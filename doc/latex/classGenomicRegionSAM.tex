@@ -1,0 +1,317 @@
+\hypertarget{classGenomicRegionSAM}{
+\section{GenomicRegionSAM Class Reference}
+\label{classGenomicRegionSAM}\index{GenomicRegionSAM@{GenomicRegionSAM}}
+}
+This class processes genomic regions in SAM format.  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for GenomicRegionSAM::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classGenomicRegionSAM}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionSAM_adf8580c5362304ab4866fa76a59df96}{
+typedef vector$<$ pair$<$ long int, char $>$ $>$ \hyperlink{classGenomicRegionSAM_adf8580c5362304ab4866fa76a59df96}{CIGARTokens}}
+\label{classGenomicRegionSAM_adf8580c5362304ab4866fa76a59df96}
+
+\begin{CompactList}\small\item\em This type is used for storing CIGAR tokens, i.e. (token\_\-type, token\_\-length). \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionSAM_e6b0828926a573743e7292567346c1a1}{
+\hyperlink{classGenomicRegionSAM_e6b0828926a573743e7292567346c1a1}{GenomicRegionSAM} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$B)}
+\label{classGenomicRegionSAM_e6b0828926a573743e7292567346c1a1}
+
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_25247d97947a54583fb17d493df4a0cf}{
+\hyperlink{classGenomicRegionSAM_25247d97947a54583fb17d493df4a0cf}{GenomicRegionSAM} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionSAM_25247d97947a54583fb17d493df4a0cf}
+
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_1d11cc22134d13dbf67ffe4c7220888d}{
+\hyperlink{classGenomicRegionSAM_1d11cc22134d13dbf67ffe4c7220888d}{$\sim$GenomicRegionSAM} ()}
+\label{classGenomicRegionSAM_1d11cc22134d13dbf67ffe4c7220888d}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_096d90b6743400daf1acb50bcf17086a}{
+void \hyperlink{classGenomicRegionSAM_096d90b6743400daf1acb50bcf17086a}{Read} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionSAM_096d90b6743400daf1acb50bcf17086a}
+
+\begin{CompactList}\small\item\em Reads SAM format from input string {\bf inp}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_4381c6486f767b6e4055cb729beee181}{
+void \hyperlink{classGenomicRegionSAM_4381c6486f767b6e4055cb729beee181}{Print} (FILE $\ast$file\_\-ptr=stdout)}
+\label{classGenomicRegionSAM_4381c6486f767b6e4055cb729beee181}
+
+\begin{CompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_df8beab78f541121e7b56957afffa4ac}{
+void \hyperlink{classGenomicRegionSAM_df8beab78f541121e7b56957afffa4ac}{PrintConstrained} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool merge\_\-labels=false)}
+\label{classGenomicRegionSAM_df8beab78f541121e7b56957afffa4ac}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionSAM_4381c6486f767b6e4055cb729beee181}{Print()}, but the interval is constrained between {\bf start} and {\bf stop}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_ecf1d74c572e85bbe9bca0b30c6a6dda}{
+void \hyperlink{classGenomicRegionSAM_ecf1d74c572e85bbe9bca0b30c6a6dda}{PrintModified} (char $\ast$label, long int start, long int stop)}
+\label{classGenomicRegionSAM_ecf1d74c572e85bbe9bca0b30c6a6dda}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionSAM_4381c6486f767b6e4055cb729beee181}{Print()}, but the label and interval's coordinates are modified. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_6d0949a836520073de57e0f968a6b819}{
+char \hyperlink{classGenomicRegionSAM_6d0949a836520073de57e0f968a6b819}{CalcStrandFromFlag} (unsigned long int flag)}
+\label{classGenomicRegionSAM_6d0949a836520073de57e0f968a6b819}
+
+\begin{CompactList}\small\item\em Extracts the strand from the FLAG field. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_f583a963f7fb0eb071c1b640c660813a}{
+void \hyperlink{classGenomicRegionSAM_f583a963f7fb0eb071c1b640c660813a}{UpdateFlagFromStrand} (char strand)}
+\label{classGenomicRegionSAM_f583a963f7fb0eb071c1b640c660813a}
+
+\begin{CompactList}\small\item\em Updates the FLAG field given a new strand. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_ea563a4a484784ad231399a3b56c7056}{
+void \hyperlink{classGenomicRegionSAM_ea563a4a484784ad231399a3b56c7056}{PrintGappedSequence} (char $\ast$seq, char $\ast$gap\_\-token\_\-types, bool lowercase\_\-for\_\-sort\_\-clipping=true)}
+\label{classGenomicRegionSAM_ea563a4a484784ad231399a3b56c7056}
+
+\begin{CompactList}\small\item\em Prints gapped sequence. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_9446540150b384ca0d3dbba630c9c6a6}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_9446540150b384ca0d3dbba630c9c6a6}{GetGappedSequence} (char $\ast$seq, char $\ast$gap\_\-token\_\-types, bool lowercase\_\-for\_\-sort\_\-clipping=true)}
+\label{classGenomicRegionSAM_9446540150b384ca0d3dbba630c9c6a6}
+
+\begin{CompactList}\small\item\em Returns gapped sequence. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_621b3dd6f4d03a5223bd26a57af14f7e}{
+void \hyperlink{classGenomicRegionSAM_621b3dd6f4d03a5223bd26a57af14f7e}{InvalidateSeqData} ()}
+\label{classGenomicRegionSAM_621b3dd6f4d03a5223bd26a57af14f7e}
+
+\begin{CompactList}\small\item\em Sets CIGAR, SEQ and QUAL fields to \char`\"{}$\ast$\char`\"{} and removes OPTIONAL field; also \hyperlink{classGenomicRegionSAM_281e35ef1bd0b7da811d9b8957f3d08f}{GenomicRegionSAM::n\_\-tokens} is set to 11. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_34b0387b9656e48d0c4046d62fe085e1}{
+void \hyperlink{classGenomicRegionSAM_34b0387b9656e48d0c4046d62fe085e1}{TokenizeCIGAR} ()}
+\label{classGenomicRegionSAM_34b0387b9656e48d0c4046d62fe085e1}
+
+\begin{CompactList}\small\item\em Computes and stores CIGAR tokens in \hyperlink{classGenomicRegionSAM_47afdde68b89cf4ea199bc91d4954a92}{GenomicRegionSAM::T}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_50198fead1c40caadf76f40b61a3c14a}{
+long int \hyperlink{classGenomicRegionSAM_50198fead1c40caadf76f40b61a3c14a}{GetNextTokenOfCIGAR} (char $\ast$$\ast$cigar, char $\ast$type)}
+\label{classGenomicRegionSAM_50198fead1c40caadf76f40b61a3c14a}
+
+\begin{CompactList}\small\item\em Returns next token in CIGAR string. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_965bb3cc1217e6c859a07dd23090c2a0}{
+void \hyperlink{classGenomicRegionSAM_965bb3cc1217e6c859a07dd23090c2a0}{UpdateCigarFromIntervals} ()}
+\label{classGenomicRegionSAM_965bb3cc1217e6c859a07dd23090c2a0}
+
+\begin{CompactList}\small\item\em Update CIGAR string based only on interval information (chooses simplest possible CIGAR). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_5de5d05dfccd33149153a299c1cb2f6b}{
+long int \hyperlink{classGenomicRegionSAM_5de5d05dfccd33149153a299c1cb2f6b}{CalcFragmentLengthFromCIGAR} ()}
+\label{classGenomicRegionSAM_5de5d05dfccd33149153a299c1cb2f6b}
+
+\begin{CompactList}\small\item\em Calculate interval length from CIGAR string. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_acff4cd74a3b8c450f9f90c6b23412c4}{
+long int \hyperlink{classGenomicRegionSAM_acff4cd74a3b8c450f9f90c6b23412c4}{CalcReferenceLengthFromCIGAR} ()}
+\label{classGenomicRegionSAM_acff4cd74a3b8c450f9f90c6b23412c4}
+
+\begin{CompactList}\small\item\em Calculate interval length from CIGAR string. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_17e8e7054ffe7205d7c34926b60526d8}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_17e8e7054ffe7205d7c34926b60526d8}{TrimCIGAR} (long int d\_\-ref\_\-start, long int d\_\-ref\_\-stop)}
+\label{classGenomicRegionSAM_17e8e7054ffe7205d7c34926b60526d8}
+
+\begin{CompactList}\small\item\em Trim CIGAR string from left and right by a given distance (measured on the reference sequence). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_0ff4472118291a8034efc929c784680c}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_0ff4472118291a8034efc929c784680c}{TrimSequence} (char $\ast$seq, long int d\_\-ref\_\-start, long int d\_\-ref\_\-stop)}
+\label{classGenomicRegionSAM_0ff4472118291a8034efc929c784680c}
+
+\begin{CompactList}\small\item\em Trim input {\bf seq} from left and right (used for trimming both SEQ and QUAL fields). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_97b9fec94e5f21490d839b3f99235a96}{
+void \hyperlink{classGenomicRegionSAM_97b9fec94e5f21490d839b3f99235a96}{RunAlign} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegionSAM_97b9fec94e5f21490d839b3f99235a96}
+
+\begin{CompactList}\small\item\em Prints alignments of input sequences to reference genome. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_5d82c1d84432274392416f87bfac655a}{
+void \hyperlink{classGenomicRegionSAM_5d82c1d84432274392416f87bfac655a}{ApplyBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSAM_5d82c1d84432274392416f87bfac655a}
+
+\begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_52fa8c0420b16fe92f54427365f72899}{
+void \hyperlink{classGenomicRegionSAM_52fa8c0420b16fe92f54427365f72899}{Center} ()}
+\label{classGenomicRegionSAM_52fa8c0420b16fe92f54427365f72899}
+
+\begin{CompactList}\small\item\em Replace each interval in the region with the corresponding center interval. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_d765c84814151be0e710fefb37c7949a}{
+void \hyperlink{classGenomicRegionSAM_d765c84814151be0e710fefb37c7949a}{Connect} ()}
+\label{classGenomicRegionSAM_d765c84814151be0e710fefb37c7949a}
+
+\begin{CompactList}\small\item\em Replace region with a single interval from minimum start to maximum stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_ca38b04fa916ae4c9c28c36f537136ba}{
+void \hyperlink{classGenomicRegionSAM_ca38b04fa916ae4c9c28c36f537136ba}{Diff} ()}
+\label{classGenomicRegionSAM_ca38b04fa916ae4c9c28c36f537136ba}
+
+\begin{CompactList}\small\item\em Replace regions with the corresponding gap intervals between successive intervals (e.g. used to compute intron boundaries). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_fc9c7ec17be517dd5b1ad7cb62f58826}{
+void \hyperlink{classGenomicRegionSAM_fc9c7ec17be517dd5b1ad7cb62f58826}{RunCalcDistances} (char $\ast$op1, char $\ast$op2)}
+\label{classGenomicRegionSAM_fc9c7ec17be517dd5b1ad7cb62f58826}
+
+\begin{CompactList}\small\item\em Print distance between successive intervals. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_7c16ba87be562950021d3f19eb14ac5e}{
+void \hyperlink{classGenomicRegionSAM_7c16ba87be562950021d3f19eb14ac5e}{Divide} ()}
+\label{classGenomicRegionSAM_7c16ba87be562950021d3f19eb14ac5e}
+
+\begin{CompactList}\small\item\em Divide intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_dd2ada73e241f593dcdcdfca97df1eb5}{
+void \hyperlink{classGenomicRegionSAM_dd2ada73e241f593dcdcdfca97df1eb5}{RunDivide} ()}
+\label{classGenomicRegionSAM_dd2ada73e241f593dcdcdfca97df1eb5}
+
+\begin{CompactList}\small\item\em Print intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_d955a6a512678613b4a42d2db0d3f549}{
+void \hyperlink{classGenomicRegionSAM_d955a6a512678613b4a42d2db0d3f549}{Fix} ()}
+\label{classGenomicRegionSAM_d955a6a512678613b4a42d2db0d3f549}
+
+\begin{CompactList}\small\item\em Removes rogue intervals (e.g. start$>$stop). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_4f26b01325ebd4e20c9bf3247d5fa733}{
+void \hyperlink{classGenomicRegionSAM_4f26b01325ebd4e20c9bf3247d5fa733}{Intersect} ()}
+\label{classGenomicRegionSAM_4f26b01325ebd4e20c9bf3247d5fa733}
+
+\begin{CompactList}\small\item\em Print intersection among all intervals, i.e. maximum start to minimum stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_538b8fc9969f24da6911ec39c8d70a3b}{
+void \hyperlink{classGenomicRegionSAM_538b8fc9969f24da6911ec39c8d70a3b}{Randomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSAM_538b8fc9969f24da6911ec39c8d70a3b}
+
+\begin{CompactList}\small\item\em Randomizes interval position within chromosomal bounds. \item\end{CompactList}\item 
+void \hyperlink{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}{ModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
+\begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_4dce925fdb55dcc7ef3dad890bc25408}{
+void \hyperlink{classGenomicRegionSAM_4dce925fdb55dcc7ef3dad890bc25408}{Select} (bool first, bool last, bool from5p, bool from3p)}
+\label{classGenomicRegionSAM_4dce925fdb55dcc7ef3dad890bc25408}
+
+\begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
+void \hyperlink{classGenomicRegionSAM_c6c559782775bfc65907801148226590}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+\begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_b31fed1760d543fa3a38bb16a064dcf9}{
+void \hyperlink{classGenomicRegionSAM_b31fed1760d543fa3a38bb16a064dcf9}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$refReg, StringLIntMap $\ast$index, StringVecLIntMap $\ast$loc)}
+\label{classGenomicRegionSAM_b31fed1760d543fa3a38bb16a064dcf9}
+
+\begin{CompactList}\small\item\em Prints shuffled region within specified reference regions in {\bf refReg}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_8a27afdcdf11895d7b3f32bd8eed68ae}{
+void \hyperlink{classGenomicRegionSAM_8a27afdcdf11895d7b3f32bd8eed68ae}{Sort} ()}
+\label{classGenomicRegionSAM_8a27afdcdf11895d7b3f32bd8eed68ae}
+
+\begin{CompactList}\small\item\em Sort intervals according to start position (only for compatible intervals). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_e195a95ba837bfd9673093f1d451b39c}{
+void \hyperlink{classGenomicRegionSAM_e195a95ba837bfd9673093f1d451b39c}{RunSplit} ()}
+\label{classGenomicRegionSAM_e195a95ba837bfd9673093f1d451b39c}
+
+\begin{CompactList}\small\item\em Print region intervals on separate lines. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_beb76df49bb89ecf0f3074805d9fe7b2}{
+void \hyperlink{classGenomicRegionSAM_beb76df49bb89ecf0f3074805d9fe7b2}{ModifyStrand} (char $\ast$strand\_\-op)}
+\label{classGenomicRegionSAM_beb76df49bb89ecf0f3074805d9fe7b2}
+
+\begin{CompactList}\small\item\em Modified strand information: '+'=only forward, '-'=only reverse, 'r'=reverse strands from '+' to '-' and vice versa, 'b'=both strands. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_6161ba10d2a4871cc43aa5bc597a787b}{
+void \hyperlink{classGenomicRegionSAM_6161ba10d2a4871cc43aa5bc597a787b}{Union} ()}
+\label{classGenomicRegionSAM_6161ba10d2a4871cc43aa5bc597a787b}
+
+\begin{CompactList}\small\item\em Compute intervals' union. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_27027bc80a3b5a864ebafd415a6ef5a6}{
+void \hyperlink{classGenomicRegionSAM_27027bc80a3b5a864ebafd415a6ef5a6}{PrintWindows} (long int win\_\-step, long int win\_\-size)}
+\label{classGenomicRegionSAM_27027bc80a3b5a864ebafd415a6ef5a6}
+
+\begin{CompactList}\small\item\em Print sliding windows (implemented only for single-interval regions). \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionSAM_281e35ef1bd0b7da811d9b8957f3d08f}{
+long int \hyperlink{classGenomicRegionSAM_281e35ef1bd0b7da811d9b8957f3d08f}{n\_\-tokens}}
+\label{classGenomicRegionSAM_281e35ef1bd0b7da811d9b8957f3d08f}
+
+\begin{CompactList}\small\item\em number of TAB-separated fields in SAM entry ($>$= 12) \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_200d7f7044dd69311eceb851a3c315e5}{
+unsigned long int \hyperlink{classGenomicRegionSAM_200d7f7044dd69311eceb851a3c315e5}{FLAG}}
+\label{classGenomicRegionSAM_200d7f7044dd69311eceb851a3c315e5}
+
+\begin{CompactList}\small\item\em bitwise FLAG \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_edacdd8319f4b614229a41b80d4c6f67}{
+long int \hyperlink{classGenomicRegionSAM_edacdd8319f4b614229a41b80d4c6f67}{MAPQ}}
+\label{classGenomicRegionSAM_edacdd8319f4b614229a41b80d4c6f67}
+
+\begin{CompactList}\small\item\em MAPping Quality. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_a5acff481ae565db4976e66933212726}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_a5acff481ae565db4976e66933212726}{CIGAR}}
+\label{classGenomicRegionSAM_a5acff481ae565db4976e66933212726}
+
+\begin{CompactList}\small\item\em CIGAR string. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_f723505bfafff1a1fa616479023d0c3c}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_f723505bfafff1a1fa616479023d0c3c}{RNEXT}}
+\label{classGenomicRegionSAM_f723505bfafff1a1fa616479023d0c3c}
+
+\begin{CompactList}\small\item\em Reference name of the mate/next fragment. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_d6f88b4324ba508b86102641d819661f}{
+long int \hyperlink{classGenomicRegionSAM_d6f88b4324ba508b86102641d819661f}{PNEXT}}
+\label{classGenomicRegionSAM_d6f88b4324ba508b86102641d819661f}
+
+\begin{CompactList}\small\item\em Position of the mate/next fragment. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_f180854a186be37eab49520edaa1262f}{
+long int \hyperlink{classGenomicRegionSAM_f180854a186be37eab49520edaa1262f}{TLEN}}
+\label{classGenomicRegionSAM_f180854a186be37eab49520edaa1262f}
+
+\begin{CompactList}\small\item\em observed Template LENgth \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_6c2887ed1fa3a25d801641ea1b139032}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_6c2887ed1fa3a25d801641ea1b139032}{SEQ}}
+\label{classGenomicRegionSAM_6c2887ed1fa3a25d801641ea1b139032}
+
+\begin{CompactList}\small\item\em fragment SEQuence \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_b43ca5f2fbfdee520f1424c3a9fd0706}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_b43ca5f2fbfdee520f1424c3a9fd0706}{QUAL}}
+\label{classGenomicRegionSAM_b43ca5f2fbfdee520f1424c3a9fd0706}
+
+\begin{CompactList}\small\item\em ASCII of Phred-scaled base QUALity+33. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_1622a8804462bad83b1c49d25eeacb49}{
+char $\ast$ \hyperlink{classGenomicRegionSAM_1622a8804462bad83b1c49d25eeacb49}{OPTIONAL}}
+\label{classGenomicRegionSAM_1622a8804462bad83b1c49d25eeacb49}
+
+\begin{CompactList}\small\item\em all SAM fields after the 12th mandatory field \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionSAM_47afdde68b89cf4ea199bc91d4954a92}{
+\hyperlink{classGenomicRegionSAM_adf8580c5362304ab4866fa76a59df96}{CIGARTokens} \hyperlink{classGenomicRegionSAM_47afdde68b89cf4ea199bc91d4954a92}{T}}
+\label{classGenomicRegionSAM_47afdde68b89cf4ea199bc91d4954a92}
+
+\begin{CompactList}\small\item\em CIGAR tokens. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This class processes genomic regions in SAM format. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}{
+\index{GenomicRegionSAM@{GenomicRegionSAM}!ModifyPos@{ModifyPos}}
+\index{ModifyPos@{ModifyPos}!GenomicRegionSAM@{GenomicRegionSAM}}
+\subsubsection[ModifyPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSAM::ModifyPos (char $\ast$ {\em position\_\-op}, \/  long int {\em position\_\-shift})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}
+
+
+Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
+\end{Desc}
+
+
+Reimplemented from \hyperlink{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{GenomicRegion}.\hypertarget{classGenomicRegionSAM_c6c559782775bfc65907801148226590}{
+\index{GenomicRegionSAM@{GenomicRegionSAM}!ShiftPos@{ShiftPos}}
+\index{ShiftPos@{ShiftPos}!GenomicRegionSAM@{GenomicRegionSAM}}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSAM::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionSAM_c6c559782775bfc65907801148226590}
+
+
+Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\end{Desc}
+
+
+Reimplemented from \hyperlink{classGenomicRegion_dc42fea61283fa8134d65467b2292405}{GenomicRegion}.
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}

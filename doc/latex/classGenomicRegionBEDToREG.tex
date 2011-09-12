@@ -1,0 +1,56 @@
+\hypertarget{classGenomicRegionBEDToREG}{
+\section{GenomicRegionBEDToREG Class Reference}
+\label{classGenomicRegionBEDToREG}\index{GenomicRegionBEDToREG@{GenomicRegionBEDToREG}}
+}
+This class reads BED files but converts them internally to the REG format, so all operations are performed on the REG format.  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for GenomicRegionBEDToREG::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classGenomicRegionBEDToREG}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionBEDToREG_964b37e08c0c513d974e14cadaba5d20}{
+\hyperlink{classGenomicRegionBEDToREG_964b37e08c0c513d974e14cadaba5d20}{GenomicRegionBEDToREG} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$B)}
+\label{classGenomicRegionBEDToREG_964b37e08c0c513d974e14cadaba5d20}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBEDToREG_b0fa681e5f8ddc81b0e27786bd86b9d9}{
+\hyperlink{classGenomicRegionBEDToREG_b0fa681e5f8ddc81b0e27786bd86b9d9}{GenomicRegionBEDToREG} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionBEDToREG_b0fa681e5f8ddc81b0e27786bd86b9d9}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBEDToREG_59650c4d898e5835271627bf8c45c609}{
+\hyperlink{classGenomicRegionBEDToREG_59650c4d898e5835271627bf8c45c609}{$\sim$GenomicRegionBEDToREG} ()}
+\label{classGenomicRegionBEDToREG_59650c4d898e5835271627bf8c45c609}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBEDToREG_3f18f7f3946f2258b30e9796fafee093}{
+void \hyperlink{classGenomicRegionBEDToREG_3f18f7f3946f2258b30e9796fafee093}{Read} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionBEDToREG_3f18f7f3946f2258b30e9796fafee093}
+
+\begin{CompactList}\small\item\em Reads BED format from input string {\bf inp}. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This class reads BED files but converts them internally to the REG format, so all operations are performed on the REG format. 
+
+Example: 
+
+\begin{Code}\begin{verbatim}    GenomicRegionBEDToREG x("chr1 132033 140102 Region#1 1000 + 132033 140102 0 2 3899,4104 0,3965");
+    cout << "x = \n"; x.Print();
+\end{verbatim}
+\end{Code}
+
+ 
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}
