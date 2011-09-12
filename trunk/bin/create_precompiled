@@ -1,0 +1,29 @@
+#!/bin/tcsh
+
+##
+## USAGE: create_precompiled VERSION
+##
+
+if ($#argv < 1) then
+  usage $0
+  exit
+endif
+
+set VERSION = $1
+
+echo "Compiling..."
+cd src
+make clean
+make -f Makefile.static
+cd ../src_gpl
+make clean
+make -f Makefile.static
+cd ..
+echo
+
+echo "Creating archive..."
+tar cvzf genomic-tools-$VERSION-RHEL-x86_64.tgz bin/*
+echo
+
+echo "Done."
+

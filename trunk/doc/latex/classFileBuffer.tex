@@ -1,0 +1,111 @@
+\hypertarget{classFileBuffer}{
+\section{FileBuffer Class Reference}
+\label{classFileBuffer}\index{FileBuffer@{FileBuffer}}
+}
+Class for reading lines from file or standard input.  
+
+
+{\tt \#include $<$core.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hyperlink{classFileBuffer_8dfee67d26ddebb474edd7676f4bdf3d}{FileBuffer} (const char $\ast$file, unsigned long int buffer\_\-size=10000)
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hyperlink{classFileBuffer_490eb6dcf60d7c804ad677035e38db40}{FileBuffer} (FILE $\ast$file\_\-ptr, unsigned long int buffer\_\-size=10000)
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_108373797a1626a0ac478fefe881535e}{
+void \hyperlink{classFileBuffer_108373797a1626a0ac478fefe881535e}{Reset} ()}
+\label{classFileBuffer_108373797a1626a0ac478fefe881535e}
+
+\begin{CompactList}\small\item\em Resets the file pointer (obviously this does not work for standard input). \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_121e4400d297944b8c241b90ab70fa3a}{
+char $\ast$ \hyperlink{classFileBuffer_121e4400d297944b8c241b90ab70fa3a}{Next} ()}
+\label{classFileBuffer_121e4400d297944b8c241b90ab70fa3a}
+
+\begin{CompactList}\small\item\em Read the next line. \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_48bf46db592b676a68cc33dc10a0e272}{
+char $\ast$ \hyperlink{classFileBuffer_48bf46db592b676a68cc33dc10a0e272}{Get} ()}
+\label{classFileBuffer_48bf46db592b676a68cc33dc10a0e272}
+
+\begin{CompactList}\small\item\em Returns a pointer to the current line. \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_83e9378412806c2646639d2b4c7c457f}{
+long int \hyperlink{classFileBuffer_83e9378412806c2646639d2b4c7c457f}{CountLines} ()}
+\label{classFileBuffer_83e9378412806c2646639d2b4c7c457f}
+
+\begin{CompactList}\small\item\em Counts the number of lines in the file. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classFileBuffer_b91de85b7f0eab77697c680346c4f61d}{
+unsigned long int \hyperlink{classFileBuffer_b91de85b7f0eab77697c680346c4f61d}{n\_\-line}}
+\label{classFileBuffer_b91de85b7f0eab77697c680346c4f61d}
+
+\begin{CompactList}\small\item\em keeps track of line number \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_416474b62bf29cc6e44dbb3d7db5fb2a}{
+char $\ast$ \hyperlink{classFileBuffer_416474b62bf29cc6e44dbb3d7db5fb2a}{file\_\-name}}
+\label{classFileBuffer_416474b62bf29cc6e44dbb3d7db5fb2a}
+
+\begin{CompactList}\small\item\em file name \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_ef9398116185fc3314424ed2c68b7854}{
+FILE $\ast$ \hyperlink{classFileBuffer_ef9398116185fc3314424ed2c68b7854}{FILE\_\-PTR}}
+\label{classFileBuffer_ef9398116185fc3314424ed2c68b7854}
+
+\begin{CompactList}\small\item\em file pointer \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_8e4c0122ac4352e5a930248f982da2ca}{
+bool \hyperlink{classFileBuffer_8e4c0122ac4352e5a930248f982da2ca}{is\_\-stdin}}
+\label{classFileBuffer_8e4c0122ac4352e5a930248f982da2ca}
+
+\begin{CompactList}\small\item\em true if reading from standard input \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_f93bf5b014aac504fca11ab6a2d59fb0}{
+char $\ast$ \hyperlink{classFileBuffer_f93bf5b014aac504fca11ab6a2d59fb0}{BUFFER}}
+\label{classFileBuffer_f93bf5b014aac504fca11ab6a2d59fb0}
+
+\begin{CompactList}\small\item\em where input line is stored \item\end{CompactList}\item 
+\hypertarget{classFileBuffer_73d2b90a38cc6e8326fbc03b7ff244ef}{
+unsigned long int \hyperlink{classFileBuffer_73d2b90a38cc6e8326fbc03b7ff244ef}{BUFFER\_\-SIZE}}
+\label{classFileBuffer_73d2b90a38cc6e8326fbc03b7ff244ef}
+
+\begin{CompactList}\small\item\em buffer size (automatically adjusted during execution to accommodate any line size) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Class for reading lines from file or standard input. 
+
+This implementation is significantly faster than getline() on C++ streams because it uses char arrays. It also automatically adjusts buffer size to fit line content. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classFileBuffer_8dfee67d26ddebb474edd7676f4bdf3d}{
+\index{FileBuffer@{FileBuffer}!FileBuffer@{FileBuffer}}
+\index{FileBuffer@{FileBuffer}!FileBuffer@{FileBuffer}}
+\subsubsection[FileBuffer]{\setlength{\rightskip}{0pt plus 5cm}FileBuffer::FileBuffer (const char $\ast$ {\em file}, \/  unsigned long int {\em buffer\_\-size} = {\tt 10000})}}
+\label{classFileBuffer_8dfee67d26ddebb474edd7676f4bdf3d}
+
+
+Class constructor. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]file name, if 'NULL' standard input is read instead \item[{\em buffer\_\-size}]buffer size (automatically adjusted during execution to accommodate any line size) \end{description}
+\end{Desc}
+\hypertarget{classFileBuffer_490eb6dcf60d7c804ad677035e38db40}{
+\index{FileBuffer@{FileBuffer}!FileBuffer@{FileBuffer}}
+\index{FileBuffer@{FileBuffer}!FileBuffer@{FileBuffer}}
+\subsubsection[FileBuffer]{\setlength{\rightskip}{0pt plus 5cm}FileBuffer::FileBuffer (FILE $\ast$ {\em file\_\-ptr}, \/  unsigned long int {\em buffer\_\-size} = {\tt 10000})}}
+\label{classFileBuffer_490eb6dcf60d7c804ad677035e38db40}
+
+
+Class constructor. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file\_\-ptr}]file pointer \item[{\em buffer\_\-size}]buffer size (automatically adjusted during execution to accommodate any line size) \end{description}
+\end{Desc}
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+core.h\item 
+core.cpp\end{CompactItemize}

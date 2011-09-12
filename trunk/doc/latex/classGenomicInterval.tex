@@ -1,0 +1,273 @@
+\hypertarget{classGenomicInterval}{
+\section{GenomicInterval Class Reference}
+\label{classGenomicInterval}\index{GenomicInterval@{GenomicInterval}}
+}
+set of CIGAR operations that map to the fragment sequence (SAM format)  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicInterval_09dcaee742ca117a8caaa1c656d0e354}{
+\hyperlink{classGenomicInterval_09dcaee742ca117a8caaa1c656d0e354}{GenomicInterval} (char $\ast$chromosome, char strand, long int start, long int stop, unsigned long int \hyperlink{classGenomicInterval_0dbe6195570468c386eea923e30c762c}{n\_\-line}=0)}
+\label{classGenomicInterval_09dcaee742ca117a8caaa1c656d0e354}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c452f2239b17bc72efe4eef12a261514}{
+\hyperlink{classGenomicInterval_c452f2239b17bc72efe4eef12a261514}{GenomicInterval} (string chromosome, char strand, long int start, long int stop, unsigned long int \hyperlink{classGenomicInterval_0dbe6195570468c386eea923e30c762c}{n\_\-line}=0)}
+\label{classGenomicInterval_c452f2239b17bc72efe4eef12a261514}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_99f413828468dca1eeb5cc806848d98e}{
+\hyperlink{classGenomicInterval_99f413828468dca1eeb5cc806848d98e}{GenomicInterval} (char $\ast$inp, char delimiter=' ', unsigned long int \hyperlink{classGenomicInterval_0dbe6195570468c386eea923e30c762c}{n\_\-line}=0)}
+\label{classGenomicInterval_99f413828468dca1eeb5cc806848d98e}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_4132f8d27fa5ebe416abe41150974c14}{
+\hyperlink{classGenomicInterval_4132f8d27fa5ebe416abe41150974c14}{GenomicInterval} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I)}
+\label{classGenomicInterval_4132f8d27fa5ebe416abe41150974c14}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_632a255d16cb13b15b2f2d4f826cace7}{
+\hyperlink{classGenomicInterval_632a255d16cb13b15b2f2d4f826cace7}{$\sim$GenomicInterval} ()}
+\label{classGenomicInterval_632a255d16cb13b15b2f2d4f826cace7}
+
+\begin{CompactList}\small\item\em Class Destructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_feba30dc21d2e5ed7e460eb1b79f021b}{
+void \hyperlink{classGenomicInterval_feba30dc21d2e5ed7e460eb1b79f021b}{PrintInterval} ()}
+\label{classGenomicInterval_feba30dc21d2e5ed7e460eb1b79f021b}
+
+\begin{CompactList}\small\item\em Print interval (do not print newline character). \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_968607fbfe88e86760924156f6519d98}{
+void \hyperlink{classGenomicInterval_968607fbfe88e86760924156f6519d98}{PrintInterval} (FILE $\ast$file\_\-ptr)}
+\label{classGenomicInterval_968607fbfe88e86760924156f6519d98}
+
+\begin{CompactList}\small\item\em Print interval in file (do not print newline character). \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_310800040ea4e328f5899611143caee0}{
+void \hyperlink{classGenomicInterval_310800040ea4e328f5899611143caee0}{PrintInterval} (long int start, long int stop)}
+\label{classGenomicInterval_310800040ea4e328f5899611143caee0}
+
+\begin{CompactList}\small\item\em Print interval with modified start and stop positions (do not print newline character). \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_70f300009a0cc29b024853fb794d0e9a}{
+void \hyperlink{classGenomicInterval_70f300009a0cc29b024853fb794d0e9a}{Print} (bool point=false)}
+\label{classGenomicInterval_70f300009a0cc29b024853fb794d0e9a}
+
+\begin{CompactList}\small\item\em Print interval with a newline character at the end. If {\bf point} is 'true', then print every point in the interval separately. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_dbd1571cf6db0ef646f9b1e095bfcb4e}{
+void \hyperlink{classGenomicInterval_dbd1571cf6db0ef646f9b1e095bfcb4e}{PrintWithLabel} (char $\ast$label, bool point=false)}
+\label{classGenomicInterval_dbd1571cf6db0ef646f9b1e095bfcb4e}
+
+\begin{CompactList}\small\item\em Print interval with a label in front and newline character at the end. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_79d1e06f62b4c1eddda7b9fc62733c7b}{
+bool \hyperlink{classGenomicInterval_79d1e06f62b4c1eddda7b9fc62733c7b}{IsValid} ()}
+\label{classGenomicInterval_79d1e06f62b4c1eddda7b9fc62733c7b}
+
+\begin{CompactList}\small\item\em Check integrity of interval start/stop positions (start$>$=1 and stop$>$=start). \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_b9323c2818c13a25fda953ae18fc97aa}{
+bool \hyperlink{classGenomicInterval_b9323c2818c13a25fda953ae18fc97aa}{CheckValid} (bool quiet=false)}
+\label{classGenomicInterval_b9323c2818c13a25fda953ae18fc97aa}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicInterval_79d1e06f62b4c1eddda7b9fc62733c7b}{GenomicInterval::IsValid}, but it also prints error messages. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_36dc2d4059337cc03a1211b6b8a7471c}{
+bool \hyperlink{classGenomicInterval_36dc2d4059337cc03a1211b6b8a7471c}{IsBefore} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I, bool sorted\_\-by\_\-strand)}
+\label{classGenomicInterval_36dc2d4059337cc03a1211b6b8a7471c}
+
+\begin{CompactList}\small\item\em Compares with input interval {\bf I} and returns true if its order is before {\bf I}. The order is determined first by chromosome, then by strand, and finally by start position. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_8fc5d344a103f145db968e536b30f9cf}{
+bool \hyperlink{classGenomicInterval_8fc5d344a103f145db968e536b30f9cf}{IsPosBefore} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I)}
+\label{classGenomicInterval_8fc5d344a103f145db968e536b30f9cf}
+
+\begin{CompactList}\small\item\em Compares with input interval {\bf I} and returns true if its position order is before {\bf I}. The position order is determined first by start position and then by stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_b6febc4c04d4919a9485ce8eeec5129d}{
+bool \hyperlink{classGenomicInterval_b6febc4c04d4919a9485ce8eeec5129d}{IsCompatibleWith} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I, bool ignore\_\-strand)}
+\label{classGenomicInterval_b6febc4c04d4919a9485ce8eeec5129d}
+
+\begin{CompactList}\small\item\em Compares with input interval {\bf I} and returns true if intervals are in the same chromosome and strand. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_a1c591b6d3cc3c576cec24a3ab67abfb}{
+bool \hyperlink{classGenomicInterval_a1c591b6d3cc3c576cec24a3ab67abfb}{OverlapsWith} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I, bool ignore\_\-strand=false)}
+\label{classGenomicInterval_a1c591b6d3cc3c576cec24a3ab67abfb}
+
+\begin{CompactList}\small\item\em Returns 'true' if it overlaps with input interval {\bf I}. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c76f5c0d3cae831f6cec9d8a27b1c56d}{
+void \hyperlink{classGenomicInterval_c76f5c0d3cae831f6cec9d8a27b1c56d}{SetCoordinates} (long int start, long int stop)}
+\label{classGenomicInterval_c76f5c0d3cae831f6cec9d8a27b1c56d}
+
+\begin{CompactList}\small\item\em Set start/stop positions to new values. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_e068e54e894fb239b61ec6d29e5f70bf}{
+long int \hyperlink{classGenomicInterval_e068e54e894fb239b61ec6d29e5f70bf}{GetCoordinate} (char $\ast$op)}
+\label{classGenomicInterval_e068e54e894fb239b61ec6d29e5f70bf}
+
+\begin{CompactList}\small\item\em If: op='1' returns start position, op='2' returns stop position, op='5p' returns 5-prime, op='3p' returns 3-prime. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_7ceb36d952453db9473c7548c885f40a}{
+size\_\-t \hyperlink{classGenomicInterval_7ceb36d952453db9473c7548c885f40a}{GetSize} ()}
+\label{classGenomicInterval_7ceb36d952453db9473c7548c885f40a}
+
+\begin{CompactList}\small\item\em Returns interval size. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_ff25b35226220508539b1183d5b9c11d}{
+char $\ast$ \hyperlink{classGenomicInterval_ff25b35226220508539b1183d5b9c11d}{GetSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
+\label{classGenomicInterval_ff25b35226220508539b1183d5b9c11d}
+
+\begin{CompactList}\small\item\em Extracts genomic interval sequence from chromosomal sequences supplied in {\bf C}. If parameter {\bf replace} is true, it replaces \char`\"{}N\char`\"{} with lowercase \char`\"{}a\char`\"{}. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_39cd65d08a0c64a8bbddec32c8decbd3}{
+size\_\-t \hyperlink{classGenomicInterval_39cd65d08a0c64a8bbddec32c8decbd3}{GetSeqLength} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicInterval_39cd65d08a0c64a8bbddec32c8decbd3}
+
+\begin{CompactList}\small\item\em Returns sequence length excluding 'N' characters. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_ea112f495d21eda675de671d9ff2e5ad}{
+long int \hyperlink{classGenomicInterval_ea112f495d21eda675de671d9ff2e5ad}{CalcOverlap} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I, bool ignore\_\-strand)}
+\label{classGenomicInterval_ea112f495d21eda675de671d9ff2e5ad}
+
+\begin{CompactList}\small\item\em Calculates the overlap with input interval {\bf I}. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_a801336aa07a0029d97d7914a747abd3}{
+long int \hyperlink{classGenomicInterval_a801336aa07a0029d97d7914a747abd3}{CalcDistanceFrom} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$I, char $\ast$op, char $\ast$I\_\-op)}
+\label{classGenomicInterval_a801336aa07a0029d97d7914a747abd3}
+
+\begin{CompactList}\small\item\em Calculates the distance from input interval {\bf I} based on position operators {\bf op} and {\bf I\_\-op}. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_7856012eda653222a1ac5482510bacc7}{
+int \hyperlink{classGenomicInterval_7856012eda653222a1ac5482510bacc7}{CalcDirection} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$i, bool sorted\_\-by\_\-strand)}
+\label{classGenomicInterval_7856012eda653222a1ac5482510bacc7}
+
+\begin{CompactList}\small\item\em Returns -1 if before interval {\bf i}, +1 if after, and 0 if the intervals overlap. The order is determined first by chromosome, then (optionally) by strand and finally by start position. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_b14f526a4df4f148e1b843ee0dc10d04}{
+void \hyperlink{classGenomicInterval_b14f526a4df4f148e1b843ee0dc10d04}{PrintSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
+\label{classGenomicInterval_b14f526a4df4f148e1b843ee0dc10d04}
+
+\begin{CompactList}\small\item\em Prints genomic interval sequence from chromosomal sequences supplied in {\bf C}. If parameter {\bf replace} is true, it replaces \char`\"{}N\char`\"{} with lowercase \char`\"{}a\char`\"{}. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_a410816fa04d76edd7caeb9ae2442ae1}{
+void \hyperlink{classGenomicInterval_a410816fa04d76edd7caeb9ae2442ae1}{ReverseStrand} ()}
+\label{classGenomicInterval_a410816fa04d76edd7caeb9ae2442ae1}
+
+\begin{CompactList}\small\item\em If interval strand is '+', it is changed to '-' and vice versa. \item\end{CompactList}\item 
+void \hyperlink{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+\begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
+void \hyperlink{classGenomicInterval_96b34b76019001c4751d4c4f868ee24d}{ModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
+\begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_bf416450f25b579dfb76b2bd6a81aa6a}{
+void \hyperlink{classGenomicInterval_bf416450f25b579dfb76b2bd6a81aa6a}{ReversePos} (StringLIntMap $\ast$bounds)}
+\label{classGenomicInterval_bf416450f25b579dfb76b2bd6a81aa6a}
+
+\begin{CompactList}\small\item\em Reverses interval start/stop positions with respect to chromosomal bounds, as if the reference point were in the end of the chromosome as opposed to the beginning. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_1834c0f1217585398de74119d680ab7b}{
+bool \hyperlink{classGenomicInterval_1834c0f1217585398de74119d680ab7b}{CheckBounds} (StringLIntMap $\ast$bounds, bool ignore)}
+\label{classGenomicInterval_1834c0f1217585398de74119d680ab7b}
+
+\begin{CompactList}\small\item\em Checks if interval start/stop positions comply with chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c28099b569624adcf3b327e922e5e4e5}{
+void \hyperlink{classGenomicInterval_c28099b569624adcf3b327e922e5e4e5}{ApplyBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicInterval_c28099b569624adcf3b327e922e5e4e5}
+
+\begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c06925f3fcf6b47cec5c6f95aaa379c0}{
+void \hyperlink{classGenomicInterval_c06925f3fcf6b47cec5c6f95aaa379c0}{PrintBEDFormat} (char $\ast$color, bool convert\_\-chromosome)}
+\label{classGenomicInterval_c06925f3fcf6b47cec5c6f95aaa379c0}
+
+\begin{CompactList}\small\item\em Prints in BED format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_75aed02c1df83acb5d7ec89e2a9949bd}{
+void \hyperlink{classGenomicInterval_75aed02c1df83acb5d7ec89e2a9949bd}{Randomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
+\label{classGenomicInterval_75aed02c1df83acb5d7ec89e2a9949bd}
+
+\begin{CompactList}\small\item\em Randomizes interval position within chromosomal bounds. \item\end{CompactList}\item 
+void \hyperlink{classGenomicInterval_ab40ad7dd997948e0c04a13164e955d6}{GetOffsetFrom} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$ReferenceI, char $\ast$op, bool ignore\_\-strand, long int $\ast$start\_\-offset, long int $\ast$stop\_\-offset)
+\begin{CompactList}\small\item\em Computes start/stop offset distances from {\bf ReferenceI}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicInterval_0dbe6195570468c386eea923e30c762c}{
+unsigned long int \hyperlink{classGenomicInterval_0dbe6195570468c386eea923e30c762c}{n\_\-line}}
+\label{classGenomicInterval_0dbe6195570468c386eea923e30c762c}
+
+\begin{CompactList}\small\item\em file line number \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c489a1195c43cc93d0e192dc91d5a192}{
+char $\ast$ \hyperlink{classGenomicInterval_c489a1195c43cc93d0e192dc91d5a192}{CHROMOSOME}}
+\label{classGenomicInterval_c489a1195c43cc93d0e192dc91d5a192}
+
+\begin{CompactList}\small\item\em chromosome name (space and tab characters are not allowed) \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_25f6603b48fcc57f97c89fa768b658f9}{
+char \hyperlink{classGenomicInterval_25f6603b48fcc57f97c89fa768b658f9}{STRAND}}
+\label{classGenomicInterval_25f6603b48fcc57f97c89fa768b658f9}
+
+\begin{CompactList}\small\item\em orientation ('+' or '-') \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c0abba93599f5cdf4b5a4e7ec5909bbd}{
+long int \hyperlink{classGenomicInterval_c0abba93599f5cdf4b5a4e7ec5909bbd}{START}}
+\label{classGenomicInterval_c0abba93599f5cdf4b5a4e7ec5909bbd}
+
+\begin{CompactList}\small\item\em interval start position in the chromosome ($>$=1) \item\end{CompactList}\item 
+\hypertarget{classGenomicInterval_c5fac21da3939b7976859a54800b93f0}{
+long int \hyperlink{classGenomicInterval_c5fac21da3939b7976859a54800b93f0}{STOP}}
+\label{classGenomicInterval_c5fac21da3939b7976859a54800b93f0}
+
+\begin{CompactList}\small\item\em interval stop position in the chromosome ($<$=chromosome\_\-size) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+set of CIGAR operations that map to the fragment sequence (SAM format) 
+
+This class implements the genomic interval.
+
+Genomic intervals can be constructed from strings that follow this format:
+
+CHROMOSOME {\em $<$SPACE$>$\/} STRAND {\em $<$SPACE$>$\/} START {\em $<$SPACE$>$\/} STOP
+
+Example: 
+
+\begin{Code}\begin{verbatim}    GenomicInterval x("chr1",'+',132034,135932);
+    GenomicInterval y("chr1 + 135832 140102");
+    cout << "size of interval x = " << x.GetSize() << '\n';
+    cout << "size of interval y = " << y.GetSize() << '\n';
+    cout << "overlap of x and y = " << x.GetOverlap(&y) << '\n';    
+\end{verbatim}
+\end{Code}
+
+ 
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}{
+\index{GenomicInterval@{GenomicInterval}!ShiftPos@{ShiftPos}}
+\index{ShiftPos@{ShiftPos}!GenomicInterval@{GenomicInterval}}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicInterval::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})}}
+\label{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}
+
+
+Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\end{Desc}
+\hypertarget{classGenomicInterval_96b34b76019001c4751d4c4f868ee24d}{
+\index{GenomicInterval@{GenomicInterval}!ModifyPos@{ModifyPos}}
+\index{ModifyPos@{ModifyPos}!GenomicInterval@{GenomicInterval}}
+\subsubsection[ModifyPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicInterval::ModifyPos (char $\ast$ {\em position\_\-op}, \/  long int {\em position\_\-shift})}}
+\label{classGenomicInterval_96b34b76019001c4751d4c4f868ee24d}
+
+
+Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
+\end{Desc}
+\hypertarget{classGenomicInterval_ab40ad7dd997948e0c04a13164e955d6}{
+\index{GenomicInterval@{GenomicInterval}!GetOffsetFrom@{GetOffsetFrom}}
+\index{GetOffsetFrom@{GetOffsetFrom}!GenomicInterval@{GenomicInterval}}
+\subsubsection[GetOffsetFrom]{\setlength{\rightskip}{0pt plus 5cm}void GenomicInterval::GetOffsetFrom ({\bf GenomicInterval} $\ast$ {\em ReferenceI}, \/  char $\ast$ {\em op}, \/  bool {\em ignore\_\-strand}, \/  long int $\ast$ {\em start\_\-offset}, \/  long int $\ast$ {\em stop\_\-offset})}}
+\label{classGenomicInterval_ab40ad7dd997948e0c04a13164e955d6}
+
+
+Computes start/stop offset distances from {\bf ReferenceI}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ReferenceI}]pointer to reference interval \item[{\em op}]selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position \item[{\em ignore\_\-strand}]ignore mismatch between test and reference strand \item[{\em start\_\-offset}]return value: the start offset \item[{\em stop\_\-offset}]return value: the stop offset \end{description}
+\end{Desc}
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}
