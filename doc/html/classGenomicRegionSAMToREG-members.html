@@ -36,6 +36,7 @@
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#71367cf4a117918f43a71a5295839733">ApplyBounds</a>(StringLIntMap *bounds)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#da548684fc4ae44dd3782aa15eaaf0a8">CalcDirection</a>(GenomicInterval *i, bool sorted_by_strand)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#b44366e44dc9a83da65b9593ce90dd32">CalcDirection</a>(GenomicRegion *r, bool sorted_by_strand)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#623e28aab180174d43873c4a85342ad4">CalcOverlap</a>(GenomicRegion *r, bool ignore_strand)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAMToREG.html#cc2044e03dc7e75bdcada1eb1e77a5ea">CalcStrandFromFlag</a>(unsigned long int flag)</td><td><a class="el" href="classGenomicRegionSAMToREG.html">GenomicRegionSAMToREG</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#1e9a85a086afbe2608411450c9a4c5e6">Center</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#2a99aedb0632fd7e1f2f8dc995ba9191">CheckBounds</a>(StringLIntMap *bounds, bool ignore)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
@@ -69,7 +70,7 @@
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#0721b07af0850057e4ab9cd416ecac2f">ModifyPos</a>(char *position_op, long int position_shift)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#e19cd6eaa883e6517ba12567cd756320">ModifyStrand</a>(char *strand_op)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#efe2255aeed5338060190ded05cb9c0c">n_line</a></td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#821c468713f787b3d821af7edaab41dc">OverlapsWith</a>(GenomicRegion *R, bool ignore_strand)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#9e3617a0046fe5fa8fce9f9cce8c3c37">OverlapsWith</a>(GenomicRegion *r, bool ignore_strand)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#40397d1fab7b00e5f04b9f7e52f0114e">Print</a>(FILE *file_ptr=stdout)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#405010d9256a3c08c53adee98133cb62">PrintBEDFormat</a>(char *color, bool convert_chromosome)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#cfe5347d9c92da801ce7e97416fc8758">PrintConstrained</a>(GenomicRegion *r, bool merge_labels=false)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
@@ -105,7 +106,7 @@
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#37af413ecbed6ee0d36ecbc40d957947">~GenomicRegion</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAMToREG.html#19dea1653efdc013f4425a43470eab02">~GenomicRegionSAMToREG</a>()</td><td><a class="el" href="classGenomicRegionSAMToREG.html">GenomicRegionSAMToREG</a></td><td></td></tr>
 </table></div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 12 16:49:29 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 16 19:13:00 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

@@ -218,9 +218,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetCurrentOperation(op);
   
   // common options
-  cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
-  cmd_line->AddOption("-h", &HELP, false, "help");
   cmd_line->AddOption("--help", &HELP, false, "help");
+  cmd_line->AddOption("-h", &HELP, false, "help");
+  cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
 
   // Main options
   if (op=="align") {

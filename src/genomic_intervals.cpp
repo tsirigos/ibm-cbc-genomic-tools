@@ -1158,6 +1158,18 @@ bool GenomicRegion::IsPosBefore(GenomicRegion *r)
 
 
 
+//---------CalcOverlap-----------
+//
+long int GenomicRegion::CalcOverlap(GenomicRegion *r, bool ignore_strand)
+{
+  long int y = 0;
+  for (GenomicIntervalSet::iterator i1=I.begin(); i1!=I.end(); i1++)
+    for (GenomicIntervalSet::iterator i2=r->I.begin(); i2!=r->I.end(); i2++) y += (*i1)->CalcOverlap(*i2,ignore_strand);
+  return y;
+}
+
+
+
 //---------CalcDirection-----------
 //
 int GenomicRegion::CalcDirection(GenomicInterval *i, bool sorted_by_strand)
@@ -2382,11 +2394,11 @@ GenomicRegionBED *GenomicRegionBED::Constrain(GenomicRegion *r, char *label)
       else new_r->I.push_back(i);
     }
   }
-  new_r->n_tokens = 12;
-  new_r->score = n_tokens>=5?score:0;
+  new_r->n_tokens = n_tokens;
+  new_r->score = n_tokens>=5?score:NULL;
   new_r->thickStart = n_tokens>=7?max(thickStart,r->I.front()->START-1):r->I.front()->START-1;
   new_r->thickEnd = n_tokens>=8?min(thickEnd,r->I.back()->STOP):r->I.back()->STOP;
-  new_r->itemRgb = n_tokens>=9?StrCopy(itemRgb):StrCopy("0");
+  new_r->itemRgb = n_tokens>=9?StrCopy(itemRgb):NULL;
   return new_r;
 }
 
@@ -4676,97 +4688,6 @@ void GenomicRegionSet::PrintBEDGraphFormat(char *title, char *color, char *posit
 
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
 //---------------------------------------------------------------------------------------------//
-// CLASS: IndexedGenomicRegionSet                                                              //
-//---------------------------------------------------------------------------------------------//
-
-
-//---------Constructor--------
-//
-IndexedGenomicRegionSet::IndexedGenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose)
-  :GenomicRegionSet(file,buffer_size,verbose,true)
-{
-  Progress PRG("Creating index...",n_regions);
-  for (GenomicRegion *r=Get(); r!=NULL; r=Next()) {
-    if (regIndex.find(r->I.front()->CHROMOSOME)==regIndex.end()) {
-      regIndex[r->I.front()->CHROMOSOME] = new GenomicIntervalList*[10000];
-      for (int b=0; b<10000; b++) regIndex[r->I.front()->CHROMOSOME][b] = new GenomicIntervalList();
-    }
-    int bin = CalcBinFromRange(r->I.front()->START-1,r->I.front()->STOP);
-    if ((bin<0)||(bin>=10000)) r->PrintError("bin out of range!");
-    regIndex[r->I.front()->CHROMOSOME][bin]->push_back(r->I.front());
-    PRG.Check();
-  }
-  PRG.Done();
-}
-
-
-
-//---------Destructor--------
-//
-IndexedGenomicRegionSet::~IndexedGenomicRegionSet()
-{
-
-}
-
-
-
-//---------CalcBinFromRange (Copyright 2002 Jim Kent)--------
-//
-int IndexedGenomicRegionSet::CalcBinFromRange(long int start, long int end)
-{
-  static int binOffsets[] = {512+64+8+1, 64+8+1, 8+1, 1, 0};
-  long int startBin = start, endBin = end-1;
-  startBin >>= 17;  	//_binFirstShift;
-  endBin >>= 17;   		//_binFirstShift;
-  for (long int i=0; i<5; ++i) {
-    if (startBin==endBin) return binOffsets[i] + startBin;
-    startBin >>= 3;		//_binNextShift;
-    endBin >>= 3;		//_binNextShift;
-  }
-  fprintf(stderr, "Error: [CalcBinFromRange] start %ld, end %ld out of range in findBin (max is 512M)", start, end);
-  exit(1);
-  return 0;
-}
-
-
-
-//---------Find--------
-//
-void IndexedGenomicRegionSet::Find(GenomicRegion *r)
-{
-  if (regIndex.find(r->I.front()->CHROMOSOME)==regIndex.end()) return;
-  printf(">");
-  r->Print();
-  int bin = CalcBinFromRange(r->I.front()->START-1,r->I.front()->STOP);
-  for (GenomicIntervalList::iterator it=regIndex[r->I.front()->CHROMOSOME][bin]->begin(); it!=regIndex[r->I.front()->CHROMOSOME][bin]->end(); it++) 
-    if (r->I.front()->OverlapsWith(*it)==true) (*it)->Print();
-}
-
-
-
-//---------------------------------------------------------------------------------------------//
-// END CLASS: IndexedGenomicRegionSet                                                          //    
-//---------------------------------------------------------------------------------------------//
-//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
-//---------------------------------------------------------------------------------------------//
 // CLASS: GenomicRegionSetScanner                                                              //
 //---------------------------------------------------------------------------------------------//
 
@@ -4892,17 +4813,273 @@ void GenomicRegionSetScanner::PrintInterval()
 
 
 
+
+
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
 //---------------------------------------------------------------------------------------------//
-// CLASS: GenomicRegionSetOverlapScanner                                                       //
+// CLASS: GenomicRegionSetOverlaps                                                             //
+//---------------------------------------------------------------------------------------------//
+
+
+//---------Constructor--------
+//
+GenomicRegionSetOverlaps::GenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet)
+{
+  this->QuerySet = QuerySet;
+  this->IndexSet = IndexSet;
+}
+
+
+
+//---------Destructor--------
+//
+GenomicRegionSetOverlaps::~GenomicRegionSetOverlaps()
+{
+
+}
+
+
+
+//---------GetOverlap--------
+//
+GenomicRegion *GenomicRegionSetOverlaps::GetOverlap(bool match_gaps, bool ignore_strand)
+{
+  for (GenomicRegion *r=GetMatch(); r!=NULL; r = NextMatch()) {
+    if (match_gaps||current_qreg->OverlapsWith(r,ignore_strand)) {
+      if (ignore_strand) return r;
+      else if (current_qreg->I.front()->STRAND==r->I.front()->STRAND) return r;
+    }
+  }
+  return NULL;
+}
+
+
+
+//---------NextOverlap--------
+//
+GenomicRegion *GenomicRegionSetOverlaps::NextOverlap(bool match_gaps, bool ignore_strand)
+{
+  for (GenomicRegion *r=NextMatch(); r!=NULL; r=NextMatch()) {
+    if (match_gaps||current_qreg->OverlapsWith(r,ignore_strand)) {
+      if (ignore_strand) return r;
+      else if (current_qreg->I.front()->STRAND==r->I.front()->STRAND) return r;
+    }
+  }
+  return NULL;
+}
+
+
+
+//---------CalcCoverage--------
+//
+unsigned long int GenomicRegionSetOverlaps::CalcCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+{
+  unsigned long int c = 0;
+  for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) {
+    long int cc = match_gaps ? min(r->I.back()->STOP,current_qreg->I.back()->STOP)-max(r->I.front()->START,current_qreg->I.front()->START)+1 : current_qreg->CalcOverlap(r,ignore_strand);
+    if (use_labels_as_values) cc *= atol(r->LABEL);
+    c += cc;
+  }
+  return c;
+}
+
+
+
+//---------CountOverlaps--------
+//
+unsigned long int GenomicRegionSetOverlaps::CountOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+{
+  unsigned long int c = 0;
+  for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) c += use_labels_as_values?atol(r->LABEL):1;
+  return c;
+}
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetOverlaps                                                         //    
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: UnsortedGenomicRegionSetOverlaps                                                     //
+//---------------------------------------------------------------------------------------------//
+
+
+//---------Constructor--------
+//
+UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet)
+ : GenomicRegionSetOverlaps(QuerySet,IndexSet)
+{
+  if (IndexSet->load_in_memory==false) { fprintf(stderr, "Error: [UnsortedGenomicRegionSetOverlaps] index regions must be loaded in memory!\n"); exit(1); }
+  bits = 17;
+  n_bins = (300000000>>bits)+1;
+  r_next = new long int[IndexSet->n_regions];
+  for (long int k=0; k<IndexSet->n_regions; k++) r_next[k] = -1;
+  Progress PRG("Creating index...",IndexSet->n_regions);
+  for (long int k=0; k<IndexSet->n_regions; k++) {
+    GenomicRegion *r = IndexSet->R[k];
+    map<string,long int*>::iterator it = bins.find(r->I.front()->CHROMOSOME);
+    long int *chr_bins;
+    if (it==bins.end()) {
+      chr_bins = bins[r->I.front()->CHROMOSOME] = new long int[n_bins+1];
+      for (long int b=0; b<=n_bins; b++) chr_bins[b] = -1;
+    }
+    else chr_bins = it->second;
+    long int b_start = r->I.front()->START>>bits;
+    long int b_stop = r->I.back()->STOP>>bits;
+    long int b = ((b_start<n_bins)&&(b_start==b_stop))?b_start:n_bins;
+    long int z = chr_bins[b]; 
+    if (z!=-1) r_next[k] = z;
+    chr_bins[b] = k;
+    PRG.Check();
+  }
+  PRG.Done();
+  Progress PRG1("Counting used...",bins.size());
+  long int n_used = 0;
+  for (map<string,long int*>::iterator it=bins.begin(); it!=bins.end(); it++,PRG1.Check()) 
+    for (long int b=0; b<=n_bins; b++) 
+      for (long int z=it->second[b]; z!=-1; z=r_next[z]) n_used++;
+  PRG1.Done();
+  if (n_used!=IndexSet->n_regions) { fprintf(stderr, "Bug: [UnsortedGenomicRegionSetOverlaps] n_used should equal n_regions!\n"); exit(1); }
+}
+
+
+
+//---------Destructor--------
+//
+UnsortedGenomicRegionSetOverlaps::~UnsortedGenomicRegionSetOverlaps()
+{
+  delete r_next;
+  for (map<string,long int*>::iterator it=bins.begin(); it!=bins.end(); it++) delete it->second;
+}
+
+
+
+//---------GetQuery--------
+//
+GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetQuery()
+{
+  current_qreg = QuerySet->Get();
+  return current_qreg;
+}
+
+
+
+//---------NextQuery--------
+//
+GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextQuery()
+{
+  current_qreg = QuerySet->Next();
+  return current_qreg;
+}
+
+
+
+//---------GetMatch--------
+//
+// NOTES for GetMatch()/NextMatch():
+// -- implement bin hierarchy to accommodate different index region sizes
+GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetMatch()
+{
+  current_chrom_bin_it = bins.find(current_qreg->I.front()->CHROMOSOME);
+  new_query = true;
+  return NextMatch();
+}
+
+
+
+//---------NextMatch--------
+//
+GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextMatch()
+{
+  if (current_chrom_bin_it==bins.end()) return (current_ireg=NULL); 
+  static long int b, b_last, current_k;
+  if (new_query) {
+    new_query = false;
+    b = current_qreg->I.front()->START>>bits;
+    b_last = current_qreg->I.back()->STOP>>bits;
+    if ((b>b_last)||(b>=n_bins)) return (current_ireg=NULL); 
+    current_k = current_chrom_bin_it->second[b];
+  }
+  while (true) {
+    while (current_k!=-1) {
+      current_ireg = IndexSet->R[current_k];
+      current_k = r_next[current_k];
+      if ((current_qreg->I.front()->START<=current_ireg->I.back()->STOP)&&(current_qreg->I.back()->STOP>=current_ireg->I.front()->START)) return current_ireg;  
+    }
+    b++;
+    if (b>n_bins) break;
+    if (b>b_last) b = n_bins;
+    current_k = current_chrom_bin_it->second[b];
+  }
+  return (current_ireg=NULL);
+}
+
+
+
+//---------Done--------
+//
+bool UnsortedGenomicRegionSetOverlaps::Done()
+{
+  return current_qreg==NULL;
+}
+
+
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: UnsortedGenomicRegionSetOverlaps                                                 //    
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: SortedGenomicRegionSetOverlaps                                                       //
 //---------------------------------------------------------------------------------------------//
 
 //---------Constructor--------
 //
-GenomicRegionSetOverlapScanner::GenomicRegionSetOverlapScanner(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, bool sorted_by_strand)
+SortedGenomicRegionSetOverlaps::SortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, bool sorted_by_strand)
+ : GenomicRegionSetOverlaps(QuerySet,IndexSet)
 {
-  this->QuerySet = QuerySet;
-  this->IndexSet = IndexSet;
   this->sorted_by_strand = sorted_by_strand;
   this->ireg_buffer_interval = NULL;
   this->max_ireg_buffer_size = 0;
@@ -4912,9 +5089,10 @@ GenomicRegionSetOverlapScanner::GenomicRegionSetOverlapScanner(GenomicRegionSet 
 }
 
 
+
 //---------Destructor--------
 //
-GenomicRegionSetOverlapScanner::~GenomicRegionSetOverlapScanner()
+SortedGenomicRegionSetOverlaps::~SortedGenomicRegionSetOverlaps()
 {
   ClearIndexBuffer();
   if (_MESSAGES_) fprintf(stderr, "Max used memory = %lu regions.\n", max_ireg_buffer_size);
@@ -4924,7 +5102,7 @@ GenomicRegionSetOverlapScanner::~GenomicRegionSetOverlapScanner()
 
 //---------ClearIndexBuffer--------
 //
-void GenomicRegionSetOverlapScanner::ClearIndexBuffer()
+void SortedGenomicRegionSetOverlaps::ClearIndexBuffer()
 {
   for (GenomicRegionList::iterator it=IRegBuffer.begin(); it!=IRegBuffer.end(); it++) delete *it;
   IRegBuffer.clear();
@@ -4936,7 +5114,7 @@ void GenomicRegionSetOverlapScanner::ClearIndexBuffer()
 
 //---------LoadIndexBuffer--------
 //
-void GenomicRegionSetOverlapScanner::LoadIndexBuffer()
+void SortedGenomicRegionSetOverlaps::LoadIndexBuffer()
 {
   if (current_qreg==NULL) return;
   if (IRegBuffer.size()>max_ireg_buffer_size) max_ireg_buffer_size = IRegBuffer.size();
@@ -4970,7 +5148,7 @@ void GenomicRegionSetOverlapScanner::LoadIndexBuffer()
 
 //---------GetQuery--------
 //
-GenomicRegion *GenomicRegionSetOverlapScanner::GetQuery()
+GenomicRegion *SortedGenomicRegionSetOverlaps::GetQuery()
 {
   current_qreg = QuerySet->Get();
   if ((current_qreg!=NULL)&&(current_qreg->IsCompatibleSortedAndNonoverlapping()==false)) current_qreg->PrintError("query regions should be compatible, sorted and non-overlapping!");
@@ -4981,7 +5159,7 @@ GenomicRegion *GenomicRegionSetOverlapScanner::GetQuery()
 
 //---------NextQuery--------
 //
-GenomicRegion *GenomicRegionSetOverlapScanner::NextQuery()
+GenomicRegion *SortedGenomicRegionSetOverlaps::NextQuery()
 {
   GenomicRegion *qreg_prev = QuerySet->GetRetain();
   current_qreg = QuerySet->Next();
@@ -4995,7 +5173,7 @@ GenomicRegion *GenomicRegionSetOverlapScanner::NextQuery()
 
 //---------GetMatch--------
 //
-GenomicRegion *GenomicRegionSetOverlapScanner::GetMatch()
+GenomicRegion *SortedGenomicRegionSetOverlaps::GetMatch()
 {
   if ((current_qreg==NULL)||(current_ireg==NULL)) return NULL; 
   while (true) {
@@ -5015,7 +5193,7 @@ GenomicRegion *GenomicRegionSetOverlapScanner::GetMatch()
 
 //---------NextMatch--------
 //
-GenomicRegion *GenomicRegionSetOverlapScanner::NextMatch()
+GenomicRegion *SortedGenomicRegionSetOverlaps::NextMatch()
 {
   IRegBufferIterator++; 
   current_ireg = IRegBufferIterator==IRegBuffer.end()?NULL:*IRegBufferIterator;
@@ -5024,70 +5202,23 @@ GenomicRegion *GenomicRegionSetOverlapScanner::NextMatch()
 }
 
 
-//---------GetOverlap--------
-//
-GenomicRegion *GenomicRegionSetOverlapScanner::GetOverlap(bool match_gaps, bool ignore_strand)
-{
-  for (GenomicRegion *r=GetMatch(); r!=NULL; r = NextMatch()) {
-    if (match_gaps||current_qreg->OverlapsWith(r,ignore_strand)) {
-      if (ignore_strand) return r;
-      else if (current_qreg->I.front()->STRAND==r->I.front()->STRAND) return r;
-    }
-  }
-  return NULL;
-}
-
-
-//---------NextOverlap--------
-//
-GenomicRegion *GenomicRegionSetOverlapScanner::NextOverlap(bool match_gaps, bool ignore_strand)
-{
-  for (GenomicRegion *r=NextMatch(); r!=NULL; r = NextMatch()) {
-    if (match_gaps||current_qreg->OverlapsWith(r,ignore_strand)) {
-      if (ignore_strand) return r;
-      else if (current_qreg->I.front()->STRAND==r->I.front()->STRAND) return r;
-    }
-  }
-  return NULL;
-}
-
-
 //---------Done--------
 //
-bool GenomicRegionSetOverlapScanner::Done()
+bool SortedGenomicRegionSetOverlaps::Done()
 {
   return (current_qreg==NULL)||((IndexSet->Get()==NULL)&&IRegBuffer.empty());
 }
 
 
-//---------CalcCoverage--------
-//
-unsigned long int GenomicRegionSetOverlapScanner::CalcCoverage(bool use_labels_as_values, bool ignore_strand)
-{
-  unsigned long int c = 0;
-  for (GenomicRegion *r=GetOverlap(false,ignore_strand); r!=NULL; r=NextOverlap(false,ignore_strand)) {
-    long int cc = min(r->I.back()->STOP,current_qreg->I.back()->STOP)-max(r->I.front()->START,current_qreg->I.front()->START)+1;		// NOTE: this is not accounting for any gaps in ireg or qreg
-    if (use_labels_as_values) cc *= atol(r->LABEL);
-    c += cc;
-  }
-  return c;
-}
-
-
-//---------CountMatches--------
-//
-unsigned long int GenomicRegionSetOverlapScanner::CountMatches(bool use_labels_as_values, bool ignore_strand)
-{
-  unsigned long int c = 0;
-  for (GenomicRegion *r=GetOverlap(false,ignore_strand); r!=NULL; r=NextOverlap(false,ignore_strand)) c += use_labels_as_values?atol(r->LABEL):1;							// NOTE: a match does not necessarily mean that there is overlap (only enclosing is guarranteed)
-  return c;
-}
-
-
 //---------------------------------------------------------------------------------------------//
-// END CLASS: GenomicRegionSetOverlapScanner                                                   //
+// END CLASS: SortedGenomicRegionSetOverlaps                                                   //
 //---------------------------------------------------------------------------------------------//
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
 
 
 
