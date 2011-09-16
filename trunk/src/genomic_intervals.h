@@ -41,7 +41,7 @@ typedef GenomicIntervalSetAsVector GenomicIntervalSet;
 //typedef GenomicIntervalSetAsList GenomicIntervalSet;
 //typedef GenomicIntervalSetAsArray GenomicIntervalSet;
 
-// for buffer in GenomicRegionSetOverlapScanner
+// for buffer in SortedGenomicRegionSetOverlaps
 typedef list<GenomicRegion *> GenomicRegionList;
 
 
@@ -399,15 +399,15 @@ class Chromosomes
   
   // data
 
-  bool verbose;								//!< if 'true', print messages while loading chromosome sequences
-  bool load_in_memory;						//!< 'true' if reading from FASTA file
-  StringMap map;							//!< maps chromosome names to chromosome sequence file names
-  string map_dir;							//!< the directory where the chromosome map file is located
-  string map_name;							//!< the name of the chromosome map file
+  bool verbose;						//!< if 'true', print messages while loading chromosome sequences
+  bool load_in_memory;					//!< 'true' if reading from FASTA file
+  StringMap map;					//!< maps chromosome names to chromosome sequence file names
+  string map_dir;					//!< the directory where the chromosome map file is located
+  string map_name;					//!< the name of the chromosome map file
   string current_chromosome_name;			//!< name of the currently used chromosome
   size_t current_chromosome_size;			//!< size of the currently used chromosome 
   char *current_chromosome_seq;				//!< pointer to the currently used chromosome sequence
-  ChromosomeSeqData chromosome_seq_data;	//!< all chromosomes sequences and their sizes are stored here
+  ChromosomeSeqData chromosome_seq_data;		//!< all chromosomes sequences and their sizes are stored here
 };
 
 
@@ -432,7 +432,7 @@ class Chromosomes
 //---------------------------------------------------------------------------------------------//
 // CLASS: GenomicIntervalSetAsArray                                                            //
 //---------------------------------------------------------------------------------------------//
-//!  UNDER DEVELOPMENT: This class implements the an array of genomic intervals. 
+//!  [UNDER DEVELOPMENT] This class implements an array of genomic intervals. 
 //---------------------------------------------------------------------------------------------//
 
 class GenomicIntervalSetAsArray
@@ -684,8 +684,8 @@ class GenomicRegion
 
 
 
-  //! Returns 'true' if it overlaps with input region <b>R</b>.
-  bool OverlapsWith(GenomicRegion *R, bool ignore_strand);
+  //! Returns 'true' if it overlaps with input region <b>r</b>.
+  bool OverlapsWith(GenomicRegion *r, bool ignore_strand);
 
 
 
@@ -696,6 +696,11 @@ class GenomicRegion
 
   //! Compares with input region <b>r</b> and returns true if its position order is before <b>r</b>. The position order is determined first by start position and then by stop position.
   bool IsPosBefore(GenomicRegion *r);
+
+
+
+  //! Returns the total number of overlapping nucleotides (gaps are not matched) with input region <b>r</b>.
+  long int CalcOverlap(GenomicRegion *r, bool ignore_strand);
 
 
 
@@ -1875,7 +1880,7 @@ class GenomicRegionSet
   void RunGlobalReverseOrder();
 
 
-  //! Computes densities of input regions in index regions in <b>Index</b>. This is OBSOLETE, use class GenomicRegionSetOverlapScanner instead. 
+  //! Computes densities of input regions in index regions in <b>Index</b>. This is OBSOLETE, use class SortedGenomicRegionSetOverlaps instead. 
   void PrintDensities(GenomicRegionSet &Index, bool report_exact_boundaries);
 
 
@@ -2118,53 +2123,6 @@ class GenomicRegionSet
 
 
 //---------------------------------------------------------------------------------------------//
-// CLASS: IndexedGenomicRegionSet                                                              //
-//---------------------------------------------------------------------------------------------//
-//!  [UNDER DEVELOPMENT] An extension of GenomicRegionSet has an index for quick searching.
-//---------------------------------------------------------------------------------------------//
-class IndexedGenomicRegionSet : public GenomicRegionSet
-{
- public:
-  typedef list<GenomicInterval*> GenomicIntervalList;			//!< list of genomic intervals
-  typedef map<string,GenomicIntervalList**> RegIndex;			//!< map of string to genomic interval list
-
-  //! Class constructor, see example below.
-  IndexedGenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose); 
-
-
-  //! Class destructor.
-  ~IndexedGenomicRegionSet();
-
-
-  //! Finds a match with genomic interval <b>i</b>.
-  void Find(GenomicRegion *i);
-
-  
-  //! Given start,end in chromosome coordinates assign it a bin (Copyright 2002 Jim Kent).
-  int CalcBinFromRange(long int start, long int end);
-
-  
-  // data
-  
-  RegIndex regIndex;						//!< index
-  
-};
-
-//---------------------------------------------------------------------------------------------//
-// END CLASS: IndexedGenomicRegionSet                                                          //
-//---------------------------------------------------------------------------------------------//
-
-
-
-
-
-
-
-
-
-
-
-//---------------------------------------------------------------------------------------------//
 // CLASS: GenomicRegionSetScanner                                                              //
 //---------------------------------------------------------------------------------------------//
 //!  This class is used to scan a set of regions by sliding windows. See detailed description below for an example.  
@@ -2210,30 +2168,30 @@ class GenomicRegionSetScanner
   ~GenomicRegionSetScanner();
   
   // operations
-  long int Next();							//!< computes value in the next window
+  long int Next();				//!< computes value in the next window
   long int Next(GenomicRegionSet *Ref);		//!< computes value in the next window that overlaps with <b>Ref</b>
-  void PrintInterval();						//!< prints current window's interval
+  void PrintInterval();				//!< prints current window's interval
   
   // data
  private: 
-  bool Test();				//!< tests whether current input region should be skipped because it does not match any chromosome name in the provided bounds
+  bool Test();					//!< tests whether current input region should be skipped because it does not match any chromosome name in the provided bounds
 
   GenomicRegionSet *R;				//!< pointer to the GenomicRegionSet which will be scanned by sliding windows
   StringLIntMap *bounds;			//!< chromosome sizes
   long int win_step;				//!< sliding window step
   long int win_size;				//!< sliding window size (must be a multiple of window step)
-  bool use_labels_as_values;		//!< if true, genomic region labels are assumed to be integers and are included in the counting
-  bool ignore_reverse_strand;		//!< if true, no sliding windows on the negative strand are reported
-  char preprocess;					//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+  bool use_labels_as_values;			//!< if true, genomic region labels are assumed to be integers and are included in the counting
+  bool ignore_reverse_strand;			//!< if true, no sliding windows on the negative strand are reported
+  char preprocess;				//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   long int n_win_combine;			//!< win_size divided by win_step (note: each window is comprised of non-overlapping sub-windows of size win_step)
-  GenomicRegion *r;					//!< pointer to the most recently scanned region 
-  StringLIntMap::iterator chr;		//!< keeps track of current window's chromosome information
-  char strand;						//!< keeps track of current window's strand information
-  long int start;					//!< keeps track of current window's start information
-  long int stop;					//!< keeps track of current window's stop information
-  long int *v;						//!< a vector that keeps track of values in the sub-windows (of size win_step) that comprise the window (of size win_size)
-  long int k;						//!< the k-th element of v to be updated next (in a round-robin manner)
-  long int v_sum;					//!< keeps track of current window's value information (this is the sum of elements in vector v); it is set to '-1' if no more windows are available.
+  GenomicRegion *r;				//!< pointer to the most recently scanned region 
+  StringLIntMap::iterator chr;			//!< keeps track of current window's chromosome information
+  char strand;					//!< keeps track of current window's strand information
+  long int start;				//!< keeps track of current window's start information
+  long int stop;				//!< keeps track of current window's stop information
+  long int *v;					//!< a vector that keeps track of values in the sub-windows (of size win_step) that comprise the window (of size win_size)
+  long int k;					//!< the k-th element of v to be updated next (in a round-robin manner)
+  long int v_sum;				//!< keeps track of current window's value information (this is the sum of elements in vector v); it is set to '-1' if no more windows are available.
 };
 
 //---------------------------------------------------------------------------------------------//
@@ -2248,8 +2206,172 @@ class GenomicRegionSetScanner
 
 
 
+
+
 //---------------------------------------------------------------------------------------------//
-// CLASS: GenomicRegionSetOverlapScanner                                                       //
+// CLASS: GenomicRegionSetOverlaps                                                             //
+//---------------------------------------------------------------------------------------------//
+//!  Abstract class for computing overlaps between genomic regions.
+//---------------------------------------------------------------------------------------------//
+class GenomicRegionSetOverlaps
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param QuerySet 				pointer to query region set
+    \param IndexSet 				pointer to index region set
+  */
+  GenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet);
+
+
+  //! Class destructor.
+  virtual ~GenomicRegionSetOverlaps();
+
+  
+  //! Returns a pointer to the current query region ('NULL' if no more query regions are available).
+  virtual GenomicRegion *GetQuery() = 0;
+
+
+  //! Returns a pointer to the next query region ('NULL' if no more query regions are available).
+  virtual GenomicRegion *NextQuery() = 0;
+
+
+  //! Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  virtual GenomicRegion *GetMatch() = 0;
+
+ 
+  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  virtual GenomicRegion *NextMatch() = 0;
+
+ 
+  //! Returns true, if no more query or index regions are available and the \ref SortedGenomicRegionSetOverlaps::IRegBuffer buffer is empty.
+  virtual bool Done() = 0;
+ 
+
+  //! Returns a pointer to the current index region that overlaps the current query region.
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+  */
+  GenomicRegion *GetOverlap(bool match_gaps, bool ignore_strand);
+
+
+  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+  */
+  GenomicRegion *NextOverlap(bool match_gaps, bool ignore_strand);
+
+  
+  //! Calculates the total overlap between the current query region and the index region set.
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+    \param use_labels_as_values 	region labels contain number to be used in calculation
+  */
+  unsigned long int CalcCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+
+
+  //! Calculates the total number of matches between the current query region and the index region set.
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+    \param use_labels_as_values 	region labels contain number to be used in calculation
+   */
+  unsigned long int CountOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+
+  
+  // data
+ public: 
+  GenomicRegionSet *QuerySet;				//!< pointer to query region set
+  GenomicRegionSet *IndexSet;				//!< pointer to index region set
+  GenomicRegion *current_qreg;				//!< pointer to the current query region 
+  GenomicRegion *current_ireg;				//!< pointer to the current index region 
+   
+};
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetOverlaps                                                         //
+//---------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// CLASS: UnsortedGenomicRegionSetOverlaps                                                     //
+//---------------------------------------------------------------------------------------------//
+//!  [UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions.
+//---------------------------------------------------------------------------------------------//
+class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param QuerySet 				pointer to query region set
+    \param IndexSet 				pointer to index region set
+  */
+  UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet);
+
+
+  //! Class destructor.
+  ~UnsortedGenomicRegionSetOverlaps();
+
+  
+  //! Returns a pointer to the current query region ('NULL' if no more query regions are available).
+  GenomicRegion *GetQuery();
+
+
+  //! Returns a pointer to the next query region ('NULL' if no more query regions are available).
+  GenomicRegion *NextQuery();
+
+
+  //! Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  GenomicRegion *GetMatch();
+
+ 
+  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  GenomicRegion *NextMatch();
+
+ 
+  //! Returns true, if no more query or index regions are available and the \ref SortedGenomicRegionSetOverlaps::IRegBuffer buffer is empty.
+  bool Done();
+ 
+
+  
+  // data
+ public: 
+  long int *r_next;
+  int bits;
+  long int n_bins;
+  map<string,long int*> bins;
+  map<string,long int*>::iterator current_chrom_bin_it;
+  bool new_query; 
+};
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: UnsortedGenomicRegionSetOverlaps                                                 //
+//---------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// CLASS: SortedGenomicRegionSetOverlaps                                                       //
 //---------------------------------------------------------------------------------------------//
 //!  This class is used to find overlaps between two genomic regions sets. See detailed description below for an example.  
 /*!
@@ -2263,7 +2385,7 @@ class GenomicRegionSetScanner
     GenomicRegionSet QueryRegSet(QUERY_REG_FILE,10000,true,false);
     GenomicRegionSet IndexRegSet(INDEX_REG_FILE,10000,true,false);
 
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
       double density = (double)Overlaps.CalcCoverage(USE_VALUES,IGNORE_STRAND)/qreg->GetSize(); 
@@ -2284,7 +2406,7 @@ class GenomicRegionSetScanner
     GenomicRegionSet QueryRegSet(QUERY_REG_FILE,10000,true,false);
     GenomicRegionSet IndexRegSet(INDEX_REG_FILE,10000,true,false);
 
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
       size_t Qsize = qreg->GetSize();
@@ -2301,7 +2423,7 @@ class GenomicRegionSetScanner
   \endcode
 */
 //---------------------------------------------------------------------------------------------//
-class GenomicRegionSetOverlapScanner
+class SortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
 {
  public:
   //! Class constructor.
@@ -2310,18 +2432,18 @@ class GenomicRegionSetOverlapScanner
     \param IndexSet 				pointer to index region set
     \param sorted_by_strand			if true, query and index regions are sorted by strand
   */
-  GenomicRegionSetOverlapScanner(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, bool sorted_by_strand);
+  SortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, bool sorted_by_strand);
 
 
   //! Class destructor.
-  ~GenomicRegionSetOverlapScanner();
+  ~SortedGenomicRegionSetOverlaps();
 
   
-  //! Returns a pointer to the current query region ('NULL' if no more query regions are available); also, \ref GenomicRegionSetOverlapScanner::IRegBuffer is automatically updated via \ref GenomicRegionSetOverlapScanner::LoadIndexBuffer.
+  //! Returns a pointer to the current query region ('NULL' if no more query regions are available); also, \ref SortedGenomicRegionSetOverlaps::IRegBuffer is automatically updated via \ref SortedGenomicRegionSetOverlaps::LoadIndexBuffer.
   GenomicRegion *GetQuery();
 
 
-  //! Returns a pointer to the next query region ('NULL' if no more query regions are available); also, \ref GenomicRegionSetOverlapScanner::IRegBuffer is automatically updated via \ref GenomicRegionSetOverlapScanner::LoadIndexBuffer.
+  //! Returns a pointer to the next query region ('NULL' if no more query regions are available); also, \ref SortedGenomicRegionSetOverlaps::IRegBuffer is automatically updated via \ref SortedGenomicRegionSetOverlaps::LoadIndexBuffer.
   GenomicRegion *NextQuery();
 
 
@@ -2333,60 +2455,31 @@ class GenomicRegionSetOverlapScanner
   GenomicRegion *NextMatch();
 
  
-  //! Returns a pointer to the current index region that overlaps the current query region.
-  /*!
-    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
-    \param ignore_strand		if 'true', overlaps are strand-ignorant
-  */
-  GenomicRegion *GetOverlap(bool match_gaps, bool ignore_strand);
-
-
-  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
-  /*!
-    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
-    \param ignore_strand		if 'true', overlaps are strand-ignorant
-  */
-  GenomicRegion *NextOverlap(bool match_gaps, bool ignore_strand);
-
-  
-  //! Returns true, if no more query or index regions are available and the \ref GenomicRegionSetOverlapScanner::IRegBuffer buffer is empty.
+  //! Returns true, if no more query or index regions are available and the \ref SortedGenomicRegionSetOverlaps::IRegBuffer buffer is empty.
   bool Done();
  
 
-  //! Calculates the total overlap between the current query region and the index region set.
-  /*!
-    \param use_labels_as_values 	region labels contain number to be used in calculation
-    \param ignore_strand		if 'true', overlaps are strand-ignorant
-  */
-  unsigned long int CalcCoverage(bool use_labels_as_values, bool ignore_strand);
-
-
-  //! Calculates the total number of matches between the current query region and the index region set.
-  /*!
-    \param use_labels_as_values 	region labels contain number to be used in calculation
-    \param ignore_strand		if 'true', overlaps are strand-ignorant
-  */
-  unsigned long int CountMatches(bool use_labels_as_values, bool ignore_strand);
-
  private:
-  void LoadIndexBuffer();				//!< manages \ref GenomicRegionSetOverlapScanner::IRegBuffer
-  void ClearIndexBuffer();				//!< clears \ref GenomicRegionSetOverlapScanner::IRegBuffer
+  void LoadIndexBuffer();				//!< manages \ref SortedGenomicRegionSetOverlaps::IRegBuffer
+  void ClearIndexBuffer();				//!< clears \ref SortedGenomicRegionSetOverlaps::IRegBuffer
 
   // data
-  GenomicRegionSet *QuerySet;				//!< pointer to query region set
-  GenomicRegionSet *IndexSet;				//!< pointer to index region set
   bool sorted_by_strand;				//!< if true, query and index regions sorted by strand
-  GenomicRegion *current_qreg;				//!< pointer to the current query region 
-  GenomicRegion *current_ireg;				//!< pointer to the current index region 
   GenomicRegionList IRegBuffer;				//!< temporary buffer containing index regions that overlap with current query; the buffer is cleared only if the next query has no overlap 
-  GenomicRegionList::iterator IRegBufferIterator;	//!< iterator on \ref GenomicRegionSetOverlapScanner::IRegBuffer
-  GenomicInterval *ireg_buffer_interval;		//!< keeps tracks of the (linked) interval stored in \ref GenomicRegionSetOverlapScanner::IRegBuffer
-  unsigned long int max_ireg_buffer_size;		//!< keeps track of the maximum size of \ref GenomicRegionSetOverlapScanner::IRegBuffer 
+  GenomicRegionList::iterator IRegBufferIterator;	//!< iterator on \ref SortedGenomicRegionSetOverlaps::IRegBuffer
+  GenomicInterval *ireg_buffer_interval;		//!< keeps tracks of the (linked) interval stored in \ref SortedGenomicRegionSetOverlaps::IRegBuffer
+  unsigned long int max_ireg_buffer_size;		//!< keeps track of the maximum size of \ref SortedGenomicRegionSetOverlaps::IRegBuffer 
 };
 
 //---------------------------------------------------------------------------------------------//
-// END CLASS: GenomicRegionSetOverlapScanner                                                   //
+// END CLASS: SortedGenomicRegionSetOverlaps                                                   //
 //---------------------------------------------------------------------------------------------//
+
+
+
+
+
+
 
 
 

@@ -136,11 +136,11 @@ bool \hyperlink{classGenomicRegion_fb2db74a3cd85a84533375483e12b96c}{IsCompatibl
 \label{classGenomicRegion_fb2db74a3cd85a84533375483e12b96c}
 
 \begin{CompactList}\small\item\em Returns 'true' if intervals are compatible, sorted and non-overlapping. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegion_821c468713f787b3d821af7edaab41dc}{
-bool \hyperlink{classGenomicRegion_821c468713f787b3d821af7edaab41dc}{OverlapsWith} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$R, bool ignore\_\-strand)}
-\label{classGenomicRegion_821c468713f787b3d821af7edaab41dc}
+\hypertarget{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}{
+bool \hyperlink{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}{OverlapsWith} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand)}
+\label{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}
 
-\begin{CompactList}\small\item\em Returns 'true' if it overlaps with input region {\bf R}. \item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Returns 'true' if it overlaps with input region {\bf r}. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}{
 bool \hyperlink{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}{IsBefore} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool sorted\_\-by\_\-strand)}
 \label{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}
@@ -151,6 +151,11 @@ bool \hyperlink{classGenomicRegion_2065cf74a82c2340b1e49e7f7ec0fdd4}{IsPosBefore
 \label{classGenomicRegion_2065cf74a82c2340b1e49e7f7ec0fdd4}
 
 \begin{CompactList}\small\item\em Compares with input region {\bf r} and returns true if its position order is before {\bf r}. The position order is determined first by start position and then by stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_623e28aab180174d43873c4a85342ad4}{
+long int \hyperlink{classGenomicRegion_623e28aab180174d43873c4a85342ad4}{CalcOverlap} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand)}
+\label{classGenomicRegion_623e28aab180174d43873c4a85342ad4}
+
+\begin{CompactList}\small\item\em Returns the total number of overlapping nucleotides (gaps are not matched) with input region {\bf r}. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}{
 int \hyperlink{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}{CalcDirection} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$i, bool sorted\_\-by\_\-strand)}
 \label{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}

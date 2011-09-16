@@ -152,10 +152,10 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#fb2db74a3cd85a84533375483e12b96c">IsCompatibleSortedAndNonoverlapping</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns 'true' if intervals are compatible, sorted and non-overlapping. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="821c468713f787b3d821af7edaab41dc"></a><!-- doxytag: member="GenomicRegion::OverlapsWith" ref="821c468713f787b3d821af7edaab41dc" args="(GenomicRegion *R, bool ignore_strand)" -->
-bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#821c468713f787b3d821af7edaab41dc">OverlapsWith</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *R, bool ignore_strand)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="9e3617a0046fe5fa8fce9f9cce8c3c37"></a><!-- doxytag: member="GenomicRegion::OverlapsWith" ref="9e3617a0046fe5fa8fce9f9cce8c3c37" args="(GenomicRegion *r, bool ignore_strand)" -->
+bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#9e3617a0046fe5fa8fce9f9cce8c3c37">OverlapsWith</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool ignore_strand)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns 'true' if it overlaps with input region <b>R</b>. <br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns 'true' if it overlaps with input region <b>r</b>. <br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="25634257eb7a2ed379548b17a83414fb"></a><!-- doxytag: member="GenomicRegion::IsBefore" ref="25634257eb7a2ed379548b17a83414fb" args="(GenomicRegion *r, bool sorted_by_strand)" -->
 bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#25634257eb7a2ed379548b17a83414fb">IsBefore</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool sorted_by_strand)</td></tr>
 
@@ -164,6 +164,10 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#2065cf74a82c2340b1e49e7f7ec0fdd4">IsPosBefore</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compares with input region <b>r</b> and returns true if its position order is before <b>r</b>. The position order is determined first by start position and then by stop position. <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="623e28aab180174d43873c4a85342ad4"></a><!-- doxytag: member="GenomicRegion::CalcOverlap" ref="623e28aab180174d43873c4a85342ad4" args="(GenomicRegion *r, bool ignore_strand)" -->
+long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#623e28aab180174d43873c4a85342ad4">CalcOverlap</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool ignore_strand)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns the total number of overlapping nucleotides (gaps are not matched) with input region <b>r</b>. <br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="da548684fc4ae44dd3782aa15eaaf0a8"></a><!-- doxytag: member="GenomicRegion::CalcDirection" ref="da548684fc4ae44dd3782aa15eaaf0a8" args="(GenomicInterval *i, bool sorted_by_strand)" -->
 int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#da548684fc4ae44dd3782aa15eaaf0a8">CalcDirection</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *i, bool sorted_by_strand)</td></tr>
 
@@ -448,7 +452,7 @@ Calculates the offset distances of interval start and stop position with respect
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 12 16:49:28 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 16 19:12:59 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

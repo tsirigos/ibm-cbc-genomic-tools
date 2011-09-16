@@ -51,7 +51,7 @@ unsigned long int MIN_COUNT;
 double MIN_DENSITY;
 bool SORTED_BY_STRAND;
 bool IGNORE_STRAND;
-bool PRINT_QUERY_LABEL;
+bool MERGE_LABELS;
 bool IS_UNSORTED;
 bool SUBSET_NONOVERLAPS;
 bool MATCH_GAPS;
@@ -69,14 +69,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetProgramName(program);
 
   // set operations
-  cmd_line->AddOperation("count",     "count [OPTIONS] QUERY-REG-FILE <INDEX-REG-FILE>",     "Counts number of matching index regions per query region.");
-  cmd_line->AddOperation("coverage",  "coverage [OPTIONS] QUERY-REG-FILE <INDEX-REG-FILE>",  "Calculates (breadth) coverage per query region.");
-  cmd_line->AddOperation("density",   "density [OPTIONS] QUERY-REG-FILE <INDEX-REG-FILE>",   "Computes density of matches per query region.");
-  cmd_line->AddOperation("intersect", "intersect [OPTIONS] INDEX-REG-FILE <QUERY-REG-FILE>", "Computes intersection between all pairs of query and index regions.");
-  cmd_line->AddOperation("offset",    "offset [OPTIONS] QUERY-REG-FILE <INDEX-REG-FILE>",    "Computes distances of index regions from their overlapping query regions.");
-  cmd_line->AddOperation("overlap",   "overlap [OPTIONS] INDEX-REG-FILE <QUERY-REG-FILE>",   "Finds overlaps between all pairs of query and index regions.");
-  cmd_line->AddOperation("subset",    "subset [OPTIONS] INDEX-REG-FILE <QUERY-REG-FILE>",    "Picks a subset of query regions depending on their overlap with index regions.");
-  if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] INPUT-FILES","Performs overlap operations between a query and an index set of genomic regions. Results are always grouped by query."); exit(1); }
+  cmd_line->AddOperation("count",     "count [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",     "Counts the number of overlapping test regions per reference region.");
+  cmd_line->AddOperation("coverage",  "coverage [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",  "Calculates the depth coverage (i.e. the total number of overlapping nucleotides) per reference region.");
+  cmd_line->AddOperation("density",   "density [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Computes the density (i.e. the coverage divided by the size of the reference region) of overlaps per reference region.");
+  cmd_line->AddOperation("intersect", "intersect [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", "Computes the intersection between all pairs of test and reference regions. Results are grouped by test region.");
+  cmd_line->AddOperation("offset",    "offset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Computes the distances of test regions from their overlapping reference regions. Results are grouped by reference region.");
+  cmd_line->AddOperation("overlap",   "overlap [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Finds the overlaps between all pairs of test and reference regions. Results are grouped by test region.");
+  cmd_line->AddOperation("subset",    "subset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Picks a subset of test regions depending on their overlap with reference regions. Results are grouped by test region.");
+  if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] INPUT-FILES","Performs overlap operations between a query and an index set of genomic regions."); exit(1); }
 
   // current operation
   string op = argv[1];
@@ -84,29 +84,33 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetCurrentOperation(op);
   
   // common options
-  cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
   cmd_line->AddOption("--help", &HELP, false, "help");
   cmd_line->AddOption("-h", &HELP, false, "help");
+  cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
   cmd_line->AddOption("-s", &SORTED_BY_STRAND, false, "true, if input regions are sorted by strand");
   cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
    
   // Main options
   if (op=="count") {
+    cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-min", &MIN_COUNT, 0, "minimum count");
   }
   else if (op=="coverage") {
+    cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-min", &MIN_COUNT, 0, "minimum coverage");
   }
   else if (op=="density") {
+    cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-min", &MIN_DENSITY, 0.0, "minimum density");
   }
   else if (op=="intersect") {
-    cmd_line->AddOption("-label", &PRINT_QUERY_LABEL, false, "print query label for each match");
+    cmd_line->AddOption("-label", &MERGE_LABELS, false, "print query label for each match");
   }
   else if (op=="offset") {
+    cmd_line->AddOption("-U", &IS_UNSORTED, false, "use algorithm for unsorted query region set");
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-op", &OFFSET_OP, "1", "reference point (1=start, 2=stop, 5p=5'-end, 3p=3'-end)");
@@ -114,11 +118,12 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-c", &CENTER, false, "print center of interval only");
   }
   else if (op=="overlap") {
-    //cmd_line->AddOption("-U", &IS_UNSORTED, false, "use algorithm for unsorted query region set");
+    cmd_line->AddOption("-U", &IS_UNSORTED, false, "use algorithm for unsorted query region set");
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
-    cmd_line->AddOption("-label", &PRINT_QUERY_LABEL, false, "print query label for each match");
+    cmd_line->AddOption("-label", &MERGE_LABELS, false, "print query label for each match");
   }
   else if (op=="subset") {
+    cmd_line->AddOption("-U", &IS_UNSORTED, false, "use algorithm for unsorted query region set");
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-no", &SUBSET_NONOVERLAPS, false, "print query regions that do *not* overlap with index regions");
   }
@@ -150,21 +155,22 @@ int main(int argc, char* argv[])
   CmdLineWithOperations *cmd_line = InitCmdLine(argc,argv,&next_arg); 
   _MESSAGES_ = VERBOSE;
 
+  if ((IS_UNSORTED==true)&&(MATCH_GAPS==false)) { fprintf(stderr, "Error: if inputs are unsorted, then -gaps must be set; alternatively, use genomic_regions split operation before computing the overlaps!\n"); exit(1); }
 
   //--------------------
   // count
   //--------------------
   if (cmd_line->current_cmd_operation=="count") {
     // open region sets
-    char *QUERY_REG_FILE = argv[next_arg];
-    char *INDEX_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      unsigned long int hits = Overlaps.CountMatches(USE_VALUES,IGNORE_STRAND); 
+      unsigned long int hits = Overlaps.CountOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
       if (hits>=MIN_COUNT) {
         printf("%s", qreg->LABEL); printf("\t");
         printf("%ld", hits); printf("\n");
@@ -180,15 +186,15 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="coverage") {
     // open region sets
-    char *QUERY_REG_FILE = argv[next_arg];
-    char *INDEX_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      unsigned long int hits = Overlaps.CalcCoverage(USE_VALUES,IGNORE_STRAND); 
+      unsigned long int hits = Overlaps.CalcCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
       if (hits>=MIN_COUNT) {
         printf("%s", qreg->LABEL); printf("\t");
         printf("%ld", hits); printf("\n");
@@ -204,15 +210,16 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="density") {    
     // open region sets
-    char *QUERY_REG_FILE = argv[next_arg];
-    char *INDEX_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      double density = (double)Overlaps.CalcCoverage(USE_VALUES,IGNORE_STRAND)/qreg->GetSize(); 
+      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      double density = (double)Overlaps.CalcCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES)/qreg_size; 
       if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
       PRG.Check();
     }
@@ -225,13 +232,13 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="offset") {
     // open region sets
-    char *QUERY_REG_FILE = argv[next_arg];
-    char *INDEX_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
     // compute offsets
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
       size_t Qsize = qreg->GetSize();
@@ -262,41 +269,29 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="intersect") {
     // open region sets
-    char *INDEX_REG_FILE = argv[next_arg];
-    char *QUERY_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_UNSORTED?true:false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
     // process
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_UNSORTED) overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {   
-      GenomicRegion *ireg = Overlaps.GetOverlap(false,IGNORE_STRAND);
+    for (GenomicRegion *qreg=overlaps->GetQuery(); overlaps->Done()==false; qreg=overlaps->NextQuery()) {   
+      GenomicRegion *ireg = overlaps->GetOverlap(false,IGNORE_STRAND);
       if (ireg!=NULL) {
         do { 
-          qreg->PrintConstrained(ireg,PRINT_QUERY_LABEL);
-          ireg = Overlaps.NextOverlap(false,IGNORE_STRAND);
+          qreg->PrintConstrained(ireg,MERGE_LABELS);
+          ireg = overlaps->NextOverlap(false,IGNORE_STRAND);
         } while (ireg!=NULL);
       }
       PRG.Check();
     }
     PRG.Done();
+    delete overlaps;
   }
-
-
-  //--------------------
-  // overlap/unsorted
-  //--------------------
-  /*else if ((cmd_line->current_cmd_operation=="overlap")&&(IS_UNSORTED)) {
-    // open region sets
-    char *INDEX_REG_FILE = argv[next_arg];
-    char *QUERY_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    IndexedGenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE);
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    Progress PRG("Searching for overlaps...",1);
-    //for (GenomicRegion *r=IndexRegSet.Get(); r!=NULL; r=IndexRegSet.Next(),PRG.Check()) QueryRegSet.Find(r);
-    PRG.Done();
-  }*/
 
 
   //--------------------
@@ -304,19 +299,21 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="overlap") {
     // open region sets
-    char *INDEX_REG_FILE = argv[next_arg];
-    char *QUERY_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_UNSORTED?true:false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
     // process
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_UNSORTED) overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
     Progress PRG("Computing query overlaps...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
-      GenomicRegion *ireg = Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND);
+    for (GenomicRegion *qreg=overlaps->GetQuery(); overlaps->Done()==false; qreg=overlaps->NextQuery()) {
+      GenomicRegion *ireg = overlaps->GetOverlap(MATCH_GAPS,IGNORE_STRAND);
       if (ireg!=NULL) {
         do { 
-          if (PRINT_QUERY_LABEL) {
+          if (MERGE_LABELS) {
             char *old_label = qreg->LABEL;
             char *new_label = new char[strlen(qreg->LABEL)+1+strlen(ireg->LABEL)+1];
             sprintf(new_label, "%s:%s", qreg->LABEL, ireg->LABEL);
@@ -326,12 +323,13 @@ int main(int argc, char* argv[])
             delete new_label;
           }
           else qreg->Print();
-          ireg = Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND);
+          ireg = overlaps->NextOverlap(MATCH_GAPS,IGNORE_STRAND);
         } while (ireg!=NULL);
       }
       PRG.Check();
     }
     PRG.Done();
+    delete overlaps;
   }
 
   
@@ -341,20 +339,24 @@ int main(int argc, char* argv[])
   //--------------------
   else if (cmd_line->current_cmd_operation=="subset") {
     // open region sets
-    char *INDEX_REG_FILE = argv[next_arg];
-    char *QUERY_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_UNSORTED?true:false);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
     // process
-    GenomicRegionSetOverlapScanner Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);	
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_UNSORTED) overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);	
     Progress PRG("Creating query subset...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {   
-      if ((Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND)==NULL)==SUBSET_NONOVERLAPS) qreg->Print(); 
+    for (GenomicRegion *qreg=overlaps->GetQuery(); (SUBSET_NONOVERLAPS&&(qreg!=NULL))||(overlaps->Done()==false); qreg=overlaps->NextQuery()) {   
+      if ((overlaps->GetOverlap(MATCH_GAPS,IGNORE_STRAND)==NULL)==SUBSET_NONOVERLAPS) qreg->Print(); 
       PRG.Check();
     }
     PRG.Done();
+    delete overlaps;
   }
+
 
 
   // clean up
