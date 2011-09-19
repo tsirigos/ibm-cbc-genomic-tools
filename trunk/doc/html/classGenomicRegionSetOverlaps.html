@@ -85,12 +85,18 @@ virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#2fa112eab38f07e7bc75ac76f5b9fc67">NextOverlap</a> (bool match_gaps, bool ignore_strand)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).  <a href="#2fa112eab38f07e7bc75ac76f5b9fc67"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#309e9d296621aa80f1d13cdbd63d0aa4">CalcCoverage</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#1e30ae0e49423a432b7a1d3e3ff09011">CalcQueryCoverage</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total overlap between the current query region and the index region set.  <a href="#309e9d296621aa80f1d13cdbd63d0aa4"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#4ce9e8020fe69a410818a1a6e6f0e69b">CountOverlaps</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total overlap between the current query region and the index region set.  <a href="#1e30ae0e49423a432b7a1d3e3ff09011"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#5c31081b154c624ba35487d988082ffa">CalcIndexCoverage</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total number of matches between the current query region and the index region set.  <a href="#4ce9e8020fe69a410818a1a6e6f0e69b"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total overlap for each index region. The index region set must be loaded in memory.  <a href="#5c31081b154c624ba35487d988082ffa"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#012372e8ca88ef24bead47db23ab8ee4">CountQueryOverlaps</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total number of matches between the current query region and the index region set.  <a href="#012372e8ca88ef24bead47db23ab8ee4"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">unsigned long int *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#4b004114f9868c6a077d9207bd9b1901">CountIndexOverlaps</a> (bool match_gaps, bool ignore_strand, bool use_labels_as_values)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculates the total number of matches for each index region. The index region set must be loaded in memory.  <a href="#4b004114f9868c6a077d9207bd9b1901"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="e513304379055f6d379bc5907733dbe2"></a><!-- doxytag: member="GenomicRegionSetOverlaps::QuerySet" ref="e513304379055f6d379bc5907733dbe2" args="" -->
 <a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2">QuerySet</a></td></tr>
@@ -223,12 +229,12 @@ Returns a pointer to the next index region that overlaps the current query regio
 
 </div>
 </div><p>
-<a class="anchor" name="309e9d296621aa80f1d13cdbd63d0aa4"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CalcCoverage" ref="309e9d296621aa80f1d13cdbd63d0aa4" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
+<a class="anchor" name="1e30ae0e49423a432b7a1d3e3ff09011"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CalcQueryCoverage" ref="1e30ae0e49423a432b7a1d3e3ff09011" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned long int GenomicRegionSetOverlaps::CalcCoverage           </td>
+          <td class="memname">unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage           </td>
           <td>(</td>
           <td class="paramtype">bool&nbsp;</td>
           <td class="paramname"> <em>match_gaps</em>, </td>
@@ -267,12 +273,56 @@ Calculates the total overlap between the current query region and the index regi
 
 </div>
 </div><p>
-<a class="anchor" name="4ce9e8020fe69a410818a1a6e6f0e69b"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CountOverlaps" ref="4ce9e8020fe69a410818a1a6e6f0e69b" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
+<a class="anchor" name="5c31081b154c624ba35487d988082ffa"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CalcIndexCoverage" ref="5c31081b154c624ba35487d988082ffa" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned long int GenomicRegionSetOverlaps::CountOverlaps           </td>
+          <td class="memname">unsigned long int * GenomicRegionSetOverlaps::CalcIndexCoverage           </td>
+          <td>(</td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>match_gaps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>ignore_strand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>use_labels_as_values</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Calculates the total overlap for each index region. The index region set must be loaded in memory. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>match_gaps</em>&nbsp;</td><td>if 'true', overlaps are defined as in <a class="el" href="classGenomicRegionSetOverlaps.html#e6d1c3bd67b0a902649aab01909a9c10">GetMatch</a>. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>ignore_strand</em>&nbsp;</td><td>if 'true', overlaps are strand-ignorant </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>use_labels_as_values</em>&nbsp;</td><td>region labels contain number to be used in calculation </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="012372e8ca88ef24bead47db23ab8ee4"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CountQueryOverlaps" ref="012372e8ca88ef24bead47db23ab8ee4" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps           </td>
           <td>(</td>
           <td class="paramtype">bool&nbsp;</td>
           <td class="paramname"> <em>match_gaps</em>, </td>
@@ -311,10 +361,54 @@ Calculates the total number of matches between the current query region and the 
 
 </div>
 </div><p>
+<a class="anchor" name="4b004114f9868c6a077d9207bd9b1901"></a><!-- doxytag: member="GenomicRegionSetOverlaps::CountIndexOverlaps" ref="4b004114f9868c6a077d9207bd9b1901" args="(bool match_gaps, bool ignore_strand, bool use_labels_as_values)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long int * GenomicRegionSetOverlaps::CountIndexOverlaps           </td>
+          <td>(</td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>match_gaps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>ignore_strand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>use_labels_as_values</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Calculates the total number of matches for each index region. The index region set must be loaded in memory. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>match_gaps</em>&nbsp;</td><td>if 'true', overlaps are defined as in <a class="el" href="classGenomicRegionSetOverlaps.html#e6d1c3bd67b0a902649aab01909a9c10">GetMatch</a>. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>ignore_strand</em>&nbsp;</td><td>if 'true', overlaps are strand-ignorant </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>use_labels_as_values</em>&nbsp;</td><td>region labels contain number to be used in calculation </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 16 19:13:01 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 19 15:01:56 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

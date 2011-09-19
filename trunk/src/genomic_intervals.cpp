@@ -4870,9 +4870,9 @@ GenomicRegion *GenomicRegionSetOverlaps::NextOverlap(bool match_gaps, bool ignor
 
 
 
-//---------CalcCoverage--------
+//---------CalcQueryCoverage--------
 //
-unsigned long int GenomicRegionSetOverlaps::CalcCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
 {
   unsigned long int c = 0;
   for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) {
@@ -4885,13 +4885,56 @@ unsigned long int GenomicRegionSetOverlaps::CalcCoverage(bool match_gaps, bool i
 
 
 
-//---------CountOverlaps--------
+//---------CalcIndexCoverage--------
 //
-unsigned long int GenomicRegionSetOverlaps::CountOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+{
+  if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CalcIndexCoverage]: index set must be loaded in memory for this operation!\n"); exit(1); }
+  Progress PRG("Processing queries...",IndexSet->n_regions);
+  unsigned long int *coverage = new unsigned long int[IndexSet->n_regions];
+  for (long int k=0; k<IndexSet->n_regions; k++) { IndexSet->R[k]->n_line = k; coverage[k] = 0; }
+  for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
+    for (GenomicRegion *ireg=GetOverlap(match_gaps,ignore_strand); ireg!=NULL; ireg=NextOverlap(match_gaps,ignore_strand)) {
+      long int cc = match_gaps ? min(qreg->I.back()->STOP,ireg->I.back()->STOP)-max(qreg->I.front()->START,ireg->I.front()->START)+1 : ireg->CalcOverlap(qreg,ignore_strand);
+      if (use_labels_as_values) cc *= atol(qreg->LABEL);
+      coverage[ireg->n_line] += cc; 
+    }
+    PRG.Check();
+  }
+  PRG.Done();
+  return coverage;
+}
+
+
+
+
+//---------CountQueryOverlaps--------
+//
+unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
 {
   unsigned long int c = 0;
   for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) c += use_labels_as_values?atol(r->LABEL):1;
   return c;
+}
+
+
+
+
+//---------CountIndexOverlaps--------
+//
+unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+{
+  if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CountIndexOverlaps]: index set must be loaded in memory for this operation!\n"); exit(1); }
+  Progress PRG("Processing queries...",IndexSet->n_regions);
+  unsigned long int *hits = new unsigned long int[IndexSet->n_regions];
+  for (long int k=0; k<IndexSet->n_regions; k++) { IndexSet->R[k]->n_line = k; hits[k] = 0; }
+  for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
+    for (GenomicRegion *ireg=GetOverlap(match_gaps,ignore_strand); ireg!=NULL; ireg=NextOverlap(match_gaps,ignore_strand)) 
+      hits[ireg->n_line] += use_labels_as_values?atol(qreg->LABEL):1; 
+    PRG.Check();
+  }
+  PRG.Done();
+  return hits;
 }
 
 
@@ -4932,35 +4975,77 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
  : GenomicRegionSetOverlaps(QuerySet,IndexSet)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "Error: [UnsortedGenomicRegionSetOverlaps] index regions must be loaded in memory!\n"); exit(1); }
-  bits = 17;
-  n_bins = (300000000>>bits)+1;
+
+  // book-keeping for regions that fall in the same bin
   r_next = new long int[IndexSet->n_regions];
   for (long int k=0; k<IndexSet->n_regions; k++) r_next[k] = -1;
-  Progress PRG("Creating index...",IndexSet->n_regions);
+
+  // Calculate basic statistics
+  map<string,long int> chrom_size;
+  Progress PRG1("Loading regions into memory...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
-    map<string,long int*>::iterator it = bins.find(r->I.front()->CHROMOSOME);
-    long int *chr_bins;
-    if (it==bins.end()) {
-      chr_bins = bins[r->I.front()->CHROMOSOME] = new long int[n_bins+1];
-      for (long int b=0; b<=n_bins; b++) chr_bins[b] = -1;
-    }
-    else chr_bins = it->second;
-    long int b_start = r->I.front()->START>>bits;
-    long int b_stop = r->I.back()->STOP>>bits;
-    long int b = ((b_start<n_bins)&&(b_start==b_stop))?b_start:n_bins;
-    long int z = chr_bins[b]; 
-    if (z!=-1) r_next[k] = z;
-    chr_bins[b] = k;
-    PRG.Check();
+    long int stop = r->I.back()->STOP;
+    map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
+    if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
+    else it->second = max(it->second,stop);
+    PRG1.Check();
   }
-  PRG.Done();
-  Progress PRG1("Counting used...",bins.size());
-  long int n_used = 0;
-  for (map<string,long int*>::iterator it=bins.begin(); it!=bins.end(); it++,PRG1.Check()) 
-    for (long int b=0; b<=n_bins; b++) 
-      for (long int z=it->second[b]; z!=-1; z=r_next[z]) n_used++;
   PRG1.Done();
+
+  // set bin parameters 
+  n_levels = 4;
+  n_bits = new int[n_levels];
+  n_bits[0] = 10;
+  n_bits[1] = 15;
+  n_bits[2] = 18;
+  n_bits[3] = 60;	// the last bin level should only have one bin (NOTE: what is the max we can do here, considering that it is a signed long int?)
+
+  // initialize bin structures for each chromosome
+  for (map<string,long int>::iterator it=chrom_size.begin(); it!=chrom_size.end(); it++) {
+    long int *chrom_n_bins = new long int[n_levels];
+    long int **chrom_bins = new long int*[n_levels];
+    index[it->first] = new BinSet(chrom_n_bins,chrom_bins);
+    //cerr << "* chrom = " << it->first << "; size = " << it->second;
+    for (int l=0; l<n_levels; l++) {
+      chrom_n_bins[l] = (it->second>>n_bits[l])+1;
+      //cerr << "; n_bins[" << l << "] = " << chrom_n_bins[l];
+      chrom_bins[l] = new long int[chrom_n_bins[l]];
+      for (long int b=0; b<chrom_n_bins[l]; b++) chrom_bins[l][b] = -1;
+    }
+    //cerr << '\n';
+  }
+
+  // process regions into the bins
+  Progress PRG2("Creating index...",IndexSet->n_regions);
+  for (long int k=0; k<IndexSet->n_regions; k++) {
+    GenomicRegion *r = IndexSet->R[k];
+    long int **chrom_bins = index[r->I.front()->CHROMOSOME]->second;
+    for (int l=0; l<n_levels; l++) {
+      long int b_start = r->I.front()->START>>n_bits[l];
+      long int b_stop = r->I.back()->STOP>>n_bits[l];
+      if (b_start==b_stop) {
+        long int z = chrom_bins[l][b_start]; 
+        if (z!=-1) r_next[k] = z;
+        chrom_bins[l][b_start] = k;
+        break;
+      }
+    }
+    PRG2.Check();
+  }
+  PRG2.Done();
+
+  // double-check if all regions are stored in the bins
+  Progress PRG3("Counting used...",index.size());
+  long int n_used = 0;
+  for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++,PRG3.Check()) {
+    long int *chrom_n_bins = it->second->first;
+    long int **chrom_bins = it->second->second; 
+    for (int l=0; l<n_levels; l++)
+      for (long int b=0; b<chrom_n_bins[l]; b++) 
+        for (long int z=chrom_bins[l][b]; z!=-1; z=r_next[z]) n_used++;
+  }
+  PRG3.Done();
   if (n_used!=IndexSet->n_regions) { fprintf(stderr, "Bug: [UnsortedGenomicRegionSetOverlaps] n_used should equal n_regions!\n"); exit(1); }
 }
 
@@ -4971,7 +5056,11 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
 UnsortedGenomicRegionSetOverlaps::~UnsortedGenomicRegionSetOverlaps()
 {
   delete r_next;
-  for (map<string,long int*>::iterator it=bins.begin(); it!=bins.end(); it++) delete it->second;
+  delete n_bits;
+  for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++) {
+    delete it->second->first; 
+    delete [] it->second->second;
+  }
 }
 
 
@@ -4998,11 +5087,10 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextQuery()
 
 //---------GetMatch--------
 //
-// NOTES for GetMatch()/NextMatch():
-// -- implement bin hierarchy to accommodate different index region sizes
 GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetMatch()
 {
-  current_chrom_bin_it = bins.find(current_qreg->I.front()->CHROMOSOME);
+  map<string,BinSet*>::iterator it = index.find(current_qreg->I.front()->CHROMOSOME);
+  current_binset = it!=index.end()?it->second:NULL;
   new_query = true;
   return NextMatch();
 }
@@ -5013,25 +5101,34 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetMatch()
 //
 GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextMatch()
 {
-  if (current_chrom_bin_it==bins.end()) return (current_ireg=NULL); 
-  static long int b, b_last, current_k;
+  if (current_binset==NULL) return (current_ireg=NULL); 
+  static long int start, stop, l, b, b_stop, current_k;
+  static long int *n_bins;
   if (new_query) {
     new_query = false;
-    b = current_qreg->I.front()->START>>bits;
-    b_last = current_qreg->I.back()->STOP>>bits;
-    if ((b>b_last)||(b>=n_bins)) return (current_ireg=NULL); 
-    current_k = current_chrom_bin_it->second[b];
+    n_bins = current_binset->first;
+    l = 0;
+    start = current_qreg->I.front()->START;
+    stop = current_qreg->I.back()->STOP;
+    b = start>>n_bits[l];
+    b_stop = min(stop>>n_bits[l],n_bins[l]-1);
+    if (b>n_bins[l]) return (current_ireg=NULL); 
+    current_k = current_binset->second[l][b];
   }
   while (true) {
     while (current_k!=-1) {
       current_ireg = IndexSet->R[current_k];
       current_k = r_next[current_k];
-      if ((current_qreg->I.front()->START<=current_ireg->I.back()->STOP)&&(current_qreg->I.back()->STOP>=current_ireg->I.front()->START)) return current_ireg;  
+      if ((start<=current_ireg->I.back()->STOP)&&(stop>=current_ireg->I.front()->START)) return current_ireg;  
     }
     b++;
-    if (b>n_bins) break;
-    if (b>b_last) b = n_bins;
-    current_k = current_chrom_bin_it->second[b];
+    if (b>b_stop) { 
+      l++;
+      if (l>=n_levels) break; 
+      b = start>>n_bits[l];
+      b_stop = min(stop>>n_bits[l],n_bins[l]-1);
+    }
+    current_k = current_binset->second[l][b];
   }
   return (current_ireg=NULL);
 }

@@ -1787,163 +1787,173 @@
 <a name="l02265"></a>02265 
 <a name="l02266"></a>02266   
 <a name="l02268"></a>02268 
-<a name="l02273"></a>02273   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classGenomicRegionSetOverlaps.html#309e9d296621aa80f1d13cdbd63d0aa4" title="Calculates the total overlap between the current query region and the index region...">CalcCoverage</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
+<a name="l02273"></a>02273   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classGenomicRegionSetOverlaps.html#1e30ae0e49423a432b7a1d3e3ff09011" title="Calculates the total overlap between the current query region and the index region...">CalcQueryCoverage</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
 <a name="l02274"></a>02274 
 <a name="l02275"></a>02275 
 <a name="l02277"></a>02277 
-<a name="l02282"></a>02282   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classGenomicRegionSetOverlaps.html#4ce9e8020fe69a410818a1a6e6f0e69b" title="Calculates the total number of matches between the current query region and the index...">CountOverlaps</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
+<a name="l02282"></a>02282   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> *<a class="code" href="classGenomicRegionSetOverlaps.html#5c31081b154c624ba35487d988082ffa" title="Calculates the total overlap for each index region. The index region set must be...">CalcIndexCoverage</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
 <a name="l02283"></a>02283 
-<a name="l02284"></a>02284   
-<a name="l02285"></a>02285   <span class="comment">// data</span>
-<a name="l02286"></a>02286  <span class="keyword">public</span>: 
-<a name="l02287"></a><a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2">02287</a>   <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *QuerySet;                           
-<a name="l02288"></a><a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03">02288</a>   <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *IndexSet;                           
-<a name="l02289"></a><a class="code" href="classGenomicRegionSetOverlaps.html#31d1dbc3407c616a0bda0f42af7acbae">02289</a>   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#31d1dbc3407c616a0bda0f42af7acbae" title="pointer to the current query region">current_qreg</a>;                          
-<a name="l02290"></a><a class="code" href="classGenomicRegionSetOverlaps.html#537336b7c40b20e6f5113395c11614b6">02290</a>   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#537336b7c40b20e6f5113395c11614b6" title="pointer to the current index region">current_ireg</a>;                          
-<a name="l02291"></a>02291    
-<a name="l02292"></a>02292 };
+<a name="l02284"></a>02284 
+<a name="l02286"></a>02286 
+<a name="l02291"></a>02291   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classGenomicRegionSetOverlaps.html#012372e8ca88ef24bead47db23ab8ee4" title="Calculates the total number of matches between the current query region and the index...">CountQueryOverlaps</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
+<a name="l02292"></a>02292 
 <a name="l02293"></a>02293 
-<a name="l02294"></a>02294 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02295"></a>02295 <span class="comment">// END CLASS: GenomicRegionSetOverlaps                                                         //</span>
-<a name="l02296"></a>02296 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02297"></a>02297 
-<a name="l02298"></a>02298 
-<a name="l02299"></a>02299 
-<a name="l02300"></a>02300 
+<a name="l02295"></a>02295 
+<a name="l02300"></a>02300   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> *<a class="code" href="classGenomicRegionSetOverlaps.html#4b004114f9868c6a077d9207bd9b1901" title="Calculates the total number of matches for each index region. The index region set...">CountIndexOverlaps</a>(<span class="keywordtype">bool</span> match_gaps, <span class="keywordtype">bool</span> ignore_strand, <span class="keywordtype">bool</span> use_labels_as_values);
 <a name="l02301"></a>02301 
-<a name="l02302"></a>02302 
-<a name="l02303"></a>02303 
-<a name="l02304"></a>02304 
-<a name="l02305"></a>02305 
-<a name="l02306"></a>02306 
-<a name="l02307"></a>02307 
-<a name="l02308"></a>02308 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02309"></a>02309 <span class="comment">// CLASS: UnsortedGenomicRegionSetOverlaps                                                     //</span>
-<a name="l02310"></a>02310 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02312"></a>02312 <span class="comment"></span><span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02313"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html">02313</a> <span class="keyword">class </span><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html" title="[UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions.">UnsortedGenomicRegionSetOverlaps</a> : <span class="keyword">public</span> <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a>
-<a name="l02314"></a>02314 {
-<a name="l02315"></a>02315  <span class="keyword">public</span>:
+<a name="l02302"></a>02302  
+<a name="l02303"></a>02303   
+<a name="l02304"></a>02304   <span class="comment">// data</span>
+<a name="l02305"></a>02305  <span class="keyword">public</span>: 
+<a name="l02306"></a><a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2">02306</a>   <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *QuerySet;                           
+<a name="l02307"></a><a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03">02307</a>   <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *IndexSet;                           
+<a name="l02308"></a><a class="code" href="classGenomicRegionSetOverlaps.html#31d1dbc3407c616a0bda0f42af7acbae">02308</a>   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#31d1dbc3407c616a0bda0f42af7acbae" title="pointer to the current query region">current_qreg</a>;                          
+<a name="l02309"></a><a class="code" href="classGenomicRegionSetOverlaps.html#537336b7c40b20e6f5113395c11614b6">02309</a>   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#537336b7c40b20e6f5113395c11614b6" title="pointer to the current index region">current_ireg</a>;                          
+<a name="l02310"></a>02310    
+<a name="l02311"></a>02311 };
+<a name="l02312"></a>02312 
+<a name="l02313"></a>02313 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02314"></a>02314 <span class="comment">// END CLASS: GenomicRegionSetOverlaps                                                         //</span>
+<a name="l02315"></a>02315 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02316"></a>02316 
 <a name="l02317"></a>02317 
-<a name="l02321"></a>02321   <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6a1255dfaac34080fae7880981b47acb" title="Class constructor.">UnsortedGenomicRegionSetOverlaps</a>(<a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2" title="pointer to query region set">QuerySet</a>, <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03" title="pointer to index region set">IndexSet</a>);
+<a name="l02318"></a>02318 
+<a name="l02319"></a>02319 
+<a name="l02320"></a>02320 
+<a name="l02321"></a>02321 
 <a name="l02322"></a>02322 
 <a name="l02323"></a>02323 
-<a name="l02325"></a>02325   <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#7682171bb52c651af44e4e8f3bf33f52" title="Class destructor.">~UnsortedGenomicRegionSetOverlaps</a>();
+<a name="l02324"></a>02324 
+<a name="l02325"></a>02325 
 <a name="l02326"></a>02326 
-<a name="l02327"></a>02327   
-<a name="l02329"></a>02329   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#bf7e2f8d35f7a9cf8441caa9d765de44" title="Returns a pointer to the current query region (&amp;#39;NULL&amp;#39; if no more query regions...">GetQuery</a>();
-<a name="l02330"></a>02330 
-<a name="l02331"></a>02331 
-<a name="l02333"></a>02333   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#96e68ef99a958665f5da74572edcc854" title="Returns a pointer to the next query region (&amp;#39;NULL&amp;#39; if no more query regions...">NextQuery</a>();
-<a name="l02334"></a>02334 
-<a name="l02335"></a>02335 
-<a name="l02337"></a>02337   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#61c2c6e9203acb0e0a9bfa4f0176308f" title="Returns a pointer to the current index region that overlaps the current query region...">GetMatch</a>();
-<a name="l02338"></a>02338 
-<a name="l02339"></a>02339  
-<a name="l02341"></a>02341   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#0bcd12697611caa5216db7a4c4fca4e2" title="Returns a pointer to the next index region that overlaps the current query region...">NextMatch</a>();
+<a name="l02327"></a>02327 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02328"></a>02328 <span class="comment">// CLASS: UnsortedGenomicRegionSetOverlaps                                                     //</span>
+<a name="l02329"></a>02329 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02331"></a>02331 <span class="comment"></span><span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02332"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html">02332</a> <span class="keyword">class </span><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html" title="[UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions.">UnsortedGenomicRegionSetOverlaps</a> : <span class="keyword">public</span> <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a>
+<a name="l02333"></a>02333 {
+<a name="l02334"></a>02334  <span class="keyword">public</span>:
+<a name="l02336"></a>02336 
+<a name="l02340"></a>02340   <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6a1255dfaac34080fae7880981b47acb" title="Class constructor.">UnsortedGenomicRegionSetOverlaps</a>(<a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2" title="pointer to query region set">QuerySet</a>, <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03" title="pointer to index region set">IndexSet</a>);
+<a name="l02341"></a>02341 
 <a name="l02342"></a>02342 
-<a name="l02343"></a>02343  
-<a name="l02345"></a>02345   <span class="keywordtype">bool</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#fc18fc203debad6a2d48200ea8ccb42f" title="Returns true, if no more query or index regions are available and the SortedGenomicRegionSetOverlaps...">Done</a>();
-<a name="l02346"></a>02346  
-<a name="l02347"></a>02347 
-<a name="l02348"></a>02348   
-<a name="l02349"></a>02349   <span class="comment">// data</span>
-<a name="l02350"></a>02350  <span class="keyword">public</span>: 
-<a name="l02351"></a>02351   <span class="keywordtype">long</span> <span class="keywordtype">int</span> *r_next;
-<a name="l02352"></a>02352   <span class="keywordtype">int</span> bits;
-<a name="l02353"></a>02353   <span class="keywordtype">long</span> <span class="keywordtype">int</span> n_bins;
-<a name="l02354"></a>02354   map&lt;string,long int*&gt; bins;
-<a name="l02355"></a>02355   map&lt;string,long int*&gt;::iterator current_chrom_bin_it;
-<a name="l02356"></a>02356   <span class="keywordtype">bool</span> new_query; 
-<a name="l02357"></a>02357 };
-<a name="l02358"></a>02358 
-<a name="l02359"></a>02359 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02360"></a>02360 <span class="comment">// END CLASS: UnsortedGenomicRegionSetOverlaps                                                 //</span>
-<a name="l02361"></a>02361 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02362"></a>02362 
-<a name="l02363"></a>02363 
-<a name="l02364"></a>02364 
-<a name="l02365"></a>02365 
+<a name="l02344"></a>02344   <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#7682171bb52c651af44e4e8f3bf33f52" title="Class destructor.">~UnsortedGenomicRegionSetOverlaps</a>();
+<a name="l02345"></a>02345 
+<a name="l02346"></a>02346   
+<a name="l02348"></a>02348   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#bf7e2f8d35f7a9cf8441caa9d765de44" title="Returns a pointer to the current query region (&amp;#39;NULL&amp;#39; if no more query regions...">GetQuery</a>();
+<a name="l02349"></a>02349 
+<a name="l02350"></a>02350 
+<a name="l02352"></a>02352   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#96e68ef99a958665f5da74572edcc854" title="Returns a pointer to the next query region (&amp;#39;NULL&amp;#39; if no more query regions...">NextQuery</a>();
+<a name="l02353"></a>02353 
+<a name="l02354"></a>02354 
+<a name="l02356"></a>02356   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#61c2c6e9203acb0e0a9bfa4f0176308f" title="Returns a pointer to the current index region that overlaps the current query region...">GetMatch</a>();
+<a name="l02357"></a>02357 
+<a name="l02358"></a>02358  
+<a name="l02360"></a>02360   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#0bcd12697611caa5216db7a4c4fca4e2" title="Returns a pointer to the next index region that overlaps the current query region...">NextMatch</a>();
+<a name="l02361"></a>02361 
+<a name="l02362"></a>02362  
+<a name="l02364"></a>02364   <span class="keywordtype">bool</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#fc18fc203debad6a2d48200ea8ccb42f" title="Returns true, if no more query or index regions are available and the SortedGenomicRegionSetOverlaps...">Done</a>();
+<a name="l02365"></a>02365  
 <a name="l02366"></a>02366 
-<a name="l02367"></a>02367 
-<a name="l02368"></a>02368 
-<a name="l02369"></a>02369 
-<a name="l02370"></a>02370 
-<a name="l02371"></a>02371 
-<a name="l02372"></a>02372 
-<a name="l02373"></a>02373 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02374"></a>02374 <span class="comment">// CLASS: SortedGenomicRegionSetOverlaps                                                       //</span>
-<a name="l02375"></a>02375 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02377"></a>02377 <span class="comment"></span>
-<a name="l02425"></a>02425 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02426"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html">02426</a> <span class="keyword">class </span><a class="code" href="classSortedGenomicRegionSetOverlaps.html" title="This class is used to find overlaps between two genomic regions sets. See detailed...">SortedGenomicRegionSetOverlaps</a> : <span class="keyword">public</span> <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a>
-<a name="l02427"></a>02427 {
-<a name="l02428"></a>02428  <span class="keyword">public</span>:
-<a name="l02430"></a>02430 
-<a name="l02435"></a>02435   <a class="code" href="classSortedGenomicRegionSetOverlaps.html#0213f6ea908db759f63cea80db4909aa" title="Class constructor.">SortedGenomicRegionSetOverlaps</a>(<a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2" title="pointer to query region set">QuerySet</a>, <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03" title="pointer to index region set">IndexSet</a>, <span class="keywordtype">bool</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#f08c449faa6ba7be7c6ed9c07f4226e3" title="if true, query and index regions sorted by strand">sorted_by_strand</a>);
-<a name="l02436"></a>02436 
-<a name="l02437"></a>02437 
-<a name="l02439"></a>02439   <a class="code" href="classSortedGenomicRegionSetOverlaps.html#1ac0a70899fce3684da0b7e915a13d1e" title="Class destructor.">~SortedGenomicRegionSetOverlaps</a>();
-<a name="l02440"></a>02440 
-<a name="l02441"></a>02441   
-<a name="l02443"></a>02443   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#3b187db0a12f876a9347b4a1641670a0" title="Returns a pointer to the current query region (&amp;#39;NULL&amp;#39; if no more query regions...">GetQuery</a>();
-<a name="l02444"></a>02444 
-<a name="l02445"></a>02445 
-<a name="l02447"></a>02447   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#127edf3e9d8fb2ebf189af00e6893e96" title="Returns a pointer to the next query region (&amp;#39;NULL&amp;#39; if no more query regions...">NextQuery</a>();
-<a name="l02448"></a>02448 
-<a name="l02449"></a>02449 
-<a name="l02451"></a>02451   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#d0f7b48e1eb685f0aa62aa799088dbc7" title="Returns a pointer to the current index region that overlaps the current query region...">GetMatch</a>();
-<a name="l02452"></a>02452 
-<a name="l02453"></a>02453  
-<a name="l02455"></a>02455   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#756bad7ba9a862ae27cd9ad52acbeef2" title="Returns a pointer to the next index region that overlaps the current query region...">NextMatch</a>();
+<a name="l02367"></a>02367   
+<a name="l02368"></a>02368   <span class="comment">// data</span>
+<a name="l02369"></a>02369  <span class="keyword">public</span>: 
+<a name="l02370"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#0f0857dd93ad3c047d1f5056a57edc14">02370</a>   <span class="keyword">typedef</span> pair&lt;long int*,long int**&gt; <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#0f0857dd93ad3c047d1f5056a57edc14" title="a two-dimensional grid of bins">BinSet</a>;            
+<a name="l02371"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#251e09b7f0a13a56b902c30791228ce4">02371</a>   <span class="keywordtype">long</span> <span class="keywordtype">int</span> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#251e09b7f0a13a56b902c30791228ce4" title="for each region store, store a pointer to the &amp;quot;next&amp;quot; one in the same bin...">r_next</a>;                                     
+<a name="l02372"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#1cc721de471ed40dcc7d8eae258e5833">02372</a>   <span class="keywordtype">int</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#1cc721de471ed40dcc7d8eae258e5833" title="number of levels in the two-dimensional grid of bins">n_levels</a>;                                         
+<a name="l02373"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#76ecebfcf839a940bdae26069ceef748">02373</a>   <span class="keywordtype">int</span> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#76ecebfcf839a940bdae26069ceef748" title="number of bits (per level) by which the start position is right-shifted to compute...">n_bits</a>;                                          
+<a name="l02374"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#beeb94562abdf4aebc36684959a5bc78">02374</a>   map&lt;string,BinSet*&gt; <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#beeb94562abdf4aebc36684959a5bc78" title="the two-dimensional grid of bins per chromosome">index</a>;                            
+<a name="l02375"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6bbb87f3c66d04527f06a5761df1ab56">02375</a>   <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#0f0857dd93ad3c047d1f5056a57edc14" title="a two-dimensional grid of bins">BinSet</a> *<a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6bbb87f3c66d04527f06a5761df1ab56" title="pointer to the current chromosome set of bins">current_binset</a>;                               
+<a name="l02376"></a><a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#bafc544ce2c677ce071fa4e30ec2ecaf">02376</a>   <span class="keywordtype">bool</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#bafc544ce2c677ce071fa4e30ec2ecaf" title="&amp;#39;true&amp;#39;, if a new query is about to be processed">new_query</a>;                                       
+<a name="l02377"></a>02377 };
+<a name="l02378"></a>02378 
+<a name="l02379"></a>02379 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02380"></a>02380 <span class="comment">// END CLASS: UnsortedGenomicRegionSetOverlaps                                                 //</span>
+<a name="l02381"></a>02381 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02382"></a>02382 
+<a name="l02383"></a>02383 
+<a name="l02384"></a>02384 
+<a name="l02385"></a>02385 
+<a name="l02386"></a>02386 
+<a name="l02387"></a>02387 
+<a name="l02388"></a>02388 
+<a name="l02389"></a>02389 
+<a name="l02390"></a>02390 
+<a name="l02391"></a>02391 
+<a name="l02392"></a>02392 
+<a name="l02393"></a>02393 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02394"></a>02394 <span class="comment">// CLASS: SortedGenomicRegionSetOverlaps                                                       //</span>
+<a name="l02395"></a>02395 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02397"></a>02397 <span class="comment"></span>
+<a name="l02445"></a>02445 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02446"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html">02446</a> <span class="keyword">class </span><a class="code" href="classSortedGenomicRegionSetOverlaps.html" title="This class is used to find overlaps between two genomic regions sets. See detailed...">SortedGenomicRegionSetOverlaps</a> : <span class="keyword">public</span> <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a>
+<a name="l02447"></a>02447 {
+<a name="l02448"></a>02448  <span class="keyword">public</span>:
+<a name="l02450"></a>02450 
+<a name="l02455"></a>02455   <a class="code" href="classSortedGenomicRegionSetOverlaps.html#0213f6ea908db759f63cea80db4909aa" title="Class constructor.">SortedGenomicRegionSetOverlaps</a>(<a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2" title="pointer to query region set">QuerySet</a>, <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> *<a class="code" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03" title="pointer to index region set">IndexSet</a>, <span class="keywordtype">bool</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#f08c449faa6ba7be7c6ed9c07f4226e3" title="if true, query and index regions sorted by strand">sorted_by_strand</a>);
 <a name="l02456"></a>02456 
-<a name="l02457"></a>02457  
-<a name="l02459"></a>02459   <span class="keywordtype">bool</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#726105d1ee63db6271a90e8092e243c9" title="Returns true, if no more query or index regions are available and the SortedGenomicRegionSetOverlaps...">Done</a>();
-<a name="l02460"></a>02460  
-<a name="l02461"></a>02461 
-<a name="l02462"></a>02462  <span class="keyword">private</span>:
-<a name="l02463"></a>02463   <span class="keywordtype">void</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#d894d118c61c3cd11be8b37b8f185120" title="manages SortedGenomicRegionSetOverlaps::IRegBuffer">LoadIndexBuffer</a>();                               
-<a name="l02464"></a>02464   <span class="keywordtype">void</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#c5fe4552253a9d9d802d76b0f4356947" title="clears SortedGenomicRegionSetOverlaps::IRegBuffer">ClearIndexBuffer</a>();                              
+<a name="l02457"></a>02457 
+<a name="l02459"></a>02459   <a class="code" href="classSortedGenomicRegionSetOverlaps.html#1ac0a70899fce3684da0b7e915a13d1e" title="Class destructor.">~SortedGenomicRegionSetOverlaps</a>();
+<a name="l02460"></a>02460 
+<a name="l02461"></a>02461   
+<a name="l02463"></a>02463   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#3b187db0a12f876a9347b4a1641670a0" title="Returns a pointer to the current query region (&amp;#39;NULL&amp;#39; if no more query regions...">GetQuery</a>();
+<a name="l02464"></a>02464 
 <a name="l02465"></a>02465 
-<a name="l02466"></a>02466   <span class="comment">// data</span>
-<a name="l02467"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#f08c449faa6ba7be7c6ed9c07f4226e3">02467</a>   <span class="keywordtype">bool</span> sorted_by_strand;                                
-<a name="l02468"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#19fa18e6abd9f045786698fff48a445f">02468</a>   GenomicRegionList <a class="code" href="classSortedGenomicRegionSetOverlaps.html#19fa18e6abd9f045786698fff48a445f" title="temporary buffer containing index regions that overlap with current query; the buffer...">IRegBuffer</a>;                         
-<a name="l02469"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#71d6eea0c4bf9f19be6cf0c0c562f297">02469</a>   GenomicRegionList::iterator <a class="code" href="classSortedGenomicRegionSetOverlaps.html#71d6eea0c4bf9f19be6cf0c0c562f297" title="iterator on SortedGenomicRegionSetOverlaps::IRegBuffer">IRegBufferIterator</a>;       
-<a name="l02470"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#962f8e6ce8c15703cfefa574a07ce42c">02470</a>   <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#962f8e6ce8c15703cfefa574a07ce42c" title="keeps tracks of the (linked) interval stored in SortedGenomicRegionSetOverlaps::IRegBuffer...">ireg_buffer_interval</a>;                
-<a name="l02471"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#349d589ff006f742d635b16987fe7b6b">02471</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#349d589ff006f742d635b16987fe7b6b" title="keeps track of the maximum size of SortedGenomicRegionSetOverlaps::IRegBuffer">max_ireg_buffer_size</a>;               
-<a name="l02472"></a>02472 };
-<a name="l02473"></a>02473 
-<a name="l02474"></a>02474 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02475"></a>02475 <span class="comment">// END CLASS: SortedGenomicRegionSetOverlaps                                                   //</span>
-<a name="l02476"></a>02476 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
-<a name="l02477"></a>02477 
-<a name="l02478"></a>02478 
-<a name="l02479"></a>02479 
-<a name="l02480"></a>02480 
+<a name="l02467"></a>02467   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#127edf3e9d8fb2ebf189af00e6893e96" title="Returns a pointer to the next query region (&amp;#39;NULL&amp;#39; if no more query regions...">NextQuery</a>();
+<a name="l02468"></a>02468 
+<a name="l02469"></a>02469 
+<a name="l02471"></a>02471   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#d0f7b48e1eb685f0aa62aa799088dbc7" title="Returns a pointer to the current index region that overlaps the current query region...">GetMatch</a>();
+<a name="l02472"></a>02472 
+<a name="l02473"></a>02473  
+<a name="l02475"></a>02475   <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#756bad7ba9a862ae27cd9ad52acbeef2" title="Returns a pointer to the next index region that overlaps the current query region...">NextMatch</a>();
+<a name="l02476"></a>02476 
+<a name="l02477"></a>02477  
+<a name="l02479"></a>02479   <span class="keywordtype">bool</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#726105d1ee63db6271a90e8092e243c9" title="Returns true, if no more query or index regions are available and the SortedGenomicRegionSetOverlaps...">Done</a>();
+<a name="l02480"></a>02480  
 <a name="l02481"></a>02481 
-<a name="l02482"></a>02482 
-<a name="l02483"></a>02483 
-<a name="l02484"></a>02484 
+<a name="l02482"></a>02482  <span class="keyword">private</span>:
+<a name="l02483"></a>02483   <span class="keywordtype">void</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#d894d118c61c3cd11be8b37b8f185120" title="manages SortedGenomicRegionSetOverlaps::IRegBuffer">LoadIndexBuffer</a>();                               
+<a name="l02484"></a>02484   <span class="keywordtype">void</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#c5fe4552253a9d9d802d76b0f4356947" title="clears SortedGenomicRegionSetOverlaps::IRegBuffer">ClearIndexBuffer</a>();                              
 <a name="l02485"></a>02485 
-<a name="l02486"></a>02486 
-<a name="l02487"></a>02487 <span class="keywordtype">char</span> ProcessStrand(<span class="keywordtype">char</span> *strand);
-<a name="l02488"></a>02488 <span class="keywordtype">void</span> PrintChromosome(<span class="keywordtype">char</span> *chromosome, <span class="keywordtype">bool</span> convert);
-<a name="l02489"></a>02489 <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *RegCenter(<a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *r);
-<a name="l02490"></a>02490 
-<a name="l02491"></a>02491 StringLIntMap *ReadBounds(<span class="keywordtype">char</span> *genome_reg_file, <span class="keywordtype">bool</span> verbose=<span class="keyword">false</span>);           
-<a name="l02492"></a>02492 <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> CalcBoundSize(StringLIntMap *bounds);
-<a name="l02493"></a>02493 <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> CalcRegSize(<span class="keywordtype">char</span> *reg_file);
-<a name="l02494"></a>02494 <span class="keywordtype">bool</span> CompareGenomicIntervals(<a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *I, <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *J);
-<a name="l02495"></a>02495 <span class="keywordtype">void</span> SortGenomicIntervals(GenomicIntervalSetAsList *L);
-<a name="l02496"></a>02496 <span class="keywordtype">void</span> SortGenomicIntervals(GenomicIntervalSetAsVector *V);
-<a name="l02497"></a>02497 <span class="keywordtype">void</span> SortGenomicIntervals(<a class="code" href="classGenomicIntervalSetAsArray.html" title="[UNDER DEVELOPMENT] This class implements an array of genomic intervals.">GenomicIntervalSetAsArray</a> *A);
+<a name="l02486"></a>02486   <span class="comment">// data</span>
+<a name="l02487"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#f08c449faa6ba7be7c6ed9c07f4226e3">02487</a>   <span class="keywordtype">bool</span> sorted_by_strand;                                
+<a name="l02488"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#19fa18e6abd9f045786698fff48a445f">02488</a>   GenomicRegionList <a class="code" href="classSortedGenomicRegionSetOverlaps.html#19fa18e6abd9f045786698fff48a445f" title="temporary buffer containing index regions that overlap with current query; the buffer...">IRegBuffer</a>;                         
+<a name="l02489"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#71d6eea0c4bf9f19be6cf0c0c562f297">02489</a>   GenomicRegionList::iterator <a class="code" href="classSortedGenomicRegionSetOverlaps.html#71d6eea0c4bf9f19be6cf0c0c562f297" title="iterator on SortedGenomicRegionSetOverlaps::IRegBuffer">IRegBufferIterator</a>;       
+<a name="l02490"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#962f8e6ce8c15703cfefa574a07ce42c">02490</a>   <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *<a class="code" href="classSortedGenomicRegionSetOverlaps.html#962f8e6ce8c15703cfefa574a07ce42c" title="keeps tracks of the (linked) interval stored in SortedGenomicRegionSetOverlaps::IRegBuffer...">ireg_buffer_interval</a>;                
+<a name="l02491"></a><a class="code" href="classSortedGenomicRegionSetOverlaps.html#349d589ff006f742d635b16987fe7b6b">02491</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#349d589ff006f742d635b16987fe7b6b" title="keeps track of the maximum size of SortedGenomicRegionSetOverlaps::IRegBuffer">max_ireg_buffer_size</a>;               
+<a name="l02492"></a>02492 };
+<a name="l02493"></a>02493 
+<a name="l02494"></a>02494 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02495"></a>02495 <span class="comment">// END CLASS: SortedGenomicRegionSetOverlaps                                                   //</span>
+<a name="l02496"></a>02496 <span class="comment">//---------------------------------------------------------------------------------------------//</span>
+<a name="l02497"></a>02497 
 <a name="l02498"></a>02498 
 <a name="l02499"></a>02499 
 <a name="l02500"></a>02500 
 <a name="l02501"></a>02501 
 <a name="l02502"></a>02502 
+<a name="l02503"></a>02503 
+<a name="l02504"></a>02504 
+<a name="l02505"></a>02505 
+<a name="l02506"></a>02506 
+<a name="l02507"></a>02507 <span class="keywordtype">char</span> ProcessStrand(<span class="keywordtype">char</span> *strand);
+<a name="l02508"></a>02508 <span class="keywordtype">void</span> PrintChromosome(<span class="keywordtype">char</span> *chromosome, <span class="keywordtype">bool</span> convert);
+<a name="l02509"></a>02509 <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *RegCenter(<a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *r);
+<a name="l02510"></a>02510 
+<a name="l02511"></a>02511 StringLIntMap *ReadBounds(<span class="keywordtype">char</span> *genome_reg_file, <span class="keywordtype">bool</span> verbose=<span class="keyword">false</span>);           
+<a name="l02512"></a>02512 <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> CalcBoundSize(StringLIntMap *bounds);
+<a name="l02513"></a>02513 <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> CalcRegSize(<span class="keywordtype">char</span> *reg_file);
+<a name="l02514"></a>02514 <span class="keywordtype">bool</span> CompareGenomicIntervals(<a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *I, <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> *J);
+<a name="l02515"></a>02515 <span class="keywordtype">void</span> SortGenomicIntervals(GenomicIntervalSetAsList *L);
+<a name="l02516"></a>02516 <span class="keywordtype">void</span> SortGenomicIntervals(GenomicIntervalSetAsVector *V);
+<a name="l02517"></a>02517 <span class="keywordtype">void</span> SortGenomicIntervals(<a class="code" href="classGenomicIntervalSetAsArray.html" title="[UNDER DEVELOPMENT] This class implements an array of genomic intervals.">GenomicIntervalSetAsArray</a> *A);
+<a name="l02518"></a>02518 
+<a name="l02519"></a>02519 
+<a name="l02520"></a>02520 
+<a name="l02521"></a>02521 
+<a name="l02522"></a>02522 
 </pre></div></div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 16 19:12:57 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 19 15:01:52 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

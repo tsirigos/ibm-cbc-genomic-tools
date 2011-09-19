@@ -13,6 +13,14 @@ Inheritance diagram for UnsortedGenomicRegionSetOverlaps::\begin{figure}[H]
 \includegraphics[height=2cm]{classUnsortedGenomicRegionSetOverlaps}
 \end{center}
 \end{figure}
+\subsection*{Public Types}
+\begin{CompactItemize}
+\item 
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_0f0857dd93ad3c047d1f5056a57edc14}{
+typedef pair$<$ long int $\ast$, long int $\ast$$\ast$ $>$ \hyperlink{classUnsortedGenomicRegionSetOverlaps_0f0857dd93ad3c047d1f5056a57edc14}{BinSet}}
+\label{classUnsortedGenomicRegionSetOverlaps_0f0857dd93ad3c047d1f5056a57edc14}
+
+\begin{CompactList}\small\item\em a two-dimensional grid of bins \item\end{CompactList}\end{CompactItemize}
 \subsection*{Public Member Functions}
 \begin{CompactItemize}
 \item 
@@ -52,35 +60,35 @@ bool \hyperlink{classUnsortedGenomicRegionSetOverlaps_fc18fc203debad6a2d48200ea8
 \begin{CompactItemize}
 \item 
 \hypertarget{classUnsortedGenomicRegionSetOverlaps_251e09b7f0a13a56b902c30791228ce4}{
-long int $\ast$ \textbf{r\_\-next}}
+long int $\ast$ \hyperlink{classUnsortedGenomicRegionSetOverlaps_251e09b7f0a13a56b902c30791228ce4}{r\_\-next}}
 \label{classUnsortedGenomicRegionSetOverlaps_251e09b7f0a13a56b902c30791228ce4}
 
-\item 
-\hypertarget{classUnsortedGenomicRegionSetOverlaps_cc20802c33275e85febcf6cfe131d466}{
-int \textbf{bits}}
-\label{classUnsortedGenomicRegionSetOverlaps_cc20802c33275e85febcf6cfe131d466}
+\begin{CompactList}\small\item\em for each region store, store a pointer to the \char`\"{}next\char`\"{} one in the same bin \item\end{CompactList}\item 
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_1cc721de471ed40dcc7d8eae258e5833}{
+int \hyperlink{classUnsortedGenomicRegionSetOverlaps_1cc721de471ed40dcc7d8eae258e5833}{n\_\-levels}}
+\label{classUnsortedGenomicRegionSetOverlaps_1cc721de471ed40dcc7d8eae258e5833}
 
-\item 
-\hypertarget{classUnsortedGenomicRegionSetOverlaps_63597afa782412cc2b4c609afe90bb82}{
-long int \textbf{n\_\-bins}}
-\label{classUnsortedGenomicRegionSetOverlaps_63597afa782412cc2b4c609afe90bb82}
+\begin{CompactList}\small\item\em number of levels in the two-dimensional grid of bins \item\end{CompactList}\item 
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_76ecebfcf839a940bdae26069ceef748}{
+int $\ast$ \hyperlink{classUnsortedGenomicRegionSetOverlaps_76ecebfcf839a940bdae26069ceef748}{n\_\-bits}}
+\label{classUnsortedGenomicRegionSetOverlaps_76ecebfcf839a940bdae26069ceef748}
 
-\item 
-\hypertarget{classUnsortedGenomicRegionSetOverlaps_c10739a61d7f7c3057fe2e5445570822}{
-map$<$ string, long int $\ast$ $>$ \textbf{bins}}
-\label{classUnsortedGenomicRegionSetOverlaps_c10739a61d7f7c3057fe2e5445570822}
+\begin{CompactList}\small\item\em number of bits (per level) by which the start position is right-shifted to compute its bin \item\end{CompactList}\item 
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_beeb94562abdf4aebc36684959a5bc78}{
+map$<$ string, \hyperlink{classUnsortedGenomicRegionSetOverlaps_0f0857dd93ad3c047d1f5056a57edc14}{BinSet} $\ast$ $>$ \hyperlink{classUnsortedGenomicRegionSetOverlaps_beeb94562abdf4aebc36684959a5bc78}{index}}
+\label{classUnsortedGenomicRegionSetOverlaps_beeb94562abdf4aebc36684959a5bc78}
 
-\item 
-\hypertarget{classUnsortedGenomicRegionSetOverlaps_d21d098f71b0929fb4a770c8e4685038}{
-map$<$ string, long int $\ast$ $>$::iterator \textbf{current\_\-chrom\_\-bin\_\-it}}
-\label{classUnsortedGenomicRegionSetOverlaps_d21d098f71b0929fb4a770c8e4685038}
+\begin{CompactList}\small\item\em the two-dimensional grid of bins per chromosome \item\end{CompactList}\item 
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_6bbb87f3c66d04527f06a5761df1ab56}{
+\hyperlink{classUnsortedGenomicRegionSetOverlaps_0f0857dd93ad3c047d1f5056a57edc14}{BinSet} $\ast$ \hyperlink{classUnsortedGenomicRegionSetOverlaps_6bbb87f3c66d04527f06a5761df1ab56}{current\_\-binset}}
+\label{classUnsortedGenomicRegionSetOverlaps_6bbb87f3c66d04527f06a5761df1ab56}
 
-\item 
+\begin{CompactList}\small\item\em pointer to the current chromosome set of bins \item\end{CompactList}\item 
 \hypertarget{classUnsortedGenomicRegionSetOverlaps_bafc544ce2c677ce071fa4e30ec2ecaf}{
-bool \textbf{new\_\-query}}
+bool \hyperlink{classUnsortedGenomicRegionSetOverlaps_bafc544ce2c677ce071fa4e30ec2ecaf}{new\_\-query}}
 \label{classUnsortedGenomicRegionSetOverlaps_bafc544ce2c677ce071fa4e30ec2ecaf}
 
-\end{CompactItemize}
+\begin{CompactList}\small\item\em 'true', if a new query is about to be processed \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}

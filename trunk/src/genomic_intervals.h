@@ -2270,7 +2270,16 @@ class GenomicRegionSetOverlaps
     \param ignore_strand		if 'true', overlaps are strand-ignorant
     \param use_labels_as_values 	region labels contain number to be used in calculation
   */
-  unsigned long int CalcCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int CalcQueryCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+
+
+  //! Calculates the total overlap for each index region. The index region set must be loaded in memory.  
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+    \param use_labels_as_values 	region labels contain number to be used in calculation
+  */
+  unsigned long int *CalcIndexCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
 
 
   //! Calculates the total number of matches between the current query region and the index region set.
@@ -2279,8 +2288,18 @@ class GenomicRegionSetOverlaps
     \param ignore_strand		if 'true', overlaps are strand-ignorant
     \param use_labels_as_values 	region labels contain number to be used in calculation
    */
-  unsigned long int CountOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int CountQueryOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
 
+
+  //! Calculates the total number of matches for each index region. The index region set must be loaded in memory. 
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+    \param use_labels_as_values 	region labels contain number to be used in calculation
+   */
+  unsigned long int *CountIndexOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+
+ 
   
   // data
  public: 
@@ -2348,12 +2367,13 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
   
   // data
  public: 
-  long int *r_next;
-  int bits;
-  long int n_bins;
-  map<string,long int*> bins;
-  map<string,long int*>::iterator current_chrom_bin_it;
-  bool new_query; 
+  typedef pair<long int*,long int**> BinSet;		//!< a two-dimensional grid of bins
+  long int *r_next;					//!< for each region store, store a pointer to the "next" one in the same bin
+  int n_levels;						//!< number of levels in the two-dimensional grid of bins
+  int *n_bits;						//!< number of bits (per level) by which the start position is right-shifted to compute its bin
+  map<string,BinSet*> index;				//!< the two-dimensional grid of bins per chromosome
+  BinSet *current_binset;				//!< pointer to the current chromosome set of bins
+  bool new_query; 					//!< 'true', if a new query is about to be processed
 };
 
 //---------------------------------------------------------------------------------------------//
