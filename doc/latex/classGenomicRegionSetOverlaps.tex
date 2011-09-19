@@ -52,10 +52,14 @@ virtual bool \hyperlink{classGenomicRegionSetOverlaps_3371a386fed061f58dbd395aff
 \begin{CompactList}\small\item\em Returns a pointer to the current index region that overlaps the current query region. \item\end{CompactList}\item 
 \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSetOverlaps_2fa112eab38f07e7bc75ac76f5b9fc67}{NextOverlap} (bool match\_\-gaps, bool ignore\_\-strand)
 \begin{CompactList}\small\item\em Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). \item\end{CompactList}\item 
-unsigned long int \hyperlink{classGenomicRegionSetOverlaps_309e9d296621aa80f1d13cdbd63d0aa4}{CalcCoverage} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
+unsigned long int \hyperlink{classGenomicRegionSetOverlaps_1e30ae0e49423a432b7a1d3e3ff09011}{CalcQueryCoverage} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
 \begin{CompactList}\small\item\em Calculates the total overlap between the current query region and the index region set. \item\end{CompactList}\item 
-unsigned long int \hyperlink{classGenomicRegionSetOverlaps_4ce9e8020fe69a410818a1a6e6f0e69b}{CountOverlaps} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
-\begin{CompactList}\small\item\em Calculates the total number of matches between the current query region and the index region set. \item\end{CompactList}\end{CompactItemize}
+unsigned long int $\ast$ \hyperlink{classGenomicRegionSetOverlaps_5c31081b154c624ba35487d988082ffa}{CalcIndexCoverage} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
+\begin{CompactList}\small\item\em Calculates the total overlap for each index region. The index region set must be loaded in memory. \item\end{CompactList}\item 
+unsigned long int \hyperlink{classGenomicRegionSetOverlaps_012372e8ca88ef24bead47db23ab8ee4}{CountQueryOverlaps} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
+\begin{CompactList}\small\item\em Calculates the total number of matches between the current query region and the index region set. \item\end{CompactList}\item 
+unsigned long int $\ast$ \hyperlink{classGenomicRegionSetOverlaps_4b004114f9868c6a077d9207bd9b1901}{CountIndexOverlaps} (bool match\_\-gaps, bool ignore\_\-strand, bool use\_\-labels\_\-as\_\-values)
+\begin{CompactList}\small\item\em Calculates the total number of matches for each index region. The index region set must be loaded in memory. \item\end{CompactList}\end{CompactItemize}
 \subsection*{Public Attributes}
 \begin{CompactItemize}
 \item 
@@ -130,11 +134,11 @@ Returns a pointer to the next index region that overlaps the current query regio
 \begin{description}
 \item[{\em match\_\-gaps}]if 'true', overlaps are defined as in \hyperlink{classGenomicRegionSetOverlaps_e6d1c3bd67b0a902649aab01909a9c10}{GetMatch}. \item[{\em ignore\_\-strand}]if 'true', overlaps are strand-ignorant \end{description}
 \end{Desc}
-\hypertarget{classGenomicRegionSetOverlaps_309e9d296621aa80f1d13cdbd63d0aa4}{
-\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CalcCoverage@{CalcCoverage}}
-\index{CalcCoverage@{CalcCoverage}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
-\subsubsection[CalcCoverage]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int GenomicRegionSetOverlaps::CalcCoverage (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
-\label{classGenomicRegionSetOverlaps_309e9d296621aa80f1d13cdbd63d0aa4}
+\hypertarget{classGenomicRegionSetOverlaps_1e30ae0e49423a432b7a1d3e3ff09011}{
+\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CalcQueryCoverage@{CalcQueryCoverage}}
+\index{CalcQueryCoverage@{CalcQueryCoverage}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
+\subsubsection[CalcQueryCoverage]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
+\label{classGenomicRegionSetOverlaps_1e30ae0e49423a432b7a1d3e3ff09011}
 
 
 Calculates the total overlap between the current query region and the index region set. 
@@ -144,14 +148,42 @@ Calculates the total overlap between the current query region and the index regi
 \begin{description}
 \item[{\em match\_\-gaps}]if 'true', overlaps are defined as in \hyperlink{classGenomicRegionSetOverlaps_e6d1c3bd67b0a902649aab01909a9c10}{GetMatch}. \item[{\em ignore\_\-strand}]if 'true', overlaps are strand-ignorant \item[{\em use\_\-labels\_\-as\_\-values}]region labels contain number to be used in calculation \end{description}
 \end{Desc}
-\hypertarget{classGenomicRegionSetOverlaps_4ce9e8020fe69a410818a1a6e6f0e69b}{
-\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CountOverlaps@{CountOverlaps}}
-\index{CountOverlaps@{CountOverlaps}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
-\subsubsection[CountOverlaps]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int GenomicRegionSetOverlaps::CountOverlaps (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
-\label{classGenomicRegionSetOverlaps_4ce9e8020fe69a410818a1a6e6f0e69b}
+\hypertarget{classGenomicRegionSetOverlaps_5c31081b154c624ba35487d988082ffa}{
+\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CalcIndexCoverage@{CalcIndexCoverage}}
+\index{CalcIndexCoverage@{CalcIndexCoverage}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
+\subsubsection[CalcIndexCoverage]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int $\ast$ GenomicRegionSetOverlaps::CalcIndexCoverage (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
+\label{classGenomicRegionSetOverlaps_5c31081b154c624ba35487d988082ffa}
+
+
+Calculates the total overlap for each index region. The index region set must be loaded in memory. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em match\_\-gaps}]if 'true', overlaps are defined as in \hyperlink{classGenomicRegionSetOverlaps_e6d1c3bd67b0a902649aab01909a9c10}{GetMatch}. \item[{\em ignore\_\-strand}]if 'true', overlaps are strand-ignorant \item[{\em use\_\-labels\_\-as\_\-values}]region labels contain number to be used in calculation \end{description}
+\end{Desc}
+\hypertarget{classGenomicRegionSetOverlaps_012372e8ca88ef24bead47db23ab8ee4}{
+\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CountQueryOverlaps@{CountQueryOverlaps}}
+\index{CountQueryOverlaps@{CountQueryOverlaps}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
+\subsubsection[CountQueryOverlaps]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
+\label{classGenomicRegionSetOverlaps_012372e8ca88ef24bead47db23ab8ee4}
 
 
 Calculates the total number of matches between the current query region and the index region set. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em match\_\-gaps}]if 'true', overlaps are defined as in \hyperlink{classGenomicRegionSetOverlaps_e6d1c3bd67b0a902649aab01909a9c10}{GetMatch}. \item[{\em ignore\_\-strand}]if 'true', overlaps are strand-ignorant \item[{\em use\_\-labels\_\-as\_\-values}]region labels contain number to be used in calculation \end{description}
+\end{Desc}
+\hypertarget{classGenomicRegionSetOverlaps_4b004114f9868c6a077d9207bd9b1901}{
+\index{GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}!CountIndexOverlaps@{CountIndexOverlaps}}
+\index{CountIndexOverlaps@{CountIndexOverlaps}!GenomicRegionSetOverlaps@{GenomicRegionSetOverlaps}}
+\subsubsection[CountIndexOverlaps]{\setlength{\rightskip}{0pt plus 5cm}unsigned long int $\ast$ GenomicRegionSetOverlaps::CountIndexOverlaps (bool {\em match\_\-gaps}, \/  bool {\em ignore\_\-strand}, \/  bool {\em use\_\-labels\_\-as\_\-values})}}
+\label{classGenomicRegionSetOverlaps_4b004114f9868c6a077d9207bd9b1901}
+
+
+Calculates the total number of matches for each index region. The index region set must be loaded in memory. 
 
 \begin{Desc}
 \item[Parameters:]
