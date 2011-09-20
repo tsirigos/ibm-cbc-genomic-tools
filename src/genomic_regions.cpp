@@ -29,7 +29,7 @@ using namespace std;
 //---------------------------------------------------------------------------------//
 
 const string PROGRAM = "genomic_regions";
-const string VERSION = "2.0.0beta";
+const string VERSION = "2.0.0";
 const long int BUFFER_SIZE = 10000;
 gsl_rng *RANDOM_GENERATOR;
 
@@ -97,7 +97,7 @@ long int LINK_MAX_DIFFERENCE;
 
 
 
-
+/*
 //-----OBSOLETE/Usage----------
 //
 void Usage(const string prog)
@@ -107,13 +107,13 @@ void Usage(const string prog)
   fprintf(stderr, "  %s OPERATION [OPTIONS] <REGION-SET>\n", prog.c_str()); 
   fprintf(stderr, "\n");
   fprintf(stderr, "Line-based operations for reg, bed and fasta (when applicable) input formats: \n");
-  fprintf(stderr, "  * align     align sequences to reference genome\n");  
-  fprintf(stderr, "  * bed       convert input regions to BED format\n");  
-  fprintf(stderr, "  * bounds    check interval start/stop positions against genome chromosome regions and fix all rogue intervals\n");
+  fprintf(stderr, "  * align     align sequences to reference genome (line-based)\n");  
+  fprintf(stderr, "  * bed       convert input regions to BED format (line-based)\n");  
+  fprintf(stderr, "  * bounds    check interval start/stop positions against genome chromosome regions and fix all rogue intervals (line-based)\n");
   fprintf(stderr, "  * center    print center interval\n");
   fprintf(stderr, "  * connect   connect intervals from minimum start to maximum stop\n");
   fprintf(stderr, "  * diff      compute the difference between successive intervals\n");
-  fprintf(stderr, "  * dist      compute distances (for pairs of intervals only)\n");
+  fprintf(stderr, "  * dist      compute distances between successive region intervals\n");
   fprintf(stderr, "  * divide    divide intervals in the middle\n");
   fprintf(stderr, "  * fix       remove rogue intervals (i.e. start<1 or start>stop).\n");
   fprintf(stderr, "  * int       compute the intersection of input intervals\n");
@@ -163,7 +163,7 @@ void Usage(const string prog)
   fprintf(stderr, "\n");
 #endif
 }
-
+*/
 
 
 
@@ -178,31 +178,31 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetProgramName(program);
 
   // set operations
-  cmd_line->AddOperation("align",   "[OPTIONS] <REGION-SET>", "Aligns sequences to reference genome.");  
-  cmd_line->AddOperation("bed",     "[OPTIONS] <REGION-SET>", "Converts input regions to BED format.");  
-  cmd_line->AddOperation("bounds",  "[OPTIONS] <REGION-SET>", "Checks interval start/stop positions against genome chromosome regions and fix all rogue intervals.");
-  cmd_line->AddOperation("center",  "[OPTIONS] <REGION-SET>", "Prints center interval.");
-  cmd_line->AddOperation("connect", "[OPTIONS] <REGION-SET>", "Connects intervals from minimum start to maximum stop.");
-  cmd_line->AddOperation("diff",    "[OPTIONS] <REGION-SET>", "Computes the difference between successive intervals.");
-  cmd_line->AddOperation("dist",    "[OPTIONS] <REGION-SET>", "Computes distances (for pairs of intervals only).");
-  cmd_line->AddOperation("divide",  "[OPTIONS] <REGION-SET>", "Divides intervals in the middle.");
-  cmd_line->AddOperation("fix",     "[OPTIONS] <REGION-SET>", "Removes rogue intervals (i.e. start<1 or start>stop).");
-  cmd_line->AddOperation("int",     "[OPTIONS] <REGION-SET>", "Computes the intersection of input intervals.");
-  cmd_line->AddOperation("n",       "[OPTIONS] <REGION-SET>", "Computes total interval length (including possible overlaps).");
-  cmd_line->AddOperation("pos",     "[OPTIONS] <REGION-SET>", "Modifies interval start/stop positions.");
-  cmd_line->AddOperation("reg",     "[OPTIONS] <REGION-SET>", "Converts to REG format.");
-  cmd_line->AddOperation("rnd",     "[OPTIONS] <REGION-SET>", "Randomizes intervals across entire genome.");
-  cmd_line->AddOperation("select",  "[OPTIONS] <REGION-SET>", "Selects a subset of intervals according to their relative start positions.");
-  cmd_line->AddOperation("shift",   "[OPTIONS] <REGION-SET>", "Shifts interval start/stop positions.");
-  cmd_line->AddOperation("shiftp",  "[OPTIONS] <REGION-SET>", "Shifts interval 5\'/3\' positions.");
-  cmd_line->AddOperation("shuffle", "[OPTIONS] <REGION-SET>", "Shuffles intervals within given reference region.");
-  cmd_line->AddOperation("sort",    "[OPTIONS] <REGION-SET>", "Sorts intervals.");
-  cmd_line->AddOperation("split",   "[OPTIONS] <REGION-SET>", "Splits regions into their intervals which are printed on separate lines.");
-  cmd_line->AddOperation("strand",  "[OPTIONS] <REGION-SET>", "Modifies interval strand information.");
-  cmd_line->AddOperation("union",   "[OPTIONS] <REGION-SET>", "Computes the interval union.");
-  cmd_line->AddOperation("wig",     "[OPTIONS] <REGION-SET>", "Converts input reg to UCSC wiggle format.");  
-  cmd_line->AddOperation("win",     "[OPTIONS] <REGION-SET>", "Creates new invervals by sliding windows.");
-  cmd_line->AddOperation("x",       "[OPTIONS] <REGION-SET>", "Extracts corresponding sequences from DNA files.");
+  cmd_line->AddOperation("align",   "[OPTIONS] <REGION-SET>", "Aligns sequences to reference genome (line-based).");  
+  cmd_line->AddOperation("bed",     "[OPTIONS] <REGION-SET>", "Converts input regions to BED format (line-based).");  
+  cmd_line->AddOperation("bounds",  "[OPTIONS] <REGION-SET>", "Checks interval start/stop positions against genome chromosome bounds and removes invalid intervals (line-based).");
+  cmd_line->AddOperation("center",  "[OPTIONS] <REGION-SET>", "Prints center interval (line-based).");
+  cmd_line->AddOperation("connect", "[OPTIONS] <REGION-SET>", "Connects intervals from minimum start to maximum stop (line-based).");
+  cmd_line->AddOperation("diff",    "[OPTIONS] <REGION-SET>", "Computes the difference between successive intervals (line-based).");
+  cmd_line->AddOperation("dist",    "[OPTIONS] <REGION-SET>", "Computes distances between successive intervals (line-based).");
+  cmd_line->AddOperation("divide",  "[OPTIONS] <REGION-SET>", "Divides intervals in the middle (line-based).");
+  cmd_line->AddOperation("fix",     "[OPTIONS] <REGION-SET>", "Removes invalid intervals, i.e. start<1 or start>stop (line-based).");
+  cmd_line->AddOperation("int",     "[OPTIONS] <REGION-SET>", "Computes the intersection of input intervals (line-based).");
+  cmd_line->AddOperation("n",       "[OPTIONS] <REGION-SET>", "Computes total interval length, including possible overlaps (line-based).");
+  cmd_line->AddOperation("pos",     "[OPTIONS] <REGION-SET>", "Modifies interval start/stop positions (line-based).");
+  cmd_line->AddOperation("reg",     "[OPTIONS] <REGION-SET>", "Converts to REG format (line-based).");
+  cmd_line->AddOperation("rnd",     "[OPTIONS] <REGION-SET>", "Randomizes region across entire genome (line-based).");
+  cmd_line->AddOperation("select",  "[OPTIONS] <REGION-SET>", "Selects a subset of intervals according to their relative start positions (line-based).");
+  cmd_line->AddOperation("shift",   "[OPTIONS] <REGION-SET>", "Shifts interval start/stop positions (line-based).");
+  cmd_line->AddOperation("shiftp",  "[OPTIONS] <REGION-SET>", "Shifts interval 5\'/3\' positions (line-based).");
+  cmd_line->AddOperation("shuffle", "[OPTIONS] <REGION-SET>", "Shuffles intervals within given reference region (line-based).");
+  cmd_line->AddOperation("sort",    "[OPTIONS] <REGION-SET>", "Sorts intervals (line-based).");
+  cmd_line->AddOperation("split",   "[OPTIONS] <REGION-SET>", "Splits regions into their intervals which are printed on separate lines (line-based).");
+  cmd_line->AddOperation("strand",  "[OPTIONS] <REGION-SET>", "Modifies interval strand information (line-based).");
+  cmd_line->AddOperation("union",   "[OPTIONS] <REGION-SET>", "Computes the interval union (line-based).");
+  cmd_line->AddOperation("wig",     "[OPTIONS] <REGION-SET>", "Converts to UCSC wiggle format (line-based).");  
+  cmd_line->AddOperation("win",     "[OPTIONS] <REGION-SET>", "Creates new invervals by sliding windows (line-based).");
+  cmd_line->AddOperation("x",       "[OPTIONS] <REGION-SET>", "Extracts corresponding sequences from DNA (line-based).");
   cmd_line->AddOperation("gdist",   "[OPTIONS] <REGION-SET>", "Computes distances of successive regions (file-based).");
   cmd_line->AddOperation("inv",     "[OPTIONS] <REGION-SET>", "Inverts regions given the genome chromosomal boundaries (file-based).");
   cmd_line->AddOperation("link",    "[OPTIONS] <REGION-SET>", "Links consecutive regions to produce a non-overlapping set (file-based).");

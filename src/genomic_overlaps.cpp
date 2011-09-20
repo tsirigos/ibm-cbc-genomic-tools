@@ -31,7 +31,7 @@ using namespace std;
 //---------------------------------------------------------------------------------//
 
 const string PROGRAM = "genomic_overlaps";
-const string VERSION = "2.0.0beta";
+const string VERSION = "2.0.0";
 const long int BUFFER_SIZE = 10000;
 
 
@@ -74,7 +74,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->AddOperation("coverage",  "coverage [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",  "Calculates the depth coverage (i.e. the total number of overlapping nucleotides) per reference region.");
   cmd_line->AddOperation("density",   "density [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Computes the density (i.e. the coverage divided by the size of the reference region) of overlaps per reference region.");
   cmd_line->AddOperation("intersect", "intersect [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", "Computes the intersection between all pairs of test and reference regions. Results are grouped by test region.");
-  cmd_line->AddOperation("offset",    "offset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Computes the distances of test regions from their overlapping reference regions. Results are grouped by reference region.");
+  cmd_line->AddOperation("offset",    "offset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Computes the distances of test regions from their overlapping reference regions.");
   cmd_line->AddOperation("overlap",   "overlap [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Finds the overlaps between all pairs of test and reference regions. Results are grouped by test region.");
   cmd_line->AddOperation("subset",    "subset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Picks a subset of test regions depending on their overlap with reference regions. Results are grouped by test region.");
   if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>","Performs overlap operations between a test and a reference set of genomic regions."); exit(1); }
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
   //--------------------
   // count/sorted
   //--------------------
-  if ((cmd_line->current_cmd_operation=="count")&&(IS_SORTED==true)) {
+  /*if ((cmd_line->current_cmd_operation=="count")&&(IS_SORTED==true)) {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
@@ -175,21 +175,23 @@ int main(int argc, char* argv[])
       PRG.Check();
     }
     PRG.Done();
-  }
+  }*/
 
 
   //--------------------
-  // count/unsorted
+  // count
   //--------------------
-  else if ((cmd_line->current_cmd_operation=="count")&&(IS_SORTED==false)) {
+  if (cmd_line->current_cmd_operation=="count") {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
     GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
     GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet);
-    unsigned long int *hits = Overlaps.CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    unsigned long int *hits = overlaps->CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing counts...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       if (hits[k]>=MIN_COUNT) {
@@ -200,12 +202,14 @@ int main(int argc, char* argv[])
     }
     PRG.Done();
     delete hits;
+    delete overlaps;
   }
 
 
   //--------------------
   // coverage/sorted
   //--------------------
+/*
   else if ((cmd_line->current_cmd_operation=="coverage")&&(IS_SORTED==true)) {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
@@ -225,20 +229,23 @@ int main(int argc, char* argv[])
     }
     PRG.Done();
   }
+*/
 
 
   //--------------------
-  // coverage/unsorted
+  // coverage
   //--------------------
-  else if ((cmd_line->current_cmd_operation=="coverage")&&(IS_SORTED==false)) {
+  else if (cmd_line->current_cmd_operation=="coverage") {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
     GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
     GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet);
-    unsigned long int *coverage = Overlaps.CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing coverages...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       if (coverage[k]>=MIN_COUNT) {
@@ -249,9 +256,11 @@ int main(int argc, char* argv[])
     }
     PRG.Done();
     delete coverage;
+    delete overlaps;
   }
 
 
+/*
   //--------------------
   // density/sorted
   //--------------------
@@ -272,20 +281,24 @@ int main(int argc, char* argv[])
     }
     PRG.Done();
   }
+*/
 
 
   //--------------------
-  // density/unsorted
+  // density
   //--------------------
-  else if ((cmd_line->current_cmd_operation=="density")&&(IS_SORTED==false)) {
+  else if (cmd_line->current_cmd_operation=="density") {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
     GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
     GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet);
-    unsigned long int *coverage = Overlaps.CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    // process overlaps
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       GenomicRegion *qreg = RefRegSet.R[k];
@@ -296,6 +309,7 @@ int main(int argc, char* argv[])
     }
     PRG.Done();
     delete coverage;
+    delete overlaps;
   }
 
 

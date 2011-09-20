@@ -112,23 +112,33 @@ unsigned long int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="e
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 This class is used to find overlaps between two genomic regions sets. See detailed description below for an example. 
 <p>
-A simple example for computing RNAseq read densities in known exons (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'density' operation): <div class="fragment"><pre class="fragment">    <span class="comment">// open region sets</span>
-    <span class="keywordtype">char</span> *QUERY_REG_FILE = <span class="stringliteral">"rnaseq.reads.reg"</span>;
-    <span class="keywordtype">char</span> *INDEX_REG_FILE = <span class="stringliteral">"exons.reg"</span>;
-    <span class="keywordtype">double</span> MIN_DENSITY = 0.0;
-    <span class="keywordtype">bool</span> SORTED_BY_STRAND = <span class="keyword">false</span>; 
-    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> QueryRegSet(QUERY_REG_FILE,10000,<span class="keyword">true</span>,<span class="keyword">false</span>);
-    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> IndexRegSet(INDEX_REG_FILE,10000,<span class="keyword">true</span>,<span class="keyword">false</span>);
+A simple example for computing RNAseq read densities in known exons (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'density' operation): <div class="fragment"><pre class="fragment"><span class="preprocessor">    #include "core.h"</span>
+<span class="preprocessor">    #include "genomic_intervals.h"</span>
+ 
+    <span class="comment">// open region sets</span>
+    <span class="keywordtype">char</span> *REF_REG_FILE = argv[next_arg];
+    <span class="keywordtype">char</span> *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,<span class="keyword">true</span>);
+    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,<span class="keyword">false</span>);
 
-    <a class="code" href="classSortedGenomicRegionSetOverlaps.html" title="This class is used to find overlaps between two genomic regions sets. See detailed...">SortedGenomicRegionSetOverlaps</a> Overlaps(&amp;QueryRegSet,&amp;IndexRegSet,SORTED_BY_STRAND);
-    <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">"Processing queries..."</span>,1);
-    <span class="keywordflow">for</span> (<a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      <span class="keywordtype">double</span> density = (double)Overlaps.CalcCoverage(USE_VALUES,IGNORE_STRAND)/qreg-&gt;GetSize(); 
-      <span class="keywordflow">if</span> (density&gt;=MIN_DENSITY) printf(<span class="stringliteral">"%s\t%.4e\n"</span>, qreg-&gt;LABEL, density);
+    <span class="comment">// process overlaps</span>
+    <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a> *overlaps = <span class="keyword">new</span> <a class="code" href="classSortedGenomicRegionSetOverlaps.html#0213f6ea908db759f63cea80db4909aa" title="Class constructor.">SortedGenomicRegionSetOverlaps</a>(&amp;TestRegSet,&amp;RefRegSet,SORTED_BY_STRAND);
+    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> *coverage = overlaps-&gt;<a class="code" href="classGenomicRegionSetOverlaps.html#5c31081b154c624ba35487d988082ffa" title="Calculates the total overlap for each index region. The index region set must be...">CalcIndexCoverage</a>(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">"Printing densities..."</span>,RefRegSet.n_regions);
+    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> k=0; k&lt;RefRegSet.n_regions; k++) {
+      <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *qreg = RefRegSet.R[k];
+      <span class="keywordtype">long</span> <span class="keywordtype">int</span> qreg_size = MATCH_GAPS ? (qreg-&gt;<a class="code" href="classGenomicRegion.html#b10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.back()-&gt;STOP-qreg-&gt;<a class="code" href="classGenomicRegion.html#b10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.front()-&gt;START+1) : qreg-&gt;<a class="code" href="classGenomicRegion.html#5bff7a3e83b0bc9bfb5441270d0ba1ae" title="Returns sum of interval&amp;#39;s sizes.">GetSize</a>();
+      <span class="keywordtype">double</span> density = (double)coverage[k]/qreg_size;
+      <span class="keywordflow">if</span> (density&gt;=MIN_DENSITY) printf(<span class="stringliteral">"%s\t%.4e\n"</span>, qreg-&gt;<a class="code" href="classGenomicRegion.html#7eeba95c1e87e100346688681e30ff24" title="genomic region label">LABEL</a>, density);
       PRG.Check();
     }
     PRG.Done();
-</pre></div> A more complex example for creating ChIPseq read profiles in TSS regions (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'offset' operation): <div class="fragment"><pre class="fragment">    <span class="comment">// open region sets</span>
+    <span class="keyword">delete</span> coverage;
+    <span class="keyword">delete</span> overlaps;
+</pre></div> A more complex example for creating ChIPseq read profiles in TSS regions (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'offset' operation): <div class="fragment"><pre class="fragment"><span class="preprocessor">    #include "core.h"</span>
+<span class="preprocessor">    #include "genomic_intervals.h"</span>
+ 
+    <span class="comment">// open region sets</span>
     <span class="keywordtype">char</span> *QUERY_REG_FILE = <span class="stringliteral">"chipseq.reads.reg"</span>;
     <span class="keywordtype">char</span> *INDEX_REG_FILE = <span class="stringliteral">"TSS.flank10kb.reg"</span>;
     <span class="keywordtype">char</span> *OFFSET_OP = <span class="stringliteral">"5p"</span>;
@@ -138,14 +148,15 @@ A simple example for computing RNAseq read densities in known exons (this is act
     <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> QueryRegSet(QUERY_REG_FILE,10000,<span class="keyword">true</span>,<span class="keyword">false</span>);
     <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> IndexRegSet(INDEX_REG_FILE,10000,<span class="keyword">true</span>,<span class="keyword">false</span>);
 
+    <span class="comment">// process overlaps</span>
     <a class="code" href="classSortedGenomicRegionSetOverlaps.html" title="This class is used to find overlaps between two genomic regions sets. See detailed...">SortedGenomicRegionSetOverlaps</a> Overlaps(&amp;QueryRegSet,&amp;IndexRegSet,SORTED_BY_STRAND);
     <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">"Processing queries..."</span>,1);
     <span class="keywordflow">for</span> (<a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *qreg=Overlaps.GetQuery(); Overlaps.Done()==<span class="keyword">false</span>; qreg=Overlaps.NextQuery()) {
-      <span class="keywordtype">size_t</span> Qsize = qreg-&gt;GetSize();
+      <span class="keywordtype">size_t</span> Qsize = qreg-&gt;<a class="code" href="classGenomicRegion.html#5bff7a3e83b0bc9bfb5441270d0ba1ae" title="Returns sum of interval&amp;#39;s sizes.">GetSize</a>();
       <span class="keywordflow">for</span> (<a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
-        cout &lt;&lt; qreg-&gt;LABEL &lt;&lt; <span class="charliteral">'\t'</span>;
+        cout &lt;&lt; qreg-&gt;<a class="code" href="classGenomicRegion.html#7eeba95c1e87e100346688681e30ff24" title="genomic region label">LABEL</a> &lt;&lt; <span class="charliteral">'\t'</span>;
         <span class="keywordtype">long</span> <span class="keywordtype">int</span> start_offset, stop_offset;
-        ireg-&gt;I.front()-&gt;GetOffsetFrom(qreg-&gt;I.front(),OFFSET_OP,IGNORE_STRAND,&amp;start_offset,&amp;stop_offset);
+        ireg-&gt;I.front()-&gt;GetOffsetFrom(qreg-&gt;<a class="code" href="classGenomicRegion.html#b10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.front(),OFFSET_OP,IGNORE_STRAND,&amp;start_offset,&amp;stop_offset);
         printf(<span class="stringliteral">"%f"</span>, ((<span class="keywordtype">float</span>)start_offset/Qsize+(<span class="keywordtype">float</span>)stop_offset/Qsize)/2); 
         cout &lt;&lt; <span class="charliteral">'\n'</span>;
       }
@@ -200,7 +211,7 @@ Class constructor.
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 19 15:01:56 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:14 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

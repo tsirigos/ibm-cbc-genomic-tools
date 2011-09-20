@@ -1890,14 +1890,14 @@ class GenomicRegionSet
 
   //! Scans input regions in sliding windows (input regions must be sorted). See also class GenomicRegionSetScanner.  
   /*!
-    \param bounds 					chromosome sizes
-    \param ref_reg_file 			only windows that overlap with regions in this file will be reported
-    \param win_step					sliding window step
-    \param win_size					sliding window size (must be a multiple of window step)
+    \param bounds 			chromosome sizes
+    \param ref_reg_file 		only windows that overlap with regions in this file will be reported
+    \param win_step			sliding window step
+    \param win_size			sliding window size (must be a multiple of window step)
     \param ignore_reverse_strand	if true, no sliding windows on the negative strand are reported
-    \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+    \param preprocess			if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
     \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
-    \param min_reads				report windows only if value is greater that this parameter
+    \param min_reads			report windows only if value is greater that this parameter
   */
   void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads);
 
@@ -2132,7 +2132,7 @@ class GenomicRegionSet
     // initialize (note: you need to set inputs and parameters, such as genome_reg_file, input_reg_file, WIN_DIST and WIN_SIZE)
     StringLIntMap *bounds = ReadBounds(genome_reg_file);
     GenomicRegionSet InputRegSet(input_reg_file,10000,true,false);
-    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,'c');
+    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,false,'c');
 
     // run
     Progress PRG("Scanning...",1);
@@ -2327,7 +2327,35 @@ class GenomicRegionSetOverlaps
 //---------------------------------------------------------------------------------------------//
 // CLASS: UnsortedGenomicRegionSetOverlaps                                                     //
 //---------------------------------------------------------------------------------------------//
-//!  [UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions.
+//! Class for computing overlaps between unsorted regions.
+/*!
+    A simple example for computing RNAseq read densities in known exons (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'density' operation):
+  \code
+    #include "core.h"
+    #include "genomic_intervals.h"
+    
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+
+    // process overlaps
+    GenomicRegionSetOverlaps *overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    Progress PRG("Printing densities...",RefRegSet.n_regions);
+    for (long int k=0; k<RefRegSet.n_regions; k++) {
+      GenomicRegion *qreg = RefRegSet.R[k];
+      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      double density = (double)coverage[k]/qreg_size;
+      if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
+      PRG.Check();
+    }
+    PRG.Done();
+    delete coverage;
+    delete overlaps;
+  \endcode
+*/
 //---------------------------------------------------------------------------------------------//
 class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
 {
@@ -2397,25 +2425,35 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
 /*!
      A simple example for computing RNAseq read densities in known exons (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'density' operation):
   \code
+    #include "core.h"
+    #include "genomic_intervals.h"
+ 
     // open region sets
-    char *QUERY_REG_FILE = "rnaseq.reads.reg";
-    char *INDEX_REG_FILE = "exons.reg";
-    double MIN_DENSITY = 0.0;
-    bool SORTED_BY_STRAND = false; 
-    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,10000,true,false);
-    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,10000,true,false);
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
-    SortedGenomicRegionSetOverlaps Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
-    Progress PRG("Processing queries...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      double density = (double)Overlaps.CalcCoverage(USE_VALUES,IGNORE_STRAND)/qreg->GetSize(); 
+    // process overlaps
+    GenomicRegionSetOverlaps *overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    Progress PRG("Printing densities...",RefRegSet.n_regions);
+    for (long int k=0; k<RefRegSet.n_regions; k++) {
+      GenomicRegion *qreg = RefRegSet.R[k];
+      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      double density = (double)coverage[k]/qreg_size;
       if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
       PRG.Check();
     }
     PRG.Done();
+    delete coverage;
+    delete overlaps;
   \endcode
   A more complex example for creating ChIPseq read profiles in TSS regions (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'offset' operation):
   \code
+    #include "core.h"
+    #include "genomic_intervals.h"
+ 
     // open region sets
     char *QUERY_REG_FILE = "chipseq.reads.reg";
     char *INDEX_REG_FILE = "TSS.flank10kb.reg";
@@ -2426,6 +2464,7 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
     GenomicRegionSet QueryRegSet(QUERY_REG_FILE,10000,true,false);
     GenomicRegionSet IndexRegSet(INDEX_REG_FILE,10000,true,false);
 
+    // process overlaps
     SortedGenomicRegionSetOverlaps Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
