@@ -128,7 +128,7 @@ Example:
 \begin{Code}\begin{verbatim}    // initialize (note: you need to set inputs and parameters, such as genome_reg_file, input_reg_file, WIN_DIST and WIN_SIZE)
     StringLIntMap *bounds = ReadBounds(genome_reg_file);
     GenomicRegionSet InputRegSet(input_reg_file,10000,true,false);
-    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,'c');
+    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,false,'c');
 
     // run
     Progress PRG("Scanning...",1);

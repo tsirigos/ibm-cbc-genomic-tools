@@ -32,7 +32,7 @@
   </div>
 </div>
 <div class="contents">
-<h1>UnsortedGenomicRegionSetOverlaps Class Reference</h1><!-- doxytag: class="UnsortedGenomicRegionSetOverlaps" --><!-- doxytag: inherits="GenomicRegionSetOverlaps" -->[UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions.  
+<h1>UnsortedGenomicRegionSetOverlaps Class Reference</h1><!-- doxytag: class="UnsortedGenomicRegionSetOverlaps" --><!-- doxytag: inherits="GenomicRegionSetOverlaps" -->Class for computing overlaps between unsorted regions.  
 <a href="#_details">More...</a>
 <p>
 <code>#include &lt;<a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a>&gt;</code>
@@ -111,7 +111,32 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">'true', if a new query is about to be processed <br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
-[UNDER DEVELOPMENT] Class for computing overlaps between unsorted regions. <hr><h2>Constructor &amp; Destructor Documentation</h2>
+Class for computing overlaps between unsorted regions. 
+<p>
+A simple example for computing RNAseq read densities in known exons (this is actually implemented in the <b>genomic_overlaps</b> command-line tool as 'density' operation): <div class="fragment"><pre class="fragment"><span class="preprocessor">    #include "core.h"</span>
+<span class="preprocessor">    #include "genomic_intervals.h"</span>
+    
+    <span class="comment">// open region sets</span>
+    <span class="keywordtype">char</span> *REF_REG_FILE = argv[next_arg];
+    <span class="keywordtype">char</span> *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,<span class="keyword">true</span>);
+    <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,<span class="keyword">false</span>);
+
+    <span class="comment">// process overlaps</span>
+    <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a> *overlaps = <span class="keyword">new</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6a1255dfaac34080fae7880981b47acb" title="Class constructor.">UnsortedGenomicRegionSetOverlaps</a>(&amp;TestRegSet,&amp;RefRegSet);
+    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> *coverage = overlaps-&gt;<a class="code" href="classGenomicRegionSetOverlaps.html#5c31081b154c624ba35487d988082ffa" title="Calculates the total overlap for each index region. The index region set must be...">CalcIndexCoverage</a>(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">"Printing densities..."</span>,RefRegSet.n_regions);
+    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> k=0; k&lt;RefRegSet.n_regions; k++) {
+      <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals)...">GenomicRegion</a> *qreg = RefRegSet.R[k];
+      <span class="keywordtype">long</span> <span class="keywordtype">int</span> qreg_size = MATCH_GAPS ? (qreg-&gt;<a class="code" href="classGenomicRegion.html#b10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.back()-&gt;STOP-qreg-&gt;<a class="code" href="classGenomicRegion.html#b10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.front()-&gt;START+1) : qreg-&gt;<a class="code" href="classGenomicRegion.html#5bff7a3e83b0bc9bfb5441270d0ba1ae" title="Returns sum of interval&amp;#39;s sizes.">GetSize</a>();
+      <span class="keywordtype">double</span> density = (double)coverage[k]/qreg_size;
+      <span class="keywordflow">if</span> (density&gt;=MIN_DENSITY) printf(<span class="stringliteral">"%s\t%.4e\n"</span>, qreg-&gt;<a class="code" href="classGenomicRegion.html#7eeba95c1e87e100346688681e30ff24" title="genomic region label">LABEL</a>, density);
+      PRG.Check();
+    }
+    PRG.Done();
+    <span class="keyword">delete</span> coverage;
+    <span class="keyword">delete</span> overlaps;
+</pre></div> <hr><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" name="6a1255dfaac34080fae7880981b47acb"></a><!-- doxytag: member="UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps" ref="6a1255dfaac34080fae7880981b47acb" args="(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet)" -->
 <div class="memitem">
 <div class="memproto">
@@ -152,7 +177,7 @@ Class constructor.
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 19 15:01:56 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:14 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

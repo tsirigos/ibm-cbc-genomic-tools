@@ -2,7 +2,7 @@
 \section{UnsortedGenomicRegionSetOverlaps Class Reference}
 \label{classUnsortedGenomicRegionSetOverlaps}\index{UnsortedGenomicRegionSetOverlaps@{UnsortedGenomicRegionSetOverlaps}}
 }
-\mbox{[}UNDER DEVELOPMENT\mbox{]} Class for computing overlaps between unsorted regions.  
+Class for computing overlaps between unsorted regions.  
 
 
 {\tt \#include $<$genomic\_\-intervals.h$>$}
@@ -92,7 +92,37 @@ bool \hyperlink{classUnsortedGenomicRegionSetOverlaps_bafc544ce2c677ce071fa4e30e
 
 
 \subsection{Detailed Description}
-\mbox{[}UNDER DEVELOPMENT\mbox{]} Class for computing overlaps between unsorted regions. 
+Class for computing overlaps between unsorted regions. 
+
+A simple example for computing RNAseq read densities in known exons (this is actually implemented in the {\bf genomic\_\-overlaps} command-line tool as 'density' operation): 
+
+\begin{Code}\begin{verbatim}    #include "core.h"
+    #include "genomic_intervals.h"
+    
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+
+    // process overlaps
+    GenomicRegionSetOverlaps *overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    Progress PRG("Printing densities...",RefRegSet.n_regions);
+    for (long int k=0; k<RefRegSet.n_regions; k++) {
+      GenomicRegion *qreg = RefRegSet.R[k];
+      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      double density = (double)coverage[k]/qreg_size;
+      if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
+      PRG.Check();
+    }
+    PRG.Done();
+    delete coverage;
+    delete overlaps;
+\end{verbatim}
+\end{Code}
+
+ 
 
 \subsection{Constructor \& Destructor Documentation}
 \hypertarget{classUnsortedGenomicRegionSetOverlaps_6a1255dfaac34080fae7880981b47acb}{

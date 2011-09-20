@@ -4890,7 +4890,7 @@ unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage(bool match_gaps, b
 unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CalcIndexCoverage]: index set must be loaded in memory for this operation!\n"); exit(1); }
-  Progress PRG("Processing queries...",IndexSet->n_regions);
+  Progress PRG("Processing queries...",QuerySet->n_regions);
   unsigned long int *coverage = new unsigned long int[IndexSet->n_regions];
   for (long int k=0; k<IndexSet->n_regions; k++) { IndexSet->R[k]->n_line = k; coverage[k] = 0; }
   for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
@@ -4925,7 +4925,7 @@ unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps(bool match_gaps, 
 unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CountIndexOverlaps]: index set must be loaded in memory for this operation!\n"); exit(1); }
-  Progress PRG("Processing queries...",IndexSet->n_regions);
+  Progress PRG("Processing queries...",QuerySet->n_regions);
   unsigned long int *hits = new unsigned long int[IndexSet->n_regions];
   for (long int k=0; k<IndexSet->n_regions; k++) { IndexSet->R[k]->n_line = k; hits[k] = 0; }
   for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
@@ -5201,7 +5201,7 @@ SortedGenomicRegionSetOverlaps::~SortedGenomicRegionSetOverlaps()
 //
 void SortedGenomicRegionSetOverlaps::ClearIndexBuffer()
 {
-  for (GenomicRegionList::iterator it=IRegBuffer.begin(); it!=IRegBuffer.end(); it++) delete *it;
+  if (IndexSet->load_in_memory==false) for (GenomicRegionList::iterator it=IRegBuffer.begin(); it!=IRegBuffer.end(); it++) delete *it;
   IRegBuffer.clear();
   if (ireg_buffer_interval!=NULL) delete ireg_buffer_interval;
   ireg_buffer_interval = NULL;
@@ -5276,7 +5276,7 @@ GenomicRegion *SortedGenomicRegionSetOverlaps::GetMatch()
   while (true) {
     int d = current_qreg->CalcDirection(current_ireg,sorted_by_strand);
     if (d>0) { 
-      delete *IRegBufferIterator;
+      if (IndexSet->load_in_memory==false) delete *IRegBufferIterator;
       IRegBufferIterator = IRegBuffer.erase(IRegBufferIterator); 
       if (IRegBufferIterator==IRegBuffer.end()) return NULL; 
       else current_ireg = *IRegBufferIterator; 

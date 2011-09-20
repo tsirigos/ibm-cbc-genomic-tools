@@ -35,7 +35,7 @@ using namespace std;
 //---------------------------------------------------------------------------------//
 
 const string PROGRAM = "genomic_scans";
-const string VERSION = "2.0.0beta";
+const string VERSION = "2.0.0";
 const long int BUFFER_SIZE = 10000;
 gsl_rng *RANDOM_GENERATOR;
 
