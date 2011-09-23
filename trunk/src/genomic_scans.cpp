@@ -69,13 +69,26 @@ bool DETAILS;
 CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 {
   // initialize
-  string program = PROGRAM + " (version " + VERSION + ")";
   CmdLineWithOperations *cmd_line = new CmdLineWithOperations(); 
-  cmd_line->SetProgramName(program);
+  cmd_line->SetProgramName(PROGRAM,VERSION);
 
   // set operations
-  cmd_line->AddOperation("counts", "counts [OPTIONS] <REG-FILE>", "Determines input read counts in sliding windows of reference regions.");
-  cmd_line->AddOperation("peaks", "peaks [OPTIONS] SIGNAL-REG-FILE CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]", "Scans input reads to identify peaks.");
+  cmd_line->AddOperation("counts", "[OPTIONS] <REG-FILE>", \
+  "Determines input read counts in sliding windows of reference regions.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operand: interval\n\
+  * Region requirements: single-interval\n\
+  * Region-set requirements: sorted by chromosome/strand/start"\
+  );
+
+  cmd_line->AddOperation("peaks", "[OPTIONS] SIGNAL-REG-FILE CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]", \
+  "Scans input reads to identify peaks.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operand: interval\n\
+  * Region requirements: single-interval\n\
+  * Region-set requirements: sorted by chromosome/strand/start"\
+  );
+
   if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] INPUT-FILES","Performs whole-genome scanning operations."); exit(1); }
 
   // current operation

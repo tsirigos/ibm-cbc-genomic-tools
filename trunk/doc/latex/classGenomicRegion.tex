@@ -248,7 +248,7 @@ virtual void \hyperlink{classGenomicRegion_461fbb00db1b45061e641f37614fb146}{Sel
 \label{classGenomicRegion_461fbb00db1b45061e641f37614fb146}
 
 \begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
-virtual void \hyperlink{classGenomicRegion_dc42fea61283fa8134d65467b2292405}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+virtual void \hyperlink{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
 \begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegion_b2c52ae40b34f3607f4558add94c25fd}{
 virtual void \hyperlink{classGenomicRegion_b2c52ae40b34f3607f4558add94c25fd}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$refReg, StringLIntMap $\ast$index, StringVecLIntMap $\ast$loc)}
@@ -373,11 +373,11 @@ Modifies interval start/stop positions. First it chooses which position to keep 
 \end{Desc}
 
 
-Reimplemented in \hyperlink{classGenomicRegionBED_c515c70f443db400f911452ed359433b}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_dc42fea61283fa8134d65467b2292405}{
+Reimplemented in \hyperlink{classGenomicRegionBED_c515c70f443db400f911452ed359433b}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{
 \index{GenomicRegion@{GenomicRegion}!ShiftPos@{ShiftPos}}
 \index{ShiftPos@{ShiftPos}!GenomicRegion@{GenomicRegion}}
-\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
-\label{classGenomicRegion_dc42fea61283fa8134d65467b2292405}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}
 
 
 Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
@@ -385,11 +385,11 @@ Shifts interval start/stop positions. First it chooses reference position, and t
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
 \end{Desc}
 
 
-Reimplemented in \hyperlink{classGenomicRegionBED_97d00cb29eb1f379b9e6ee17197530c7}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_c6c559782775bfc65907801148226590}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_33d1e5544b3fb81e8c19468b91920b1d}{
+Reimplemented in \hyperlink{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_fb2701ba1a521ae2c07ea0ace2f9ee77}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_33d1e5544b3fb81e8c19468b91920b1d}{
 \index{GenomicRegion@{GenomicRegion}!PrintOffsetFormat@{PrintOffsetFormat}}
 \index{PrintOffsetFormat@{PrintOffsetFormat}!GenomicRegion@{GenomicRegion}}
 \subsubsection[PrintOffsetFormat]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::PrintOffsetFormat (char $\ast$ {\em op}, \/  bool {\em fraction})}}

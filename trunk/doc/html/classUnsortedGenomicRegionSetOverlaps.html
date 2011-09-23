@@ -57,9 +57,9 @@ int ** &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">a two-dimensional grid of bins <br></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUnsortedGenomicRegionSetOverlaps.html#6a1255dfaac34080fae7880981b47acb">UnsortedGenomicRegionSetOverlaps</a> (<a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2">QuerySet</a>, <a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03">IndexSet</a>)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUnsortedGenomicRegionSetOverlaps.html#aa858364bf0a3d7986c9d0838a73ccab">UnsortedGenomicRegionSetOverlaps</a> (<a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetOverlaps.html#e513304379055f6d379bc5907733dbe2">QuerySet</a>, <a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetOverlaps.html#c587bf854c827381493735b473622e03">IndexSet</a>, char *bin_bits=NULL)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor.  <a href="#6a1255dfaac34080fae7880981b47acb"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor.  <a href="#aa858364bf0a3d7986c9d0838a73ccab"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="7682171bb52c651af44e4e8f3bf33f52"></a><!-- doxytag: member="UnsortedGenomicRegionSetOverlaps::~UnsortedGenomicRegionSetOverlaps" ref="7682171bb52c651af44e4e8f3bf33f52" args="()" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUnsortedGenomicRegionSetOverlaps.html#7682171bb52c651af44e4e8f3bf33f52">~UnsortedGenomicRegionSetOverlaps</a> ()</td></tr>
 
@@ -123,7 +123,7 @@ A simple example for computing RNAseq read densities in known exons (this is act
     <a class="code" href="classGenomicRegionSet.html" title="This class is used to read and manipulate a set of genomic regions from a file or...">GenomicRegionSet</a> TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,<span class="keyword">false</span>);
 
     <span class="comment">// process overlaps</span>
-    <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a> *overlaps = <span class="keyword">new</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#6a1255dfaac34080fae7880981b47acb" title="Class constructor.">UnsortedGenomicRegionSetOverlaps</a>(&amp;TestRegSet,&amp;RefRegSet);
+    <a class="code" href="classGenomicRegionSetOverlaps.html" title="Abstract class for computing overlaps between genomic regions.">GenomicRegionSetOverlaps</a> *overlaps = <span class="keyword">new</span> <a class="code" href="classUnsortedGenomicRegionSetOverlaps.html#aa858364bf0a3d7986c9d0838a73ccab" title="Class constructor.">UnsortedGenomicRegionSetOverlaps</a>(&amp;TestRegSet,&amp;RefRegSet);
     <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> *coverage = overlaps-&gt;<a class="code" href="classGenomicRegionSetOverlaps.html#5c31081b154c624ba35487d988082ffa" title="Calculates the total overlap for each index region. The index region set must be...">CalcIndexCoverage</a>(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">"Printing densities..."</span>,RefRegSet.n_regions);
     <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> k=0; k&lt;RefRegSet.n_regions; k++) {
@@ -137,7 +137,7 @@ A simple example for computing RNAseq read densities in known exons (this is act
     <span class="keyword">delete</span> coverage;
     <span class="keyword">delete</span> overlaps;
 </pre></div> <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="6a1255dfaac34080fae7880981b47acb"></a><!-- doxytag: member="UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps" ref="6a1255dfaac34080fae7880981b47acb" args="(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet)" -->
+<a class="anchor" name="aa858364bf0a3d7986c9d0838a73ccab"></a><!-- doxytag: member="UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps" ref="aa858364bf0a3d7986c9d0838a73ccab" args="(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, char *bin_bits=NULL)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -151,7 +151,13 @@ A simple example for computing RNAseq read densities in known exons (this is act
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *&nbsp;</td>
-          <td class="paramname"> <em>IndexSet</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>IndexSet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramname"> <em>bin_bits</em> = <code>NULL</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -169,6 +175,7 @@ Class constructor.
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>QuerySet</em>&nbsp;</td><td>pointer to query region set </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>IndexSet</em>&nbsp;</td><td>pointer to index region set </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>bin_bits</em>&nbsp;</td><td>number of shift-bits per bin level, e.g. "10,15,18" </td></tr>
   </table>
 </dl>
 
@@ -177,7 +184,7 @@ Class constructor.
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:14 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 23 12:35:25 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

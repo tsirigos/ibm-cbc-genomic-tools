@@ -146,9 +146,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#a410816fa04d76edd7caeb9ae2442ae1">ReverseStrand</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">If interval strand is '+', it is changed to '-' and vice versa. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#5cc57eb991cca3f1e1b8bd7ca8acaa03">ShiftPos</a> (long int start_shift, long int stop_shift, bool shift_5prime)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#ac9a744d5ecd181d6ddc9b7e47605a59">ShiftPos</a> (long int start_shift, long int stop_shift, bool strand_aware)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#5cc57eb991cca3f1e1b8bd7ca8acaa03"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#ac9a744d5ecd181d6ddc9b7e47605a59"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#96b34b76019001c4751d4c4f868ee24d">ModifyPos</a> (char *position_op, long int position_shift)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#96b34b76019001c4751d4c4f868ee24d"></a><br></td></tr>
@@ -209,7 +209,7 @@ Example: <div class="fragment"><pre class="fragment">    <a class="code" href="c
     cout &lt;&lt; <span class="stringliteral">"size of interval y = "</span> &lt;&lt; y.GetSize() &lt;&lt; <span class="charliteral">'\n'</span>;
     cout &lt;&lt; <span class="stringliteral">"overlap of x and y = "</span> &lt;&lt; x.GetOverlap(&amp;y) &lt;&lt; <span class="charliteral">'\n'</span>;    
 </pre></div> <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="5cc57eb991cca3f1e1b8bd7ca8acaa03"></a><!-- doxytag: member="GenomicInterval::ShiftPos" ref="5cc57eb991cca3f1e1b8bd7ca8acaa03" args="(long int start_shift, long int stop_shift, bool shift_5prime)" -->
+<a class="anchor" name="ac9a744d5ecd181d6ddc9b7e47605a59"></a><!-- doxytag: member="GenomicInterval::ShiftPos" ref="ac9a744d5ecd181d6ddc9b7e47605a59" args="(long int start_shift, long int stop_shift, bool strand_aware)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -229,7 +229,7 @@ Example: <div class="fragment"><pre class="fragment">    <a class="code" href="c
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>shift_5prime</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>strand_aware</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -247,7 +247,7 @@ Shifts interval start/stop positions. First it chooses reference position, and t
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>start_shift</em>&nbsp;</td><td>determines the shift of the start position </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>stop_shift</em>&nbsp;</td><td>determines the shift of the stop position </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>shift_5prime</em>&nbsp;</td><td>if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b> </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>strand_aware</em>&nbsp;</td><td>if 'true', then start=5-prime and stop=3-prime </td></tr>
   </table>
 </dl>
 
@@ -351,7 +351,7 @@ Computes start/stop offset distances from <b>ReferenceI</b>.
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:12 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 23 12:35:24 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

@@ -226,7 +226,7 @@ void \hyperlink{classGenomicRegionSet_7b522944fe4f7f489c99fb76ce7f576c}{RunSelec
 \label{classGenomicRegionSet_7b522944fe4f7f489c99fb76ce7f576c}
 
 \begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_d4b42becffb21de5e89129476c79c851}{RunShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+void \hyperlink{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}{RunShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
 \begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegionSet_53143cb3271c65fb289faece622cd8bd}{
 void \hyperlink{classGenomicRegionSet_53143cb3271c65fb289faece622cd8bd}{RunSort} ()}
@@ -446,11 +446,11 @@ Modifies interval start/stop positions. First it chooses which position to keep 
 \begin{description}
 \item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
 \end{Desc}
-\hypertarget{classGenomicRegionSet_d4b42becffb21de5e89129476c79c851}{
+\hypertarget{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}{
 \index{GenomicRegionSet@{GenomicRegionSet}!RunShiftPos@{RunShiftPos}}
 \index{RunShiftPos@{RunShiftPos}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[RunShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})}}
-\label{classGenomicRegionSet_d4b42becffb21de5e89129476c79c851}
+\subsubsection[RunShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})}}
+\label{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}
 
 
 Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
@@ -458,7 +458,7 @@ Shifts interval start/stop positions. First it chooses reference position, and t
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
 \end{Desc}
 \hypertarget{classGenomicRegionSet_6dc7150acdd7a0614f8a8497da687d0e}{
 \index{GenomicRegionSet@{GenomicRegionSet}!PrintRemoveN@{PrintRemoveN}}

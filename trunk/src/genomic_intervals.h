@@ -229,9 +229,9 @@ class GenomicInterval
   /*!
     \param start_shift		determines the shift of the start position
     \param stop_shift		determines the shift of the stop position
-    \param shift_5prime		if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b>
+    \param strand_aware		if 'true', then start=5-prime and stop=3-prime
   */
-  void ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime);
+  void ShiftPos(long int start_shift, long int stop_shift, bool strand_aware);
   
 
 
@@ -812,9 +812,9 @@ class GenomicRegion
   /*!
     \param start_shift		determines the shift of the start position
     \param stop_shift		determines the shift of the stop position
-    \param shift_5prime		if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b>
+    \param strand_aware		if 'true', then start=5-prime and stop=3-prime
   */
-  virtual void ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime);
+  virtual void ShiftPos(long int start_shift, long int stop_shift, bool strand_aware);
 
 
 
@@ -1184,9 +1184,9 @@ class GenomicRegionBED : public GenomicRegion
   /*!
     \param start_shift		determines the shift of the start position
     \param stop_shift		determines the shift of the stop position
-    \param shift_5prime		if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b>
+    \param strand_aware		if 'true', then start=5-prime and stop=3-prime
   */
-  void ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime);
+  void ShiftPos(long int start_shift, long int stop_shift, bool strand_aware);
 
 
 
@@ -1503,9 +1503,9 @@ class GenomicRegionSAM : public GenomicRegion
   /*!
     \param start_shift		determines the shift of the start position
     \param stop_shift		determines the shift of the stop position
-    \param shift_5prime		if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b>
+    \param strand_aware		if 'true', then start=5-prime and stop=3-prime
   */
-  void ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime);
+  void ShiftPos(long int start_shift, long int stop_shift, bool strand_aware);
 
 
 
@@ -1987,9 +1987,9 @@ class GenomicRegionSet
   /*!
     \param start_shift		determines the shift of the start position
     \param stop_shift		determines the shift of the stop position
-    \param shift_5prime		if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b>
+    \param strand_aware		if 'true', then start=5-prime and stop=3-prime
   */
-  void RunShiftPos(long int start_shift, long int stop_shift, bool shift_5prime);
+  void RunShiftPos(long int start_shift, long int stop_shift, bool strand_aware);
 
 
   //! Print sorted intervals according to start position (only for compatible intervals)
@@ -2362,10 +2362,11 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
  public:
   //! Class constructor.
   /*!
-    \param QuerySet 				pointer to query region set
-    \param IndexSet 				pointer to index region set
+    \param QuerySet 			pointer to query region set
+    \param IndexSet 			pointer to index region set
+    \param bin_bits			number of shift-bits per bin level, e.g. "10,15,18"
   */
-  UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet);
+  UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, char *bin_bits=NULL);
 
 
   //! Class destructor.

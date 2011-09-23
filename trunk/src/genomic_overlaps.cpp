@@ -43,6 +43,7 @@ const long int BUFFER_SIZE = 10000;
 
 bool HELP;
 bool VERBOSE;
+char *BIN_BITS;		// NOTE: for future use in case we want to control bin shift-bits
 bool IS_SORTED;
 bool SORTED_BY_STRAND;
 bool IGNORE_STRAND;
@@ -65,18 +66,66 @@ bool SUBSET_NONOVERLAPS;
 CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 {
   // initialize
-  string program = PROGRAM + " (version " + VERSION + ")";
   CmdLineWithOperations *cmd_line = new CmdLineWithOperations(); 
-  cmd_line->SetProgramName(program);
+  cmd_line->SetProgramName(PROGRAM,VERSION);
 
   // set operations
-  cmd_line->AddOperation("count",     "count [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",     "Counts the number of overlapping test regions per reference region.");
-  cmd_line->AddOperation("coverage",  "coverage [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",  "Calculates the depth coverage (i.e. the total number of overlapping nucleotides) per reference region.");
-  cmd_line->AddOperation("density",   "density [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Computes the density (i.e. the coverage divided by the size of the reference region) of overlaps per reference region.");
-  cmd_line->AddOperation("intersect", "intersect [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", "Computes the intersection between all pairs of test and reference regions. Results are grouped by test region.");
-  cmd_line->AddOperation("offset",    "offset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Computes the distances of test regions from their overlapping reference regions.");
-  cmd_line->AddOperation("overlap",   "overlap [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",   "Finds the overlaps between all pairs of test and reference regions. Results are grouped by test region.");
-  cmd_line->AddOperation("subset",    "subset [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>",    "Picks a subset of test regions depending on their overlap with reference regions. Results are grouped by test region.");
+  cmd_line->AddOperation("count", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Counts the number of overlapping test regions per reference region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("coverage", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Calculates the depth coverage (i.e. the total number of overlapping nucleotides) per reference region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("density", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Computes the density (i.e. the coverage divided by the size of the reference region) of overlaps per reference region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("intersect", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Computes the intersection between all pairs of test and reference regions. Results are grouped by test region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("offset", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Computes the distances of test regions from their overlapping reference regions.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("overlap", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Finds the overlaps between all pairs of test and reference regions. Results are grouped by test region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("subset", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Picks a subset of test regions depending on their overlap with reference regions. Results are grouped by test region.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: none"\
+  );
+
   if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>","Performs overlap operations between a test and a reference set of genomic regions."); exit(1); }
 
   // current operation
@@ -88,6 +137,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->AddOption("--help", &HELP, false, "help");
   cmd_line->AddOption("-h", &HELP, false, "help");
   cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
+  cmd_line->AddOption("-B", &BIN_BITS, "17,20,23,26", "number of shift-bits for each bin level");
   cmd_line->AddOption("-S", &IS_SORTED, false, "test and reference regions are sorted by chromosome and start position");
   cmd_line->AddOption("-s", &SORTED_BY_STRAND, false, "test and reference regions are also sorted by strand (-S must be set)");
   cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
@@ -190,7 +240,7 @@ int main(int argc, char* argv[])
 
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     unsigned long int *hits = overlaps->CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing counts...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
@@ -244,7 +294,7 @@ int main(int argc, char* argv[])
 
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing coverages...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
@@ -297,7 +347,7 @@ int main(int argc, char* argv[])
     // process overlaps
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
@@ -361,13 +411,13 @@ int main(int argc, char* argv[])
     GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
 
     // compute offsets
-    UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet);
+    UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
       for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
         size_t Isize = ireg->GetSize();
         printf("%s\t", ireg->LABEL);
-        if (USE_VALUES) printf("%s ", qreg->LABEL);
+        if (PRINT_LABELS) printf("%s ", qreg->LABEL);
         long int start_offset, stop_offset;
         qreg->I.front()->GetOffsetFrom(ireg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
         if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
@@ -400,7 +450,7 @@ int main(int argc, char* argv[])
     // process
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=overlaps->GetQuery(); overlaps->Done()==false; qreg=overlaps->NextQuery()) {   
       GenomicRegion *ireg = overlaps->GetOverlap(false,IGNORE_STRAND);
@@ -430,7 +480,7 @@ int main(int argc, char* argv[])
     // process
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     Progress PRG("Computing query overlaps...",1);
     for (GenomicRegion *qreg=overlaps->GetQuery(); overlaps->Done()==false; qreg=overlaps->NextQuery()) {
       GenomicRegion *ireg = overlaps->GetOverlap(MATCH_GAPS,IGNORE_STRAND);
@@ -470,7 +520,7 @@ int main(int argc, char* argv[])
     // process
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
     Progress PRG("Creating query subset...",1);
     for (GenomicRegion *qreg=overlaps->GetQuery(); (SUBSET_NONOVERLAPS&&(qreg!=NULL))||(overlaps->Done()==false); qreg=overlaps->NextQuery()) {   
       if ((overlaps->GetOverlap(MATCH_GAPS,IGNORE_STRAND)==NULL)==SUBSET_NONOVERLAPS) qreg->Print(); 

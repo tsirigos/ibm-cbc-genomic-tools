@@ -24,7 +24,7 @@ typedef pair$<$ long int $\ast$, long int $\ast$$\ast$ $>$ \hyperlink{classUnsor
 \subsection*{Public Member Functions}
 \begin{CompactItemize}
 \item 
-\hyperlink{classUnsortedGenomicRegionSetOverlaps_6a1255dfaac34080fae7880981b47acb}{UnsortedGenomicRegionSetOverlaps} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_e513304379055f6d379bc5907733dbe2}{QuerySet}, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_c587bf854c827381493735b473622e03}{IndexSet})
+\hyperlink{classUnsortedGenomicRegionSetOverlaps_aa858364bf0a3d7986c9d0838a73ccab}{UnsortedGenomicRegionSetOverlaps} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_e513304379055f6d379bc5907733dbe2}{QuerySet}, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_c587bf854c827381493735b473622e03}{IndexSet}, char $\ast$bin\_\-bits=NULL)
 \begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
 \hypertarget{classUnsortedGenomicRegionSetOverlaps_7682171bb52c651af44e4e8f3bf33f52}{
 \hyperlink{classUnsortedGenomicRegionSetOverlaps_7682171bb52c651af44e4e8f3bf33f52}{$\sim$UnsortedGenomicRegionSetOverlaps} ()}
@@ -125,11 +125,11 @@ A simple example for computing RNAseq read densities in known exons (this is act
  
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classUnsortedGenomicRegionSetOverlaps_6a1255dfaac34080fae7880981b47acb}{
+\hypertarget{classUnsortedGenomicRegionSetOverlaps_aa858364bf0a3d7986c9d0838a73ccab}{
 \index{UnsortedGenomicRegionSetOverlaps@{UnsortedGenomicRegionSetOverlaps}!UnsortedGenomicRegionSetOverlaps@{UnsortedGenomicRegionSetOverlaps}}
 \index{UnsortedGenomicRegionSetOverlaps@{UnsortedGenomicRegionSetOverlaps}!UnsortedGenomicRegionSetOverlaps@{UnsortedGenomicRegionSetOverlaps}}
-\subsubsection[UnsortedGenomicRegionSetOverlaps]{\setlength{\rightskip}{0pt plus 5cm}UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps ({\bf GenomicRegionSet} $\ast$ {\em QuerySet}, \/  {\bf GenomicRegionSet} $\ast$ {\em IndexSet})}}
-\label{classUnsortedGenomicRegionSetOverlaps_6a1255dfaac34080fae7880981b47acb}
+\subsubsection[UnsortedGenomicRegionSetOverlaps]{\setlength{\rightskip}{0pt plus 5cm}UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps ({\bf GenomicRegionSet} $\ast$ {\em QuerySet}, \/  {\bf GenomicRegionSet} $\ast$ {\em IndexSet}, \/  char $\ast$ {\em bin\_\-bits} = {\tt NULL})}}
+\label{classUnsortedGenomicRegionSetOverlaps_aa858364bf0a3d7986c9d0838a73ccab}
 
 
 Class constructor. 
@@ -137,7 +137,7 @@ Class constructor.
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em QuerySet}]pointer to query region set \item[{\em IndexSet}]pointer to index region set \end{description}
+\item[{\em QuerySet}]pointer to query region set \item[{\em IndexSet}]pointer to index region set \item[{\em bin\_\-bits}]number of shift-bits per bin level, e.g. \char`\"{}10,15,18\char`\"{} \end{description}
 \end{Desc}
 
 

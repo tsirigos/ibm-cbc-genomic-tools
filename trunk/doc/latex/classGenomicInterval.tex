@@ -140,7 +140,7 @@ void \hyperlink{classGenomicInterval_a410816fa04d76edd7caeb9ae2442ae1}{ReverseSt
 \label{classGenomicInterval_a410816fa04d76edd7caeb9ae2442ae1}
 
 \begin{CompactList}\small\item\em If interval strand is '+', it is changed to '-' and vice versa. \item\end{CompactList}\item 
-void \hyperlink{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+void \hyperlink{classGenomicInterval_ac9a744d5ecd181d6ddc9b7e47605a59}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
 \begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
 void \hyperlink{classGenomicInterval_96b34b76019001c4751d4c4f868ee24d}{ModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
 \begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
@@ -223,11 +223,11 @@ Example:
  
 
 \subsection{Member Function Documentation}
-\hypertarget{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}{
+\hypertarget{classGenomicInterval_ac9a744d5ecd181d6ddc9b7e47605a59}{
 \index{GenomicInterval@{GenomicInterval}!ShiftPos@{ShiftPos}}
 \index{ShiftPos@{ShiftPos}!GenomicInterval@{GenomicInterval}}
-\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicInterval::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})}}
-\label{classGenomicInterval_5cc57eb991cca3f1e1b8bd7ca8acaa03}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicInterval::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})}}
+\label{classGenomicInterval_ac9a744d5ecd181d6ddc9b7e47605a59}
 
 
 Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
@@ -235,7 +235,7 @@ Shifts interval start/stop positions. First it chooses reference position, and t
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
 \end{Desc}
 \hypertarget{classGenomicInterval_96b34b76019001c4751d4c4f868ee24d}{
 \index{GenomicInterval@{GenomicInterval}!ModifyPos@{ModifyPos}}

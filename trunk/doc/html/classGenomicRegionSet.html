@@ -219,9 +219,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#7b522944fe4f7f489c99fb76ce7f576c">RunSelect</a> (bool first, bool last, bool from5p, bool from3p)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Selects a subset of intervals according to their relative positions. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#d4b42becffb21de5e89129476c79c851">RunShiftPos</a> (long int start_shift, long int stop_shift, bool shift_5prime)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#0c9ba06ad5aff586193ba765e6d13a27">RunShiftPos</a> (long int start_shift, long int stop_shift, bool strand_aware)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#d4b42becffb21de5e89129476c79c851"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#0c9ba06ad5aff586193ba765e6d13a27"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="53143cb3271c65fb289faece622cd8bd"></a><!-- doxytag: member="GenomicRegionSet::RunSort" ref="53143cb3271c65fb289faece622cd8bd" args="()" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#53143cb3271c65fb289faece622cd8bd">RunSort</a> ()</td></tr>
 
@@ -512,7 +512,7 @@ Modifies interval start/stop positions. First it chooses which position to keep 
 
 </div>
 </div><p>
-<a class="anchor" name="d4b42becffb21de5e89129476c79c851"></a><!-- doxytag: member="GenomicRegionSet::RunShiftPos" ref="d4b42becffb21de5e89129476c79c851" args="(long int start_shift, long int stop_shift, bool shift_5prime)" -->
+<a class="anchor" name="0c9ba06ad5aff586193ba765e6d13a27"></a><!-- doxytag: member="GenomicRegionSet::RunShiftPos" ref="0c9ba06ad5aff586193ba765e6d13a27" args="(long int start_shift, long int stop_shift, bool strand_aware)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -532,7 +532,7 @@ Modifies interval start/stop positions. First it chooses which position to keep 
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>shift_5prime</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>strand_aware</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -550,7 +550,7 @@ Shifts interval start/stop positions. First it chooses reference position, and t
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>start_shift</em>&nbsp;</td><td>determines the shift of the start position </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>stop_shift</em>&nbsp;</td><td>determines the shift of the stop position </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>shift_5prime</em>&nbsp;</td><td>if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b> </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>strand_aware</em>&nbsp;</td><td>if 'true', then start=5-prime and stop=3-prime </td></tr>
   </table>
 </dl>
 
@@ -618,7 +618,7 @@ Calculates the offset distances of interval start and stop position with respect
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:14 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 23 12:35:25 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>

@@ -243,9 +243,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#461fbb00db1b45061e641f37614fb146">Select</a> (bool first, bool last, bool from5p, bool from3p)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Selects a subset of intervals according to their relative positions. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#dc42fea61283fa8134d65467b2292405">ShiftPos</a> (long int start_shift, long int stop_shift, bool shift_5prime)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#0ee8c165839c79afdc586f8b5e07788e">ShiftPos</a> (long int start_shift, long int stop_shift, bool strand_aware)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#dc42fea61283fa8134d65467b2292405"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately.  <a href="#0ee8c165839c79afdc586f8b5e07788e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="b2c52ae40b34f3607f4558add94c25fd"></a><!-- doxytag: member="GenomicRegion::RunShuffle" ref="b2c52ae40b34f3607f4558add94c25fd" args="(gsl_rng *random_generator, GenomicRegionSet *refReg, StringLIntMap *index, StringVecLIntMap *loc)" -->
 virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#b2c52ae40b34f3607f4558add94c25fd">RunShuffle</a> (gsl_rng *random_generator, <a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *refReg, StringLIntMap *index, StringVecLIntMap *loc)</td></tr>
 
@@ -366,7 +366,7 @@ Modifies interval start/stop positions. First it chooses which position to keep 
 
 </div>
 </div><p>
-<a class="anchor" name="dc42fea61283fa8134d65467b2292405"></a><!-- doxytag: member="GenomicRegion::ShiftPos" ref="dc42fea61283fa8134d65467b2292405" args="(long int start_shift, long int stop_shift, bool shift_5prime)" -->
+<a class="anchor" name="0ee8c165839c79afdc586f8b5e07788e"></a><!-- doxytag: member="GenomicRegion::ShiftPos" ref="0ee8c165839c79afdc586f8b5e07788e" args="(long int start_shift, long int stop_shift, bool strand_aware)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -386,7 +386,7 @@ Modifies interval start/stop positions. First it chooses which position to keep 
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>shift_5prime</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>strand_aware</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -404,11 +404,11 @@ Shifts interval start/stop positions. First it chooses reference position, and t
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>start_shift</em>&nbsp;</td><td>determines the shift of the start position </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>stop_shift</em>&nbsp;</td><td>determines the shift of the stop position </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>shift_5prime</em>&nbsp;</td><td>if 'true', then the new start position is the old 5-prime position shifted by <b>start_shift</b> and the new stop position is the old 3-prime position shifted by <b>stop_shift</b> </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>strand_aware</em>&nbsp;</td><td>if 'true', then start=5-prime and stop=3-prime </td></tr>
   </table>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classGenomicRegionBED.html#97d00cb29eb1f379b9e6ee17197530c7">GenomicRegionBED</a>, and <a class="el" href="classGenomicRegionSAM.html#c6c559782775bfc65907801148226590">GenomicRegionSAM</a>.</p>
+<p>Reimplemented in <a class="el" href="classGenomicRegionBED.html#fd2f05cec2af5186794f40f221e040b1">GenomicRegionBED</a>, and <a class="el" href="classGenomicRegionSAM.html#fb2701ba1a521ae2c07ea0ace2f9ee77">GenomicRegionSAM</a>.</p>
 
 </div>
 </div><p>
@@ -452,7 +452,7 @@ Calculates the offset distances of interval start and stop position with respect
 <hr>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="genomic__intervals_8h-source.html">genomic_intervals.h</a><li>genomic_intervals.cpp</ul>
 </div>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 20 18:46:13 2011 by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Fri Sep 23 12:35:24 2011 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.6 </small></address>
 </body>
