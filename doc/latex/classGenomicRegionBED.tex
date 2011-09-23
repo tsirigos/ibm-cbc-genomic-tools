@@ -133,7 +133,7 @@ void \hyperlink{classGenomicRegionBED_dec7408315765bbdb21465a26400422b}{Select} 
 \label{classGenomicRegionBED_dec7408315765bbdb21465a26400422b}
 
 \begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionBED_97d00cb29eb1f379b9e6ee17197530c7}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool shift\_\-5prime)
+void \hyperlink{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
 \begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegionBED_f3793387aa335bf68042f9245bc5992d}{
 void \hyperlink{classGenomicRegionBED_f3793387aa335bf68042f9245bc5992d}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$refReg, StringLIntMap $\ast$index, StringVecLIntMap $\ast$loc)}
@@ -229,11 +229,11 @@ Modifies interval start/stop positions. First it chooses which position to keep 
 \end{Desc}
 
 
-Reimplemented from \hyperlink{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{GenomicRegion}.\hypertarget{classGenomicRegionBED_97d00cb29eb1f379b9e6ee17197530c7}{
+Reimplemented from \hyperlink{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{GenomicRegion}.\hypertarget{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{
 \index{GenomicRegionBED@{GenomicRegionBED}!ShiftPos@{ShiftPos}}
 \index{ShiftPos@{ShiftPos}!GenomicRegionBED@{GenomicRegionBED}}
-\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionBED::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em shift\_\-5prime})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
-\label{classGenomicRegionBED_97d00cb29eb1f379b9e6ee17197530c7}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionBED::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}
 
 
 Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
@@ -241,11 +241,11 @@ Shifts interval start/stop positions. First it chooses reference position, and t
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em shift\_\-5prime}]if 'true', then the new start position is the old 5-prime position shifted by {\bf start\_\-shift} and the new stop position is the old 3-prime position shifted by {\bf stop\_\-shift} \end{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
 \end{Desc}
 
 
-Reimplemented from \hyperlink{classGenomicRegion_dc42fea61283fa8134d65467b2292405}{GenomicRegion}.
+Reimplemented from \hyperlink{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{GenomicRegion}.
 
 The documentation for this class was generated from the following files:\begin{CompactItemize}
 \item 

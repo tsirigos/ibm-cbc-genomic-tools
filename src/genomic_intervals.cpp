@@ -435,7 +435,6 @@ long int GenomicInterval::CalcOverlap(GenomicInterval *I, bool ignore_strand)
 //
 long int GenomicInterval::CalcDistanceFrom(GenomicInterval *I, char *op, char *I_op)
 {
-  if (IsCompatibleWith(I,false)==false) { cerr << "Line " << n_line << ": region intervals must have the same chromosome/strand for this operation!\n"; exit(1); }
   return GetCoordinate(op) - I->GetCoordinate(I_op);
 }
 
@@ -519,10 +518,13 @@ size_t GenomicInterval::GetSeqLength(Chromosomes *C)
 
 //---------ShiftPos-----------
 //
-void GenomicInterval::ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime)
+void GenomicInterval::ShiftPos(long int start_shift, long int stop_shift, bool strand_aware)
 {
-  if ((shift_5prime==false)||(STRAND=='+')) { START += start_shift; STOP += stop_shift; }
-  else { START += stop_shift; STOP += start_shift; }
+  if (strand_aware==false) { START += start_shift; STOP += stop_shift; }
+  else {
+    if (STRAND=='-') { START -= stop_shift; STOP -= start_shift; }
+    else { START += start_shift; STOP += stop_shift; }
+  }
 }
 
 
@@ -1222,7 +1224,7 @@ void GenomicRegion::RunAlign(Chromosomes *C)
 //
 void GenomicRegion::PrintBEDFormat(char *color, bool convert_chromosome)
 {
-  Sort();
+  if (IsCompatibleSortedAndNonoverlapping()==false) PrintError("region intervals must be compatible, sorted and non-overlapping for this operation!");
   long int SCORE = 1000;
   PrintChromosome(I.front()->CHROMOSOME,convert_chromosome);
   printf(" %ld %ld %s %ld %c", I.front()->START-1, I.back()->STOP, LABEL, SCORE, I.front()->STRAND);
@@ -1320,6 +1322,7 @@ void GenomicRegion::RunCalcDistances(char *op1, char *op2)
 {
   if (I.size()<=1) return;     		// NOTE: maybe we want to do this: printf("%s\tNaN\n", LABEL);
   else {
+    if (IsCompatible(false)==false) PrintError("region intervals must have the same chromosome/strand for this operation!");
     printf("%s\t", LABEL);
     GenomicIntervalSet::iterator i = I.begin();
     GenomicIntervalSet::iterator j = i;
@@ -1474,9 +1477,9 @@ void GenomicRegion::Select(bool first, bool last, bool from5p, bool from3p)
 
 //---------ShiftPos-----------
 //
-void GenomicRegion::ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime)
+void GenomicRegion::ShiftPos(long int start_shift, long int stop_shift, bool strand_aware)
 {
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->ShiftPos(start_shift,stop_shift,shift_5prime);
+  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->ShiftPos(start_shift,stop_shift,strand_aware);
 }
 
 
@@ -1485,7 +1488,7 @@ void GenomicRegion::ShiftPos(long int start_shift, long int stop_shift, bool shi
 //
 void GenomicRegion::RunShuffle(gsl_rng *random_generator, GenomicRegionSet *refReg, StringLIntMap *index, StringVecLIntMap *loc)
 {
-  if (I.size()!=1) PrintError("singleton regions expected for this operation!\n");
+  if (I.size()!=1) PrintError("single-interval regions expected for this operation!\n");
   string v = (string)I.front()->CHROMOSOME + (I.front()->STRAND=='+'?"+":"-");
   long int l = I.front()->STOP - I.front()->START + 1;
   if (loc->find(v)!=loc->end()) {
@@ -2312,9 +2315,9 @@ void GenomicRegionBED::Select(bool first, bool last, bool from5p, bool from3p)
 
 //---------ShiftPos-----------
 //
-void GenomicRegionBED::ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime)
+void GenomicRegionBED::ShiftPos(long int start_shift, long int stop_shift, bool strand_aware)
 {
-  GenomicRegion::ShiftPos(start_shift,stop_shift,shift_5prime);
+  GenomicRegion::ShiftPos(start_shift,stop_shift,strand_aware);
   GenomicRegion::Union();
   UpdateThick();
 }
@@ -3109,9 +3112,9 @@ void GenomicRegionSAM::Select(bool first, bool last, bool from5p, bool from3p)
 
 //---------ShiftPos-----------
 //
-void GenomicRegionSAM::ShiftPos(long int start_shift, long int stop_shift, bool shift_5prime)
+void GenomicRegionSAM::ShiftPos(long int start_shift, long int stop_shift, bool strand_aware)
 {
-  GenomicRegion::ShiftPos(start_shift,stop_shift,shift_5prime);
+  GenomicRegion::ShiftPos(start_shift,stop_shift,strand_aware);
   GenomicRegion::Union();
   InvalidateSeqData();
   UpdateCigarFromIntervals();  
@@ -3969,11 +3972,11 @@ void GenomicRegionSet::RunSelect(bool first, bool last, bool from5p, bool from3p
 
 //---------RunShiftPos--------
 //
-void GenomicRegionSet::RunShiftPos(long int start_shift, long int stop_shift, bool shift_5prime)
+void GenomicRegionSet::RunShiftPos(long int start_shift, long int stop_shift, bool strand_aware)
 {
   if (n_regions==0) return;
   Progress PRG("Printing shifted regions...",n_regions);
-  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) { r->ShiftPos(start_shift,stop_shift,shift_5prime); r->Print(); }
+  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) { r->ShiftPos(start_shift,stop_shift,strand_aware); r->Print(); }
   PRG.Done();
 }
 
@@ -4971,7 +4974,7 @@ unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps,
 
 //---------Constructor--------
 //
-UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet)
+UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, char *bin_bits)
  : GenomicRegionSetOverlaps(QuerySet,IndexSet)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "Error: [UnsortedGenomicRegionSetOverlaps] index regions must be loaded in memory!\n"); exit(1); }
@@ -4985,6 +4988,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   Progress PRG1("Loading regions into memory...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
+    if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
     long int stop = r->I.back()->STOP;
     map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
     if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
@@ -4994,12 +4998,22 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   PRG1.Done();
 
   // set bin parameters 
-  n_levels = 4;
-  n_bits = new int[n_levels];
-  n_bits[0] = 10;
-  n_bits[1] = 15;
-  n_bits[2] = 18;
-  n_bits[3] = 60;	// the last bin level should only have one bin (NOTE: what is the max we can do here, considering that it is a signed long int?)
+  if (bin_bits==NULL) {
+    n_levels = 5;				// use Kent et al. (UCSC Genome Browser) settings as default
+    n_bits = new int[n_levels];
+    n_bits[0] = 17;
+    n_bits[1] = 20;
+    n_bits[2] = 23;
+    n_bits[3] = 26;
+    n_bits[n_levels-1] = 60;			// the last bin level should only have one bin, i think 60 bits will guarrantee that :-) 
+  }
+  else {
+    n_levels = CountTokens(bin_bits,',')+1;
+    n_bits = new int[n_levels];
+    int l = 0;
+    for (char *s=GetNextToken(&bin_bits,','); s[0]!=0; s=GetNextToken(&bin_bits,',')) n_bits[l++] = atoi(s);
+    n_bits[n_levels-1] = 60;
+  }
 
   // initialize bin structures for each chromosome
   for (map<string,long int>::iterator it=chrom_size.begin(); it!=chrom_size.end(); it++) {
@@ -5017,6 +5031,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   }
 
   // process regions into the bins
+  //double mean_bin_occupancy = 0;
   Progress PRG2("Creating index...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
@@ -5028,12 +5043,15 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
         long int z = chrom_bins[l][b_start]; 
         if (z!=-1) r_next[k] = z;
         chrom_bins[l][b_start] = k;
+        //mean_bin_occupancy += min(1.0,(double)(r->I.back()->STOP-r->I.front()->START+1+100)/(1<<n_bits[l]));
         break;
       }
     }
     PRG2.Check();
   }
+  //mean_bin_occupancy /= IndexSet->n_regions;
   PRG2.Done();
+  //fprintf(stderr, "* mean bin occupancy = %.6f\n", mean_bin_occupancy);
 
   // double-check if all regions are stored in the bins
   Progress PRG3("Counting used...",index.size());
@@ -5070,6 +5088,7 @@ UnsortedGenomicRegionSetOverlaps::~UnsortedGenomicRegionSetOverlaps()
 GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetQuery()
 {
   current_qreg = QuerySet->Get();
+  if (current_qreg&&(current_qreg->IsCompatibleSortedAndNonoverlapping()==false)) current_qreg->PrintError("query regions should be compatible, sorted and non-overlapping!");
   return current_qreg;
 }
 
@@ -5080,6 +5099,7 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::GetQuery()
 GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextQuery()
 {
   current_qreg = QuerySet->Next();
+  if (current_qreg&&(current_qreg->IsCompatibleSortedAndNonoverlapping()==false)) current_qreg->PrintError("query regions should be compatible, sorted and non-overlapping!");
   return current_qreg;
 }
 
@@ -5364,8 +5384,8 @@ GenomicRegion *RegCenter(GenomicRegion *r)
 //
 StringLIntMap *ReadBounds(char *genome_reg_file, bool verbose) 
 {
-  StringLIntMap *bounds = new StringLIntMap();
-  if (strlen(genome_reg_file)>0) {
+  if ((genome_reg_file!=NULL)&&(strlen(genome_reg_file)>0)) {
+    StringLIntMap *bounds = new StringLIntMap();
     GenomicRegionSet RegSet(genome_reg_file,10000,verbose,false);
     long int line = 1;
     for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),line++) {
@@ -5376,7 +5396,10 @@ StringLIntMap *ReadBounds(char *genome_reg_file, bool verbose)
     }
     return bounds;
   }
-  cerr << "Error: genome region file is necessary for this operation!\n"; exit(1); 
+  else {
+    cerr << "Error: genome region file is necessary for this operation!\n"; exit(1);
+    return NULL;
+  } 
 }
 
 

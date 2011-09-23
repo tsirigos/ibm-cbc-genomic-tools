@@ -1955,13 +1955,13 @@ void ReverseGene(char *s, unsigned long int len)
 
 
 
-void CmdOptionPrint(bool val) { fprintf(stderr, "[%s]", val?"true":"false"); }
-void CmdOptionPrint(char val) { fprintf(stderr, "[%c]", val); }
-void CmdOptionPrint(int val) { fprintf(stderr, "[%d]", val); }
-void CmdOptionPrint(long int val) { fprintf(stderr, "[%ld]", val); }
-void CmdOptionPrint(unsigned long int val) { fprintf(stderr, "[%lu]", val); }
-void CmdOptionPrint(float val) { fprintf(stderr, "[%f]", val); }
-void CmdOptionPrint(double val) { fprintf(stderr, "[%f]", val); }
+void CmdOptionPrint(bool val) { printf("[%s]", val?"true":"false"); }
+void CmdOptionPrint(char val) { printf("[%c]", val); }
+void CmdOptionPrint(int val) { printf("[%d]", val); }
+void CmdOptionPrint(long int val) { printf("[%ld]", val); }
+void CmdOptionPrint(unsigned long int val) { printf("[%lu]", val); }
+void CmdOptionPrint(float val) { printf("[%f]", val); }
+void CmdOptionPrint(double val) { printf("[%f]", val); }
 
 void CmdOptionRead(bool *ptr, char *s) { *ptr = !*ptr; }
 void CmdOptionRead(char *ptr, char *s) { *ptr = s[0]; }
@@ -2108,7 +2108,7 @@ void StrCmdOption::Init()
 
 void StrCmdOption::Print()
 {
-  fprintf(stderr, "[%s]", *ptr);
+  printf("[%s]", *ptr);
 }
 
 
@@ -2162,9 +2162,10 @@ CmdLine::~CmdLine()
 
 //------SetProgramName-----------
 //
-void CmdLine::SetProgramName(string program_name)
+void CmdLine::SetProgramName(string program_name, string version)
 {
   this->program_name = program_name;
+  this->version = version;
 }
 
 
@@ -2204,14 +2205,14 @@ void CmdLine::Init()
 void CmdLine::Print()
 {
   for (OptionList::iterator x=cmd_option_list.begin(); x!=cmd_option_list.end(); x++) {
-    fprintf(stderr, "  %-10s %-80s ", (*x)->opt, (*x)->description);
+    printf("  %-10s %-80s ", (*x)->opt, (*x)->description);
     (*x)->Print();
-    fprintf(stderr, "\n");
+    printf("\n");
   }
   /*for (OptionMap::iterator x=cmd_options.begin(); x!=cmd_options.end(); x++) {
-    fprintf(stderr, "%-10s %-80s ", x->second->opt, x->second->description);
+    printf("%-10s %-80s ", x->second->opt, x->second->description);
     x->second->Print();
-    fprintf(stderr, "\n");
+    printf("\n");
   }*/
 }
 
@@ -2221,12 +2222,12 @@ void CmdLine::Print()
 //
 void CmdLine::Usage(const char *text)
 {
-  fprintf(stderr, "\n");
-  fprintf(stderr, "USAGE: \n");
-  fprintf(stderr, "  %s\n", text);
-  fprintf(stderr, "OPTIONS: \n");
+  printf("\n");
+  printf("USAGE: \n");
+  printf("  %s\n", text);
+  printf("OPTIONS: \n");
   Print();
-  fprintf(stderr, "\n");
+  printf("\n");
 }
 
 
@@ -2234,12 +2235,12 @@ void CmdLine::Usage(const char *text)
 //
 void CmdLine::Usage(char *prog_name, const char *usage)
 {
-  fprintf(stderr, "\n");
-  fprintf(stderr, "USAGE: \n");
-  fprintf(stderr, "  %s %s\n", prog_name, usage);
-  fprintf(stderr, "OPTIONS: \n");
+  printf("\n");
+  printf("USAGE: \n");
+  printf("  %s %s\n", prog_name, usage);
+  printf("OPTIONS: \n");
   Print();
-  fprintf(stderr, "\n");
+  printf("\n");
 }
 
 
@@ -2322,16 +2323,16 @@ CmdLineWithOperations::CmdLineWithOperations()
 //
 CmdLineWithOperations::~CmdLineWithOperations()
 {
-
+  for (OperationMap::iterator it=cmd_operations.begin(); it!=cmd_operations.end(); it++) delete it->second;
 }
 
 
 //------AddOperation-----------
 //
-void CmdLineWithOperations::AddOperation(string operation, string usage, string description)
+void CmdLineWithOperations::AddOperation(string operation, string usage, string description, string details)
 {
   if (cmd_operations.find(operation)!=cmd_operations.end()) { fprintf(stderr, "Error: [CmdLine::AddOperation] operation is already defined!\n"); exit(1); }
-  cmd_operations[operation] = pair<string,string>(usage,description);
+  cmd_operations[operation] = new cmd_info(usage,description,details);
 }
 
 
@@ -2349,16 +2350,22 @@ void CmdLineWithOperations::SetCurrentOperation(string operation)
 //
 void CmdLineWithOperations::OperationSummary(string usage, string description)
 {
-  cerr << '\n';
-  cerr << "USAGE: \n";
-  cerr << "  " << program_name << " " << usage << '\n';
-  cerr << '\n';
-  cerr << "DESCRIPTION: \n";
-  cerr << "  " << description << '\n'; 
-  cerr << '\n';
-  cerr << "OPERATION: \n";
-  for (OperationMap::iterator it=cmd_operations.begin(); it!=cmd_operations.end(); it++) fprintf(stderr, "  %-15s %s\n", it->first.c_str(), it->second.second.c_str());
-  cerr << '\n';
+  cout << '\n';
+  cout << "USAGE: \n";
+  cout << "  " << program_name << " " << usage << '\n';
+  cout << '\n';
+  if (version!="") {
+    cout << "VERSION: \n";
+    cout << "  " << version << '\n';
+    cout << '\n';
+  }
+  cout << "DESCRIPTION: \n";
+  cout << "  " << description << '\n'; 
+  cout << '\n';
+  cout << "OPERATION: \n";
+  for (OperationMap::iterator it=cmd_operations.begin(); it!=cmd_operations.end(); it++) 
+    printf("  %-15s %s\n", it->first.c_str(), it->second->description.c_str());
+  cout << '\n';
 }
 
 
@@ -2367,17 +2374,23 @@ void CmdLineWithOperations::OperationSummary(string usage, string description)
 //
 void CmdLineWithOperations::OperationUsage()
 {
-  if (cmd_operations.find(current_cmd_operation)==cmd_operations.end()) { fprintf(stderr, "Error: [CmdLine::AddOperation] operation not found!\n"); exit(1); }
-  cerr << '\n';
-  cerr << "USAGE: \n";
-  cerr << "  " << program_name << " " << cmd_operations[current_cmd_operation].first << '\n';
-  cerr << '\n';
-  cerr << "DESCRIPTION: \n";
-  cerr << "  " << cmd_operations[current_cmd_operation].second << '\n'; 
-  cerr << '\n';
-  cerr << "OPTIONS: \n";
+  OperationMap::iterator it = cmd_operations.find(current_cmd_operation);
+  if (it==cmd_operations.end()) { fprintf(stderr, "Error: [CmdLine::AddOperation] operation not found!\n"); exit(1); }
+  cout << '\n';
+  cout << "USAGE: \n";
+  cout << "  " << program_name << " " << it->first << " " << it->second->usage << '\n';
+  cout << '\n';
+  cout << "DESCRIPTION: \n";
+  cout << "  " << it->second->description << '\n'; 
+  cout << '\n';
+  if (it->second->details!="") {
+    cout << "DETAILS: \n";
+    cout << "  " << it->second->details << '\n'; 
+    cout << '\n';
+  }
+  cout << "OPTIONS: \n";
   Print();
-  cerr << '\n';
+  cout << '\n';
 }
 
 

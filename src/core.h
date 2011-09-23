@@ -737,7 +737,7 @@ class CmdLine
     ~CmdLine();
 
     // read & print
-    void SetProgramName(string program_name);
+    void SetProgramName(string program_name, string version="");
     void Init();
     int Read(char **argv, int argc);
     void Print();
@@ -759,6 +759,7 @@ class CmdLine
 
     // data
     string program_name;
+    string version; 
     OptionMap cmd_options;
     OptionList cmd_option_list;
 };
@@ -784,14 +785,18 @@ class CmdLine
 class CmdLineWithOperations : public CmdLine
 {
   public:
-    typedef map< string, pair<string,string> > OperationMap;
+    struct cmd_info { 
+      string usage, description, details; 
+      cmd_info(string &usage, string &description, string &details):usage(usage),description(description),details(details) {}
+    }; 
+    typedef map<string,cmd_info*> OperationMap;
 
     // constructor & destructor    
     CmdLineWithOperations();
     ~CmdLineWithOperations();
 
     // operations
-    void AddOperation(string operation, string usage, string description);
+    void AddOperation(string operation, string usage, string description, string details="");
     void SetCurrentOperation(string operation);
 
     // print info
