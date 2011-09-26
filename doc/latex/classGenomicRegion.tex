@@ -166,11 +166,6 @@ int \hyperlink{classGenomicRegion_b44366e44dc9a83da65b9593ce90dd32}{CalcDirectio
 \label{classGenomicRegion_b44366e44dc9a83da65b9593ce90dd32}
 
 \begin{CompactList}\small\item\em Returns -1 if before region {\bf r}, +1 if after, otherwise returns 0. The order is determined first by chromosome, then (optionally) by strand and finally by start position. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegion_2a99aedb0632fd7e1f2f8dc995ba9191}{
-bool \hyperlink{classGenomicRegion_2a99aedb0632fd7e1f2f8dc995ba9191}{CheckBounds} (StringLIntMap $\ast$bounds, bool ignore)}
-\label{classGenomicRegion_2a99aedb0632fd7e1f2f8dc995ba9191}
-
-\begin{CompactList}\small\item\em Checks if interval start/stop positions comply with chromosomal bounds. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}{
 virtual void \hyperlink{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}{RunAlign} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
 \label{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}
@@ -181,9 +176,9 @@ virtual void \hyperlink{classGenomicRegion_405010d9256a3c08c53adee98133cb62}{Pri
 \label{classGenomicRegion_405010d9256a3c08c53adee98133cb62}
 
 \begin{CompactList}\small\item\em Prints in BED format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegion_71367cf4a117918f43a71a5295839733}{
-virtual void \hyperlink{classGenomicRegion_71367cf4a117918f43a71a5295839733}{ApplyBounds} (StringLIntMap $\ast$bounds)}
-\label{classGenomicRegion_71367cf4a117918f43a71a5295839733}
+\hypertarget{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}{
+virtual bool \hyperlink{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}{ApplyBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}
 
 \begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
 \hypertarget{classGenomicRegion_1e9a85a086afbe2608411450c9a4c5e6}{

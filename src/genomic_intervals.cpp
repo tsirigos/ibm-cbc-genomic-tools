@@ -548,47 +548,22 @@ void GenomicInterval::ModifyPos(char *position_op, long int position_shift)
 
 
 
-//---------CheckBounds-----------
-//
-bool GenomicInterval::CheckBounds(StringLIntMap *bounds, bool ignore)
-{
-  if ((bounds==NULL)||(bounds->find(CHROMOSOME)==bounds->end())) return true;
-  size_t seq_size = (*bounds)[CHROMOSOME];
-  bool err = false;
-  if (START<1) {
-    err = true;
-    fprintf(stderr, "Line %ld: region start coordinate must be positive!\n", n_line); 
-    if (ignore==true) START = 1;
-    else exit(1);
-  }
-  if (START>(long int)seq_size) { 
-    err = true;
-    cerr << "Line " << n_line << ": region start coordinate (" << START << ") exceeds sequence size (" << seq_size << ")!\n";
-    if (ignore==true) START = seq_size;
-    else exit(1);
-  }
-  if (STOP>(long int)seq_size) { 
-    err = true;
-    cerr << "Line " << n_line << ": region stop coordinate (" << STOP << ") exceeds sequence size (" << seq_size << ")!\n";
-    if (ignore==true) STOP = seq_size;
-    else exit(1);
-  }
-  return err;
-}
-
-
-
 //---------ApplyBounds-----------
 //
-void GenomicInterval::ApplyBounds(StringLIntMap *bounds)
+bool GenomicInterval::ApplyBounds(StringLIntMap *bounds)
 {
-  if (bounds&&(bounds->find(CHROMOSOME)!=bounds->end())) {
-    if (START>(*bounds)[CHROMOSOME]) START = STOP = 0;
-    else {
-      START = min(max(START,1L),(*bounds)[CHROMOSOME]);
-      STOP = min(max(STOP,1L),(*bounds)[CHROMOSOME]);
-    }
+  if ((bounds==NULL)||(bounds->find(CHROMOSOME)==bounds->end())) return false;
+  size_t seq_size = (*bounds)[CHROMOSOME];
+  if ((START>(long int)seq_size)||(STOP<1)||(STOP<START)) { 
+    START = STOP = 0;
+    return true;
   }
+  else if ((START<1)||(STOP>(long int)seq_size)) { 
+    START = max(START,1L);
+    STOP = min(STOP,(*bounds)[CHROMOSOME]);
+    return true;
+  }
+  return false;
 }
 
 
@@ -1043,19 +1018,6 @@ size_t GenomicRegion::GetSeqLength(Chromosomes *C)
 
 
 
-//---------CheckBounds-----------
-//
-bool GenomicRegion::CheckBounds(StringLIntMap *bounds, bool ignore)
-{
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) {
-    bool err = (*i)->CheckBounds(bounds,ignore);
-    if (err) return true;
-  }
-  return false;
-}
-
-
-
 //---------DeleteIntervals-----------
 //
 void GenomicRegion::DeleteIntervals(GenomicIntervalSet::iterator i, GenomicIntervalSet::iterator j)
@@ -1246,10 +1208,13 @@ void GenomicRegion::PrintBEDFormat(char *color, bool convert_chromosome)
 
 //---------ApplyBounds-----------
 //
-void GenomicRegion::ApplyBounds(StringLIntMap *bounds)
+bool GenomicRegion::ApplyBounds(StringLIntMap *bounds)
 {
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->ApplyBounds(bounds);
+  bool invalid = false; 
+  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) 
+    if ((*i)->ApplyBounds(bounds)==true) invalid = true;
   Fix();
+  return invalid;
 }
 
 
@@ -2192,10 +2157,11 @@ void GenomicRegionBED::PrintBEDFormat(char *color, bool convert_chromosome)
 
 //---------ApplyBounds-----------
 //
-void GenomicRegionBED::ApplyBounds(StringLIntMap *bounds)
+bool GenomicRegionBED::ApplyBounds(StringLIntMap *bounds)
 {
-  GenomicRegion::ApplyBounds(bounds);
+  bool invalid = GenomicRegion::ApplyBounds(bounds);
   UpdateThick();
+  return invalid;
 }
 
 
@@ -2985,9 +2951,14 @@ void GenomicRegionSAM::RunAlign(Chromosomes *C)
   
 //---------ApplyBounds-----------
 //
-void GenomicRegionSAM::ApplyBounds(StringLIntMap *bounds)
+bool GenomicRegionSAM::ApplyBounds(StringLIntMap *bounds)
 {
-  GenomicRegion::ApplyBounds(bounds);
+  bool invalid = GenomicRegion::ApplyBounds(bounds);
+  if (invalid==true) {
+    InvalidateSeqData();
+    UpdateCigarFromIntervals();
+  }  
+  return invalid;
 }
 
 
