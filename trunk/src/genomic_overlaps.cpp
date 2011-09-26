@@ -204,6 +204,8 @@ int main(int argc, char* argv[])
   CmdLineWithOperations *cmd_line = InitCmdLine(argc,argv,&next_arg); 
   _MESSAGES_ = VERBOSE;
 
+  if (IS_SORTED&&SORTED_BY_STRAND&&IGNORE_STRAND) { fprintf(stderr, "[Error]: the input is sorted by chromosome/strand/start (i.e. -S and -s are set), therefore the overlap algorithm can only report strand-specific results (i.e. -i cannot be set)!\n"); exit(1); }
+
   //--------------------
   // count/sorted
   //--------------------

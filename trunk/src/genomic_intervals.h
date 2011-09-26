@@ -249,13 +249,8 @@ class GenomicInterval
 
 
 
-  //! Checks if interval start/stop positions comply with chromosomal bounds
-  bool CheckBounds(StringLIntMap *bounds, bool ignore);
-
-
-
   //! Corrects interval start/stop positions so as to comply with chromosomal bounds
-  void ApplyBounds(StringLIntMap *bounds);
+  bool ApplyBounds(StringLIntMap *bounds);
 
 
 
@@ -714,11 +709,6 @@ class GenomicRegion
 
   
 
-  //! Checks if interval start/stop positions comply with chromosomal bounds
-  bool CheckBounds(StringLIntMap *bounds, bool ignore);	
-
-
-
   //------------------------------------------------------//
   //   Line-based (horizontal) operations                 //
   //------------------------------------------------------//
@@ -735,7 +725,7 @@ class GenomicRegion
 
 
   //! Corrects interval start/stop positions so as to comply with chromosomal bounds.
-  virtual void ApplyBounds(StringLIntMap *bounds);
+  virtual bool ApplyBounds(StringLIntMap *bounds);
 
 
 
@@ -1117,7 +1107,7 @@ class GenomicRegionBED : public GenomicRegion
 
 
   //! Corrects interval start/stop positions so as to comply with chromosomal bounds.
-  void ApplyBounds(StringLIntMap *bounds);
+  bool ApplyBounds(StringLIntMap *bounds);
 
 
 
@@ -1436,7 +1426,7 @@ class GenomicRegionSAM : public GenomicRegion
 
   
   //! Corrects interval start/stop positions so as to comply with chromosomal bounds.
-  void ApplyBounds(StringLIntMap *bounds);
+  bool ApplyBounds(StringLIntMap *bounds);
 
 
 
