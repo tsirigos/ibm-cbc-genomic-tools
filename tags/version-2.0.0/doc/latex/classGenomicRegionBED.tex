@@ -1,0 +1,253 @@
+\hypertarget{classGenomicRegionBED}{
+\section{GenomicRegionBED Class Reference}
+\label{classGenomicRegionBED}\index{GenomicRegionBED@{GenomicRegionBED}}
+}
+This class processes genomic regions in BED format.  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for GenomicRegionBED::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classGenomicRegionBED}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionBED_89d54edc5809d113202c9f09f82e1057}{
+\hyperlink{classGenomicRegionBED_89d54edc5809d113202c9f09f82e1057}{GenomicRegionBED} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$B)}
+\label{classGenomicRegionBED_89d54edc5809d113202c9f09f82e1057}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_4d7c87327c1074258ac1e6b5ac87c9dd}{
+\hyperlink{classGenomicRegionBED_4d7c87327c1074258ac1e6b5ac87c9dd}{GenomicRegionBED} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionBED_4d7c87327c1074258ac1e6b5ac87c9dd}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_a6e68da10b635bcd84bf320b94a4d414}{
+\hyperlink{classGenomicRegionBED_a6e68da10b635bcd84bf320b94a4d414}{GenomicRegionBED} (char $\ast$label, \hyperlink{classGenomicInterval}{GenomicInterval} $\ast$i)}
+\label{classGenomicRegionBED_a6e68da10b635bcd84bf320b94a4d414}
+
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_a27241b7fbdb90e0b4b1e411045d080f}{
+\hyperlink{classGenomicRegionBED_a27241b7fbdb90e0b4b1e411045d080f}{$\sim$GenomicRegionBED} ()}
+\label{classGenomicRegionBED_a27241b7fbdb90e0b4b1e411045d080f}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_707a1744e040214d78d37b928f1f0252}{
+void \hyperlink{classGenomicRegionBED_707a1744e040214d78d37b928f1f0252}{Read} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegionBED_707a1744e040214d78d37b928f1f0252}
+
+\begin{CompactList}\small\item\em Reads BED format from input string {\bf inp}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}{
+void \hyperlink{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}{Print} (FILE $\ast$file\_\-ptr=stdout)}
+\label{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}
+
+\begin{CompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_e194ce2d67eafe222f10172ee376de94}{
+void \hyperlink{classGenomicRegionBED_e194ce2d67eafe222f10172ee376de94}{Print} (FILE $\ast$file\_\-ptr, char $\ast$color, bool convert\_\-chromosome)}
+\label{classGenomicRegionBED_e194ce2d67eafe222f10172ee376de94}
+
+\begin{CompactList}\small\item\em Same as generic \hyperlink{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}{Print()} except that it modifies the color and the chromosome names. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_04eceeb473bee498747bdd68d8ba8806}{
+void \hyperlink{classGenomicRegionBED_04eceeb473bee498747bdd68d8ba8806}{PrintIntersection} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand, bool merge\_\-labels)}
+\label{classGenomicRegionBED_04eceeb473bee498747bdd68d8ba8806}
+
+\begin{CompactList}\small\item\em Prints all pairwise intersection with the intervals in region {\bf r} (compatible, sorted and non-overlapping). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_25a8584259b6a8d47aa8c46795de1880}{
+void \hyperlink{classGenomicRegionBED_25a8584259b6a8d47aa8c46795de1880}{PrintConstrained} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool merge\_\-labels=false)}
+\label{classGenomicRegionBED_25a8584259b6a8d47aa8c46795de1880}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}{Print()}, but the interval is constrained between {\bf start} and {\bf stop}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_aebba3c31c0fa88e594706f490030549}{
+void \hyperlink{classGenomicRegionBED_aebba3c31c0fa88e594706f490030549}{PrintModified} (char $\ast$label, long int start, long int stop)}
+\label{classGenomicRegionBED_aebba3c31c0fa88e594706f490030549}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionBED_ffbd8eb279f10f9b45189e2388fe7e89}{Print()}, but the label and interval's coordinates are modified. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_01bd886cfa67a3adae10c67dee941924}{
+void \hyperlink{classGenomicRegionBED_01bd886cfa67a3adae10c67dee941924}{UpdateThick} ()}
+\label{classGenomicRegionBED_01bd886cfa67a3adae10c67dee941924}
+
+\begin{CompactList}\small\item\em Auxiliary function: updates thickStart/thickEnd variables to honor changes in coordinates. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_513fb071e2626be58837052daf86bab5}{
+void \hyperlink{classGenomicRegionBED_513fb071e2626be58837052daf86bab5}{PrintBEDFormat} (char $\ast$color, bool convert\_\-chromosome)}
+\label{classGenomicRegionBED_513fb071e2626be58837052daf86bab5}
+
+\begin{CompactList}\small\item\em Prints in BED format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_d9ec9c8dd69ee078fde940463ad46e1e}{
+bool \hyperlink{classGenomicRegionBED_d9ec9c8dd69ee078fde940463ad46e1e}{ApplyBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionBED_d9ec9c8dd69ee078fde940463ad46e1e}
+
+\begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_35c692c1343327d9cb450cfa1276096f}{
+void \hyperlink{classGenomicRegionBED_35c692c1343327d9cb450cfa1276096f}{Center} ()}
+\label{classGenomicRegionBED_35c692c1343327d9cb450cfa1276096f}
+
+\begin{CompactList}\small\item\em Replace each interval in the region with the corresponding center interval. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_d55a9ffea8b0924bac3d11a5722cdfd2}{
+void \hyperlink{classGenomicRegionBED_d55a9ffea8b0924bac3d11a5722cdfd2}{Connect} ()}
+\label{classGenomicRegionBED_d55a9ffea8b0924bac3d11a5722cdfd2}
+
+\begin{CompactList}\small\item\em Replace region with a single interval from minimum start to maximum stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_9580179a120834e71ac90e56e5f35aa9}{
+void \hyperlink{classGenomicRegionBED_9580179a120834e71ac90e56e5f35aa9}{Diff} ()}
+\label{classGenomicRegionBED_9580179a120834e71ac90e56e5f35aa9}
+
+\begin{CompactList}\small\item\em Replace regions with the corresponding gap intervals between successive intervals (e.g. used to compute intron boundaries). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_833d50369e61f64603c63b6a05f3d80b}{
+void \hyperlink{classGenomicRegionBED_833d50369e61f64603c63b6a05f3d80b}{RunCalcDistances} (char $\ast$op1, char $\ast$op2)}
+\label{classGenomicRegionBED_833d50369e61f64603c63b6a05f3d80b}
+
+\begin{CompactList}\small\item\em Print distance between successive intervals. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_be056ec84d2d6890479d47559839bab4}{
+void \hyperlink{classGenomicRegionBED_be056ec84d2d6890479d47559839bab4}{Divide} ()}
+\label{classGenomicRegionBED_be056ec84d2d6890479d47559839bab4}
+
+\begin{CompactList}\small\item\em Divide intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_5f456b4af154c98968370568828d6e3d}{
+void \hyperlink{classGenomicRegionBED_5f456b4af154c98968370568828d6e3d}{RunDivide} ()}
+\label{classGenomicRegionBED_5f456b4af154c98968370568828d6e3d}
+
+\begin{CompactList}\small\item\em Print intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_ac069dcf513265f7756b72c106f2765c}{
+void \hyperlink{classGenomicRegionBED_ac069dcf513265f7756b72c106f2765c}{Fix} ()}
+\label{classGenomicRegionBED_ac069dcf513265f7756b72c106f2765c}
+
+\begin{CompactList}\small\item\em Removes rogue intervals (e.g. start$>$stop). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_cf815a65712e82bf3f8c596c795f55c4}{
+void \hyperlink{classGenomicRegionBED_cf815a65712e82bf3f8c596c795f55c4}{Intersect} ()}
+\label{classGenomicRegionBED_cf815a65712e82bf3f8c596c795f55c4}
+
+\begin{CompactList}\small\item\em Print intersection among all intervals, i.e. maximum start to minimum stop position. \item\end{CompactList}\item 
+void \hyperlink{classGenomicRegionBED_c515c70f443db400f911452ed359433b}{ModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
+\begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_920d47deb095506c311da2b2324e7a14}{
+void \hyperlink{classGenomicRegionBED_920d47deb095506c311da2b2324e7a14}{Randomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionBED_920d47deb095506c311da2b2324e7a14}
+
+\begin{CompactList}\small\item\em Randomizes interval position within chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_dec7408315765bbdb21465a26400422b}{
+void \hyperlink{classGenomicRegionBED_dec7408315765bbdb21465a26400422b}{Select} (bool first, bool last, bool from5p, bool from3p)}
+\label{classGenomicRegionBED_dec7408315765bbdb21465a26400422b}
+
+\begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
+void \hyperlink{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
+\begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_f3793387aa335bf68042f9245bc5992d}{
+void \hyperlink{classGenomicRegionBED_f3793387aa335bf68042f9245bc5992d}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$refReg, StringLIntMap $\ast$index, StringVecLIntMap $\ast$loc)}
+\label{classGenomicRegionBED_f3793387aa335bf68042f9245bc5992d}
+
+\begin{CompactList}\small\item\em Prints shuffled region within specified reference regions in {\bf refReg}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_fd1a61c04f76782abdc83074ae0f7bd3}{
+void \hyperlink{classGenomicRegionBED_fd1a61c04f76782abdc83074ae0f7bd3}{Sort} ()}
+\label{classGenomicRegionBED_fd1a61c04f76782abdc83074ae0f7bd3}
+
+\begin{CompactList}\small\item\em Sort intervals according to start position (only for compatible intervals). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_bd3b8e4969c2ff2639eb344de7b224f9}{
+void \hyperlink{classGenomicRegionBED_bd3b8e4969c2ff2639eb344de7b224f9}{RunSplit} ()}
+\label{classGenomicRegionBED_bd3b8e4969c2ff2639eb344de7b224f9}
+
+\begin{CompactList}\small\item\em Print region intervals on separate lines. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_605f5bf86254547d117ed0c3f5c64587}{
+void \hyperlink{classGenomicRegionBED_605f5bf86254547d117ed0c3f5c64587}{Union} ()}
+\label{classGenomicRegionBED_605f5bf86254547d117ed0c3f5c64587}
+
+\begin{CompactList}\small\item\em Compute intervals' union. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_3ebdc24dd97c7b106205d932970de535}{
+void \hyperlink{classGenomicRegionBED_3ebdc24dd97c7b106205d932970de535}{PrintWindows} (long int win\_\-step, long int win\_\-size)}
+\label{classGenomicRegionBED_3ebdc24dd97c7b106205d932970de535}
+
+\begin{CompactList}\small\item\em Print sliding windows (implemented only for single-interval regions). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_0c4b2a8a590ce1dfbef142d03d53fe5d}{
+\hyperlink{classGenomicRegionBED}{GenomicRegionBED} $\ast$ \hyperlink{classGenomicRegionBED_0c4b2a8a590ce1dfbef142d03d53fe5d}{Constrain} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, char $\ast$label=NULL)}
+\label{classGenomicRegionBED_0c4b2a8a590ce1dfbef142d03d53fe5d}
+
+\begin{CompactList}\small\item\em Returns a version of this genomic region constrained by the start/stop coordinates. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_6db4aa9e6d1655bf116095d295b27269}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionBED_6db4aa9e6d1655bf116095d295b27269}{Diff} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r)}
+\label{classGenomicRegionBED_6db4aa9e6d1655bf116095d295b27269}
+
+\begin{CompactList}\small\item\em Returns the difference of this genomic region and region {\bf r}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegionBED_60878391f6fb1e0ad0ac9bc88a7625d3}{
+long int \hyperlink{classGenomicRegionBED_60878391f6fb1e0ad0ac9bc88a7625d3}{n\_\-tokens}}
+\label{classGenomicRegionBED_60878391f6fb1e0ad0ac9bc88a7625d3}
+
+\begin{CompactList}\small\item\em number of tokens \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_fa7ba810a0d1673f5dbabcf85c7bbb95}{
+long int \hyperlink{classGenomicRegionBED_fa7ba810a0d1673f5dbabcf85c7bbb95}{score}}
+\label{classGenomicRegionBED_fa7ba810a0d1673f5dbabcf85c7bbb95}
+
+\begin{CompactList}\small\item\em score field \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_52fc75b347dfe6696e7ad2beeeb623a9}{
+char $\ast$ \hyperlink{classGenomicRegionBED_52fc75b347dfe6696e7ad2beeeb623a9}{itemRgb}}
+\label{classGenomicRegionBED_52fc75b347dfe6696e7ad2beeeb623a9}
+
+\begin{CompactList}\small\item\em color field \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_019dfaebedc17e8859b36c3359287faa}{
+long int \hyperlink{classGenomicRegionBED_019dfaebedc17e8859b36c3359287faa}{thickStart}}
+\label{classGenomicRegionBED_019dfaebedc17e8859b36c3359287faa}
+
+\begin{CompactList}\small\item\em thickStart field \item\end{CompactList}\item 
+\hypertarget{classGenomicRegionBED_5333a7fdc1f21db508aa7af4f50553ba}{
+long int \hyperlink{classGenomicRegionBED_5333a7fdc1f21db508aa7af4f50553ba}{thickEnd}}
+\label{classGenomicRegionBED_5333a7fdc1f21db508aa7af4f50553ba}
+
+\begin{CompactList}\small\item\em thickEnd field \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This class processes genomic regions in BED format. 
+
+Example: 
+
+\begin{Code}\begin{verbatim}    GenomicRegionBED x("chr1 132033 140102 Region#1 1000 + 132033 140102 0 2 3899,4104 0,3965");
+    cout << "x = \n"; x.Print();
+\end{verbatim}
+\end{Code}
+
+ 
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenomicRegionBED_c515c70f443db400f911452ed359433b}{
+\index{GenomicRegionBED@{GenomicRegionBED}!ModifyPos@{ModifyPos}}
+\index{ModifyPos@{ModifyPos}!GenomicRegionBED@{GenomicRegionBED}}
+\subsubsection[ModifyPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionBED::ModifyPos (char $\ast$ {\em position\_\-op}, \/  long int {\em position\_\-shift})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionBED_c515c70f443db400f911452ed359433b}
+
+
+Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
+\end{Desc}
+
+
+Reimplemented from \hyperlink{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{GenomicRegion}.\hypertarget{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{
+\index{GenomicRegionBED@{GenomicRegionBED}!ShiftPos@{ShiftPos}}
+\index{ShiftPos@{ShiftPos}!GenomicRegionBED@{GenomicRegionBED}}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionBED::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}
+
+
+Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
+\end{Desc}
+
+
+Reimplemented from \hyperlink{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{GenomicRegion}.
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}

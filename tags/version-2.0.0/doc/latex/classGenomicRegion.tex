@@ -1,0 +1,406 @@
+\hypertarget{classGenomicRegion}{
+\section{GenomicRegion Class Reference}
+\label{classGenomicRegion}\index{GenomicRegion@{GenomicRegion}}
+}
+This class implements the genomic regions (i.e. ordered sets of genomic intervals).  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for GenomicRegion::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.06667cm]{classGenomicRegion}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegion_8ff9fe5618b932a1caccbd9072ddaaef}{
+\hyperlink{classGenomicRegion_8ff9fe5618b932a1caccbd9072ddaaef}{GenomicRegion} ()}
+\label{classGenomicRegion_8ff9fe5618b932a1caccbd9072ddaaef}
+
+\begin{CompactList}\small\item\em Empty class constructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_c45e11c7c0d0477c4b8682ef5266d3d7}{
+\hyperlink{classGenomicRegion_c45e11c7c0d0477c4b8682ef5266d3d7}{GenomicRegion} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$B)}
+\label{classGenomicRegion_c45e11c7c0d0477c4b8682ef5266d3d7}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_c22559720502ea450aeb4f65c6c789e1}{
+\hyperlink{classGenomicRegion_c22559720502ea450aeb4f65c6c789e1}{GenomicRegion} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0)}
+\label{classGenomicRegion_c22559720502ea450aeb4f65c6c789e1}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_6de3d0ff71615c36a7311509af56ae79}{
+\hyperlink{classGenomicRegion_6de3d0ff71615c36a7311509af56ae79}{GenomicRegion} (char $\ast$label, \hyperlink{classGenomicInterval}{GenomicInterval} $\ast$i)}
+\label{classGenomicRegion_6de3d0ff71615c36a7311509af56ae79}
+
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_37af413ecbed6ee0d36ecbc40d957947}{
+virtual \hyperlink{classGenomicRegion_37af413ecbed6ee0d36ecbc40d957947}{$\sim$GenomicRegion} ()}
+\label{classGenomicRegion_37af413ecbed6ee0d36ecbc40d957947}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_fd188daab9b4e97ef66883d6971fe103}{
+void \hyperlink{classGenomicRegion_fd188daab9b4e97ef66883d6971fe103}{Read} (char $\ast$inp, long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}=0, char del1=' ', char del2=',')}
+\label{classGenomicRegion_fd188daab9b4e97ef66883d6971fe103}
+
+\begin{CompactList}\small\item\em Reads label and genomic region intervals from input string {\bf inp}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_40397d1fab7b00e5f04b9f7e52f0114e}{
+virtual void \hyperlink{classGenomicRegion_40397d1fab7b00e5f04b9f7e52f0114e}{Print} (FILE $\ast$file\_\-ptr=stdout)}
+\label{classGenomicRegion_40397d1fab7b00e5f04b9f7e52f0114e}
+
+\begin{CompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_b9ea31af7fbb32f206efe0e64533a5be}{
+virtual void \hyperlink{classGenomicRegion_b9ea31af7fbb32f206efe0e64533a5be}{PrintModified} (char $\ast$label, long int start, long int stop)}
+\label{classGenomicRegion_b9ea31af7fbb32f206efe0e64533a5be}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegion_40397d1fab7b00e5f04b9f7e52f0114e}{Print()}, but the label and interval's coordinates are modified. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_ba987d40590874eebd1dd8bb0c02bdc8}{
+virtual void \hyperlink{classGenomicRegion_ba987d40590874eebd1dd8bb0c02bdc8}{PrintIntersection} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand, bool merge\_\-labels)}
+\label{classGenomicRegion_ba987d40590874eebd1dd8bb0c02bdc8}
+
+\begin{CompactList}\small\item\em Prints all pairwise intersection with the intervals in region {\bf r} (compatible, sorted and non-overlapping). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_cfe5347d9c92da801ce7e97416fc8758}{
+virtual void \hyperlink{classGenomicRegion_cfe5347d9c92da801ce7e97416fc8758}{PrintConstrained} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool merge\_\-labels=false)}
+\label{classGenomicRegion_cfe5347d9c92da801ce7e97416fc8758}
+
+\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegion_40397d1fab7b00e5f04b9f7e52f0114e}{Print()}, but the interval is constrained between {\bf r-$>$I.front()-$>$START} and {\bf r-$>$I.back()-$>$STOP}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_9c687565a8ed25da5a5ccf08e5e8461e}{
+void \hyperlink{classGenomicRegion_9c687565a8ed25da5a5ccf08e5e8461e}{PrintREG} (bool compact=false)}
+\label{classGenomicRegion_9c687565a8ed25da5a5ccf08e5e8461e}
+
+\begin{CompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_9a00b031d4a119181b8b76ffa34a6f47}{
+void \hyperlink{classGenomicRegion_9a00b031d4a119181b8b76ffa34a6f47}{PrintQ} (bool reverse=false)}
+\label{classGenomicRegion_9a00b031d4a119181b8b76ffa34a6f47}
+
+\begin{CompactList}\small\item\em Prints sequences (SEQ format). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_68ecc1c8c76e9204f6e27801f0ba3d5f}{
+void \hyperlink{classGenomicRegion_68ecc1c8c76e9204f6e27801f0ba3d5f}{PrintError} (string error\_\-msg)}
+\label{classGenomicRegion_68ecc1c8c76e9204f6e27801f0ba3d5f}
+
+\begin{CompactList}\small\item\em Prints error message and exits. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_ad8566a736786134b72e7bf74296e807}{
+void \hyperlink{classGenomicRegion_ad8566a736786134b72e7bf74296e807}{DeleteIntervals} (GenomicIntervalSet::iterator i, GenomicIntervalSet::iterator j)}
+\label{classGenomicRegion_ad8566a736786134b72e7bf74296e807}
+
+\begin{CompactList}\small\item\em Deletes intervals from iterator {\bf i} to {\bf j}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_bc547e770917e859fa434d6c54954916}{
+void \hyperlink{classGenomicRegion_bc547e770917e859fa434d6c54954916}{SetLabel} (char $\ast$label)}
+\label{classGenomicRegion_bc547e770917e859fa434d6c54954916}
+
+\begin{CompactList}\small\item\em Changes the label. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_e795532404bad8b93bec632c20d12b9d}{
+void \hyperlink{classGenomicRegion_e795532404bad8b93bec632c20d12b9d}{SetStrand} (char strand)}
+\label{classGenomicRegion_e795532404bad8b93bec632c20d12b9d}
+
+\begin{CompactList}\small\item\em Interval strands are set to {\bf strand}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_815baa00d7d33f179181560a1fe468fc}{
+char $\ast$ \hyperlink{classGenomicRegion_815baa00d7d33f179181560a1fe468fc}{GetChromosome} ()}
+\label{classGenomicRegion_815baa00d7d33f179181560a1fe468fc}
+
+\begin{CompactList}\small\item\em Returns pointer to chromosome name. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_5bff7a3e83b0bc9bfb5441270d0ba1ae}{
+size\_\-t \hyperlink{classGenomicRegion_5bff7a3e83b0bc9bfb5441270d0ba1ae}{GetSize} ()}
+\label{classGenomicRegion_5bff7a3e83b0bc9bfb5441270d0ba1ae}
+
+\begin{CompactList}\small\item\em Returns sum of interval's sizes. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_719143f1affa44c38493b2cd43448d3b}{
+size\_\-t \hyperlink{classGenomicRegion_719143f1affa44c38493b2cd43448d3b}{GetSeqLength} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegion_719143f1affa44c38493b2cd43448d3b}
+
+\begin{CompactList}\small\item\em Returns genomic region sequence length excluding 'N' characters. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_fcf7c053989b87f425f084d1f2c078f5}{
+char $\ast$ \hyperlink{classGenomicRegion_fcf7c053989b87f425f084d1f2c078f5}{GetSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
+\label{classGenomicRegion_fcf7c053989b87f425f084d1f2c078f5}
+
+\begin{CompactList}\small\item\em Returns genomic region sequence. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_58c2fe162c1e9bbbd7c90d5abd011ff0}{
+bool \hyperlink{classGenomicRegion_58c2fe162c1e9bbbd7c90d5abd011ff0}{IsCompatible} (bool ignore\_\-strand)}
+\label{classGenomicRegion_58c2fe162c1e9bbbd7c90d5abd011ff0}
+
+\begin{CompactList}\small\item\em Returns 'true' if all intervals are in the same chromosome and strand. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_2ebd984a2632314a39a6e9ba2c497105}{
+bool \hyperlink{classGenomicRegion_2ebd984a2632314a39a6e9ba2c497105}{IsCompatibleWith} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand)}
+\label{classGenomicRegion_2ebd984a2632314a39a6e9ba2c497105}
+
+\begin{CompactList}\small\item\em Returns 'true' if all intervals are compatible with the intervals in {\bf r}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_2e0765dfbe651ad583faa8c8a77e047f}{
+bool \hyperlink{classGenomicRegion_2e0765dfbe651ad583faa8c8a77e047f}{IsCompatibleSorted} (bool ignore\_\-strand)}
+\label{classGenomicRegion_2e0765dfbe651ad583faa8c8a77e047f}
+
+\begin{CompactList}\small\item\em Returns 'true' if intervals are compatible and sorted by chromosome, strand (if {\bf ignore\_\-strand} is false) and start position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_fb2db74a3cd85a84533375483e12b96c}{
+bool \hyperlink{classGenomicRegion_fb2db74a3cd85a84533375483e12b96c}{IsCompatibleSortedAndNonoverlapping} ()}
+\label{classGenomicRegion_fb2db74a3cd85a84533375483e12b96c}
+
+\begin{CompactList}\small\item\em Returns 'true' if intervals are compatible, sorted and non-overlapping. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}{
+bool \hyperlink{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}{OverlapsWith} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand)}
+\label{classGenomicRegion_9e3617a0046fe5fa8fce9f9cce8c3c37}
+
+\begin{CompactList}\small\item\em Returns 'true' if it overlaps with input region {\bf r}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}{
+bool \hyperlink{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}{IsBefore} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool sorted\_\-by\_\-strand)}
+\label{classGenomicRegion_25634257eb7a2ed379548b17a83414fb}
+
+\begin{CompactList}\small\item\em Compares with input region {\bf r} and returns true if its order is before {\bf r}. The order is determined first by chromosome, second by strand, then by start position and finally by stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_2065cf74a82c2340b1e49e7f7ec0fdd4}{
+bool \hyperlink{classGenomicRegion_2065cf74a82c2340b1e49e7f7ec0fdd4}{IsPosBefore} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r)}
+\label{classGenomicRegion_2065cf74a82c2340b1e49e7f7ec0fdd4}
+
+\begin{CompactList}\small\item\em Compares with input region {\bf r} and returns true if its position order is before {\bf r}. The position order is determined first by start position and then by stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_623e28aab180174d43873c4a85342ad4}{
+long int \hyperlink{classGenomicRegion_623e28aab180174d43873c4a85342ad4}{CalcOverlap} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool ignore\_\-strand)}
+\label{classGenomicRegion_623e28aab180174d43873c4a85342ad4}
+
+\begin{CompactList}\small\item\em Returns the total number of overlapping nucleotides (gaps are not matched) with input region {\bf r}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}{
+int \hyperlink{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}{CalcDirection} (\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$i, bool sorted\_\-by\_\-strand)}
+\label{classGenomicRegion_da548684fc4ae44dd3782aa15eaaf0a8}
+
+\begin{CompactList}\small\item\em Returns -1 if before interval {\bf i}, +1 if after, otherwise returns 0. The order is determined first by chromosome, then (optionally) by strand and finally by start position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_b44366e44dc9a83da65b9593ce90dd32}{
+int \hyperlink{classGenomicRegion_b44366e44dc9a83da65b9593ce90dd32}{CalcDirection} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, bool sorted\_\-by\_\-strand)}
+\label{classGenomicRegion_b44366e44dc9a83da65b9593ce90dd32}
+
+\begin{CompactList}\small\item\em Returns -1 if before region {\bf r}, +1 if after, otherwise returns 0. The order is determined first by chromosome, then (optionally) by strand and finally by start position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}{
+virtual void \hyperlink{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}{RunAlign} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegion_90b0382a60f0a8532af73fc18f41364b}
+
+\begin{CompactList}\small\item\em Prints alignments of input sequences to reference genome. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_405010d9256a3c08c53adee98133cb62}{
+virtual void \hyperlink{classGenomicRegion_405010d9256a3c08c53adee98133cb62}{PrintBEDFormat} (char $\ast$color, bool convert\_\-chromosome)}
+\label{classGenomicRegion_405010d9256a3c08c53adee98133cb62}
+
+\begin{CompactList}\small\item\em Prints in BED format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}{
+virtual bool \hyperlink{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}{ApplyBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegion_11b494e59775ac255ddb469c98f8a8a8}
+
+\begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_1e9a85a086afbe2608411450c9a4c5e6}{
+virtual void \hyperlink{classGenomicRegion_1e9a85a086afbe2608411450c9a4c5e6}{Center} ()}
+\label{classGenomicRegion_1e9a85a086afbe2608411450c9a4c5e6}
+
+\begin{CompactList}\small\item\em Replace each interval in the region with the corresponding center interval. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_c2c426782bd7c0d302b7a77bb1ff047f}{
+virtual void \hyperlink{classGenomicRegion_c2c426782bd7c0d302b7a77bb1ff047f}{Connect} ()}
+\label{classGenomicRegion_c2c426782bd7c0d302b7a77bb1ff047f}
+
+\begin{CompactList}\small\item\em Replace region with a single interval from minimum start to maximum stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_869de97ecf059355fe5a5b572b5c2575}{
+virtual void \hyperlink{classGenomicRegion_869de97ecf059355fe5a5b572b5c2575}{Diff} ()}
+\label{classGenomicRegion_869de97ecf059355fe5a5b572b5c2575}
+
+\begin{CompactList}\small\item\em Replace regions with the corresponding gap intervals between successive intervals (e.g. used to compute intron boundaries). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_98695d5d1056d693a1c635b197f4b8bf}{
+virtual void \hyperlink{classGenomicRegion_98695d5d1056d693a1c635b197f4b8bf}{RunCalcDistances} (char $\ast$op1, char $\ast$op2)}
+\label{classGenomicRegion_98695d5d1056d693a1c635b197f4b8bf}
+
+\begin{CompactList}\small\item\em Print distance between successive intervals. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_0785438db56d7b7cc7539470e85434dd}{
+virtual void \hyperlink{classGenomicRegion_0785438db56d7b7cc7539470e85434dd}{Divide} ()}
+\label{classGenomicRegion_0785438db56d7b7cc7539470e85434dd}
+
+\begin{CompactList}\small\item\em Divide intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_45fe5d619f2e21644eacb6984aa47eff}{
+virtual void \hyperlink{classGenomicRegion_45fe5d619f2e21644eacb6984aa47eff}{RunDivide} ()}
+\label{classGenomicRegion_45fe5d619f2e21644eacb6984aa47eff}
+
+\begin{CompactList}\small\item\em Print intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_048d2182b212789b182c2c82a7ac131e}{
+virtual void \hyperlink{classGenomicRegion_048d2182b212789b182c2c82a7ac131e}{Fix} ()}
+\label{classGenomicRegion_048d2182b212789b182c2c82a7ac131e}
+
+\begin{CompactList}\small\item\em Removes rogue intervals (e.g. start$>$stop). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_8075e77ab6296b59506857cc21ee4c9d}{
+virtual void \hyperlink{classGenomicRegion_8075e77ab6296b59506857cc21ee4c9d}{Intersect} ()}
+\label{classGenomicRegion_8075e77ab6296b59506857cc21ee4c9d}
+
+\begin{CompactList}\small\item\em Print intersection among all intervals, i.e. maximum start to minimum stop position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_08db190bc63e6f1d6fc90679dc5e6868}{
+void \hyperlink{classGenomicRegion_08db190bc63e6f1d6fc90679dc5e6868}{RunSize} ()}
+\label{classGenomicRegion_08db190bc63e6f1d6fc90679dc5e6868}
+
+\begin{CompactList}\small\item\em Prints region label and sum of intervals' sizes. \item\end{CompactList}\item 
+virtual void \hyperlink{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{ModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
+\begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_222b3b8f567c306ee5a71ea3a720ef43}{
+virtual void \hyperlink{classGenomicRegion_222b3b8f567c306ee5a71ea3a720ef43}{Randomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
+\label{classGenomicRegion_222b3b8f567c306ee5a71ea3a720ef43}
+
+\begin{CompactList}\small\item\em Randomizes interval position within chromosomal bounds. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_6120af435fb9ee68cb5a3d5066a4fda4}{
+void \hyperlink{classGenomicRegion_6120af435fb9ee68cb5a3d5066a4fda4}{ReversePos} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegion_6120af435fb9ee68cb5a3d5066a4fda4}
+
+\begin{CompactList}\small\item\em Reverses interval start/stop positions with respect to chromosomal bounds, as if the reference point were in the end of the chromosome as opposed to the beginning. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_461fbb00db1b45061e641f37614fb146}{
+virtual void \hyperlink{classGenomicRegion_461fbb00db1b45061e641f37614fb146}{Select} (bool first, bool last, bool from5p, bool from3p)}
+\label{classGenomicRegion_461fbb00db1b45061e641f37614fb146}
+
+\begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
+virtual void \hyperlink{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{ShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
+\begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_b2c52ae40b34f3607f4558add94c25fd}{
+virtual void \hyperlink{classGenomicRegion_b2c52ae40b34f3607f4558add94c25fd}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$refReg, StringLIntMap $\ast$index, StringVecLIntMap $\ast$loc)}
+\label{classGenomicRegion_b2c52ae40b34f3607f4558add94c25fd}
+
+\begin{CompactList}\small\item\em Prints shuffled region within specified reference regions in {\bf refReg}. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_03959dc5b5695d817b5a40b47f30a4aa}{
+virtual void \hyperlink{classGenomicRegion_03959dc5b5695d817b5a40b47f30a4aa}{Sort} ()}
+\label{classGenomicRegion_03959dc5b5695d817b5a40b47f30a4aa}
+
+\begin{CompactList}\small\item\em Sort intervals according to start position (only for compatible intervals). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_1686d4f4d2962b22d506a25a5887c31c}{
+virtual void \hyperlink{classGenomicRegion_1686d4f4d2962b22d506a25a5887c31c}{RunSplit} ()}
+\label{classGenomicRegion_1686d4f4d2962b22d506a25a5887c31c}
+
+\begin{CompactList}\small\item\em Print region intervals on separate lines. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_e19cd6eaa883e6517ba12567cd756320}{
+virtual void \hyperlink{classGenomicRegion_e19cd6eaa883e6517ba12567cd756320}{ModifyStrand} (char $\ast$strand\_\-op)}
+\label{classGenomicRegion_e19cd6eaa883e6517ba12567cd756320}
+
+\begin{CompactList}\small\item\em Modified strand information: '+'=only forward, '-'=only reverse, 'r'=reverse strands from '+' to '-' and vice versa, 'b'=both strands. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_05cb47d38946b780f7eb585074ccf393}{
+virtual void \hyperlink{classGenomicRegion_05cb47d38946b780f7eb585074ccf393}{Union} ()}
+\label{classGenomicRegion_05cb47d38946b780f7eb585074ccf393}
+
+\begin{CompactList}\small\item\em Compute intervals' union. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_3d90c15accabfd5c0279f27f3513ba7c}{
+virtual void \hyperlink{classGenomicRegion_3d90c15accabfd5c0279f27f3513ba7c}{RunUnion} ()}
+\label{classGenomicRegion_3d90c15accabfd5c0279f27f3513ba7c}
+
+\begin{CompactList}\small\item\em Print intervals' union. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_3962ea71432f3977b1ac501e4e878480}{
+virtual void \hyperlink{classGenomicRegion_3962ea71432f3977b1ac501e4e878480}{PrintWindows} (long int win\_\-step, long int win\_\-size)}
+\label{classGenomicRegion_3962ea71432f3977b1ac501e4e878480}
+
+\begin{CompactList}\small\item\em Print sliding windows (implemented only for single-interval regions). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_a2a5b753401e9f9d64a30cfbbdf23f60}{
+void \hyperlink{classGenomicRegion_a2a5b753401e9f9d64a30cfbbdf23f60}{PrintRemoveN} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegion_a2a5b753401e9f9d64a30cfbbdf23f60}
+
+\begin{CompactList}\small\item\em Remove sub-intervals that correspond to sequences of 'N' characters. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_4b52d78052e0109b1fceafe450cfdedd}{
+void \hyperlink{classGenomicRegion_4b52d78052e0109b1fceafe450cfdedd}{PrintSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
+\label{classGenomicRegion_4b52d78052e0109b1fceafe450cfdedd}
+
+\begin{CompactList}\small\item\em Prints region label, intervals and extracted sequence in SEQ format. \item\end{CompactList}\item 
+void \hyperlink{classGenomicRegion_33d1e5544b3fb81e8c19468b91920b1d}{PrintOffsetFormat} (char $\ast$op, bool fraction)
+\begin{CompactList}\small\item\em Calculates the offset distances of interval start and stop position with respect to the first interval in the set. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_7a8ac4f469447256253bdbdcb1b4a956}{
+void \hyperlink{classGenomicRegion_7a8ac4f469447256253bdbdcb1b4a956}{PrintSeqLength} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegion_7a8ac4f469447256253bdbdcb1b4a956}
+
+\begin{CompactList}\small\item\em Prints region label and sequence length (excluding 'N' characters). \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_77fa696d55d538b365d15a7a30391132}{
+void \hyperlink{classGenomicRegion_77fa696d55d538b365d15a7a30391132}{PrintVerifySeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool ignore)}
+\label{classGenomicRegion_77fa696d55d538b365d15a7a30391132}
+
+\begin{CompactList}\small\item\em Verifies extracted sequence against region label. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_9304039f70c5110b961cc9de77974d09}{
+void \hyperlink{classGenomicRegion_9304039f70c5110b961cc9de77974d09}{ReverseStrand} ()}
+\label{classGenomicRegion_9304039f70c5110b961cc9de77974d09}
+
+\begin{CompactList}\small\item\em If interval strand is '+', it is changed to '-' and vice versa. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_50f5ba99404da1cdae6a8632a19ff837}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegion_50f5ba99404da1cdae6a8632a19ff837}{Constrain} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r, char $\ast$label=NULL)}
+\label{classGenomicRegion_50f5ba99404da1cdae6a8632a19ff837}
+
+\begin{CompactList}\small\item\em Returns a version of this genomic region constrained by the start/stop coordinates. \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_44cf789afda4e77749019045050e5ec7}{
+virtual \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegion_44cf789afda4e77749019045050e5ec7}{Diff} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r)}
+\label{classGenomicRegion_44cf789afda4e77749019045050e5ec7}
+
+\begin{CompactList}\small\item\em Returns the difference of this genomic region and region {\bf r}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{
+unsigned long int \hyperlink{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}{n\_\-line}}
+\label{classGenomicRegion_efe2255aeed5338060190ded05cb9c0c}
+
+\begin{CompactList}\small\item\em keeps track of line number \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_7eeba95c1e87e100346688681e30ff24}{
+char $\ast$ \hyperlink{classGenomicRegion_7eeba95c1e87e100346688681e30ff24}{LABEL}}
+\label{classGenomicRegion_7eeba95c1e87e100346688681e30ff24}
+
+\begin{CompactList}\small\item\em genomic region label \item\end{CompactList}\item 
+\hypertarget{classGenomicRegion_b10b86b03c258958818b00c21e3672a9}{
+GenomicIntervalSet \hyperlink{classGenomicRegion_b10b86b03c258958818b00c21e3672a9}{I}}
+\label{classGenomicRegion_b10b86b03c258958818b00c21e3672a9}
+
+\begin{CompactList}\small\item\em set of intervals \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This class implements the genomic regions (i.e. ordered sets of genomic intervals). 
+
+Example: 
+
+\begin{Code}\begin{verbatim}    GenomicRegionREG x("Region#1\tchr1 + 132034 135932 chr1 + 135832 140102");          // standard REG format
+    GenomicRegionREG y("Region#2\tchr1 + 132034,135832 135932,140102");                         // compact REG format
+    cout << "x = \n"; x.Print();
+    cout << "y = \n"; y.Print(); 
+\end{verbatim}
+\end{Code}
+
+ 
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}{
+\index{GenomicRegion@{GenomicRegion}!ModifyPos@{ModifyPos}}
+\index{ModifyPos@{ModifyPos}!GenomicRegion@{GenomicRegion}}
+\subsubsection[ModifyPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::ModifyPos (char $\ast$ {\em position\_\-op}, \/  long int {\em position\_\-shift})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegion_0721b07af0850057e4ab9cd416ecac2f}
+
+
+Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
+\end{Desc}
+
+
+Reimplemented in \hyperlink{classGenomicRegionBED_c515c70f443db400f911452ed359433b}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_353207352073db00dee0a9b620dca197}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}{
+\index{GenomicRegion@{GenomicRegion}!ShiftPos@{ShiftPos}}
+\index{ShiftPos@{ShiftPos}!GenomicRegion@{GenomicRegion}}
+\subsubsection[ShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::ShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})\hspace{0.3cm}{\tt  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegion_0ee8c165839c79afdc586f8b5e07788e}
+
+
+Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
+\end{Desc}
+
+
+Reimplemented in \hyperlink{classGenomicRegionBED_fd2f05cec2af5186794f40f221e040b1}{GenomicRegionBED}, and \hyperlink{classGenomicRegionSAM_fb2701ba1a521ae2c07ea0ace2f9ee77}{GenomicRegionSAM}.\hypertarget{classGenomicRegion_33d1e5544b3fb81e8c19468b91920b1d}{
+\index{GenomicRegion@{GenomicRegion}!PrintOffsetFormat@{PrintOffsetFormat}}
+\index{PrintOffsetFormat@{PrintOffsetFormat}!GenomicRegion@{GenomicRegion}}
+\subsubsection[PrintOffsetFormat]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegion::PrintOffsetFormat (char $\ast$ {\em op}, \/  bool {\em fraction})}}
+\label{classGenomicRegion_33d1e5544b3fb81e8c19468b91920b1d}
+
+
+Calculates the offset distances of interval start and stop position with respect to the first interval in the set. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em op}]determines reference point as follows: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position \item[{\em fraction}]if 'true', offsets are reported as a fraction of the total region length \end{description}
+\end{Desc}
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}

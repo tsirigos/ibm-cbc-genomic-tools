@@ -1,0 +1,68 @@
+\hypertarget{classIndexedGenomicRegionSet}{
+\section{IndexedGenomicRegionSet Class Reference}
+\label{classIndexedGenomicRegionSet}\index{IndexedGenomicRegionSet@{IndexedGenomicRegionSet}}
+}
+\mbox{[}UNDER DEVELOPMENT\mbox{]} An extension of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} has an index for quick searching.  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for IndexedGenomicRegionSet::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classIndexedGenomicRegionSet}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{CompactItemize}
+\item 
+\hypertarget{classIndexedGenomicRegionSet_870fa974397cb4487b5e2fe3fa6f8ec5}{
+typedef list$<$ \hyperlink{classGenomicInterval}{GenomicInterval} $\ast$ $>$ \hyperlink{classIndexedGenomicRegionSet_870fa974397cb4487b5e2fe3fa6f8ec5}{GenomicIntervalList}}
+\label{classIndexedGenomicRegionSet_870fa974397cb4487b5e2fe3fa6f8ec5}
+
+\begin{CompactList}\small\item\em list of genomic intervals \item\end{CompactList}\item 
+\hypertarget{classIndexedGenomicRegionSet_c1e7aa6c1a55659c5756a70d0289c997}{
+typedef map$<$ string, \hyperlink{classIndexedGenomicRegionSet_870fa974397cb4487b5e2fe3fa6f8ec5}{GenomicIntervalList} $\ast$$\ast$ $>$ \hyperlink{classIndexedGenomicRegionSet_c1e7aa6c1a55659c5756a70d0289c997}{RegIndex}}
+\label{classIndexedGenomicRegionSet_c1e7aa6c1a55659c5756a70d0289c997}
+
+\begin{CompactList}\small\item\em map of string to genomic interval list \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classIndexedGenomicRegionSet_f4e3d07d6b9c1dfbc795c636edbcb939}{
+\hyperlink{classIndexedGenomicRegionSet_f4e3d07d6b9c1dfbc795c636edbcb939}{IndexedGenomicRegionSet} (char $\ast$\hyperlink{classGenomicRegionSet_7c593d1beab775590d5b810097644583}{file}, unsigned long int \hyperlink{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}, bool \hyperlink{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}{verbose})}
+\label{classIndexedGenomicRegionSet_f4e3d07d6b9c1dfbc795c636edbcb939}
+
+\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
+\hypertarget{classIndexedGenomicRegionSet_9b29696100e6af8b184d13d135ecf37b}{
+\hyperlink{classIndexedGenomicRegionSet_9b29696100e6af8b184d13d135ecf37b}{$\sim$IndexedGenomicRegionSet} ()}
+\label{classIndexedGenomicRegionSet_9b29696100e6af8b184d13d135ecf37b}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classIndexedGenomicRegionSet_d05963371eebfcbd246d736290951888}{
+void \hyperlink{classIndexedGenomicRegionSet_d05963371eebfcbd246d736290951888}{Find} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$i)}
+\label{classIndexedGenomicRegionSet_d05963371eebfcbd246d736290951888}
+
+\begin{CompactList}\small\item\em Finds a match with genomic interval {\bf i}. \item\end{CompactList}\item 
+\hypertarget{classIndexedGenomicRegionSet_e302fefddacaa1b77e69e0f1657a88d7}{
+int \hyperlink{classIndexedGenomicRegionSet_e302fefddacaa1b77e69e0f1657a88d7}{CalcBinFromRange} (long int start, long int end)}
+\label{classIndexedGenomicRegionSet_e302fefddacaa1b77e69e0f1657a88d7}
+
+\begin{CompactList}\small\item\em Given start,end in chromosome coordinates assign it a bin (Copyright 2002 Jim Kent). \item\end{CompactList}\end{CompactItemize}
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classIndexedGenomicRegionSet_594ca1013c6d77da12dfb9b626781f71}{
+\hyperlink{classIndexedGenomicRegionSet_c1e7aa6c1a55659c5756a70d0289c997}{RegIndex} \hyperlink{classIndexedGenomicRegionSet_594ca1013c6d77da12dfb9b626781f71}{regIndex}}
+\label{classIndexedGenomicRegionSet_594ca1013c6d77da12dfb9b626781f71}
+
+\begin{CompactList}\small\item\em index \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+\mbox{[}UNDER DEVELOPMENT\mbox{]} An extension of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} has an index for quick searching. 
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}

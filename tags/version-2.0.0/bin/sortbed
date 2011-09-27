@@ -1,0 +1,19 @@
+#!/bin/tcsh 
+
+##
+## USAGE: sortbed [-i] <BED-FILE>
+##
+
+if ($#argv > 1) then
+  grep '^##' $0
+  exit
+endif
+
+if ($1 == "") then
+  sort +0 -1 +5 -6 +1 -2n
+else if ($1 == "-i") then
+  sort +0 -1 +1 -2n
+else
+  exit
+endif
+

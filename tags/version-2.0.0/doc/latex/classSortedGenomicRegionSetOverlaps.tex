@@ -1,0 +1,180 @@
+\hypertarget{classSortedGenomicRegionSetOverlaps}{
+\section{SortedGenomicRegionSetOverlaps Class Reference}
+\label{classSortedGenomicRegionSetOverlaps}\index{SortedGenomicRegionSetOverlaps@{SortedGenomicRegionSetOverlaps}}
+}
+This class is used to find overlaps between two genomic regions sets. See detailed description below for an example.  
+
+
+{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+Inheritance diagram for SortedGenomicRegionSetOverlaps::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classSortedGenomicRegionSetOverlaps}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+\hyperlink{classSortedGenomicRegionSetOverlaps_0213f6ea908db759f63cea80db4909aa}{SortedGenomicRegionSetOverlaps} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_e513304379055f6d379bc5907733dbe2}{QuerySet}, \hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetOverlaps_c587bf854c827381493735b473622e03}{IndexSet}, bool \hyperlink{classSortedGenomicRegionSetOverlaps_f08c449faa6ba7be7c6ed9c07f4226e3}{sorted\_\-by\_\-strand})
+\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_1ac0a70899fce3684da0b7e915a13d1e}{
+\hyperlink{classSortedGenomicRegionSetOverlaps_1ac0a70899fce3684da0b7e915a13d1e}{$\sim$SortedGenomicRegionSetOverlaps} ()}
+\label{classSortedGenomicRegionSetOverlaps_1ac0a70899fce3684da0b7e915a13d1e}
+
+\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_3b187db0a12f876a9347b4a1641670a0}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classSortedGenomicRegionSetOverlaps_3b187db0a12f876a9347b4a1641670a0}{GetQuery} ()}
+\label{classSortedGenomicRegionSetOverlaps_3b187db0a12f876a9347b4a1641670a0}
+
+\begin{CompactList}\small\item\em Returns a pointer to the current query region ('NULL' if no more query regions are available); also, \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} is automatically updated via \hyperlink{classSortedGenomicRegionSetOverlaps_d894d118c61c3cd11be8b37b8f185120}{SortedGenomicRegionSetOverlaps::LoadIndexBuffer}. \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_127edf3e9d8fb2ebf189af00e6893e96}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classSortedGenomicRegionSetOverlaps_127edf3e9d8fb2ebf189af00e6893e96}{NextQuery} ()}
+\label{classSortedGenomicRegionSetOverlaps_127edf3e9d8fb2ebf189af00e6893e96}
+
+\begin{CompactList}\small\item\em Returns a pointer to the next query region ('NULL' if no more query regions are available); also, \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} is automatically updated via \hyperlink{classSortedGenomicRegionSetOverlaps_d894d118c61c3cd11be8b37b8f185120}{SortedGenomicRegionSetOverlaps::LoadIndexBuffer}. \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_d0f7b48e1eb685f0aa62aa799088dbc7}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classSortedGenomicRegionSetOverlaps_d0f7b48e1eb685f0aa62aa799088dbc7}{GetMatch} ()}
+\label{classSortedGenomicRegionSetOverlaps_d0f7b48e1eb685f0aa62aa799088dbc7}
+
+\begin{CompactList}\small\item\em Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_756bad7ba9a862ae27cd9ad52acbeef2}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classSortedGenomicRegionSetOverlaps_756bad7ba9a862ae27cd9ad52acbeef2}{NextMatch} ()}
+\label{classSortedGenomicRegionSetOverlaps_756bad7ba9a862ae27cd9ad52acbeef2}
+
+\begin{CompactList}\small\item\em Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_726105d1ee63db6271a90e8092e243c9}{
+bool \hyperlink{classSortedGenomicRegionSetOverlaps_726105d1ee63db6271a90e8092e243c9}{Done} ()}
+\label{classSortedGenomicRegionSetOverlaps_726105d1ee63db6271a90e8092e243c9}
+
+\begin{CompactList}\small\item\em Returns true, if no more query or index regions are available and the \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} buffer is empty. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Private Member Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_d894d118c61c3cd11be8b37b8f185120}{
+void \hyperlink{classSortedGenomicRegionSetOverlaps_d894d118c61c3cd11be8b37b8f185120}{LoadIndexBuffer} ()}
+\label{classSortedGenomicRegionSetOverlaps_d894d118c61c3cd11be8b37b8f185120}
+
+\begin{CompactList}\small\item\em manages \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_c5fe4552253a9d9d802d76b0f4356947}{
+void \hyperlink{classSortedGenomicRegionSetOverlaps_c5fe4552253a9d9d802d76b0f4356947}{ClearIndexBuffer} ()}
+\label{classSortedGenomicRegionSetOverlaps_c5fe4552253a9d9d802d76b0f4356947}
+
+\begin{CompactList}\small\item\em clears \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} \item\end{CompactList}\end{CompactItemize}
+\subsection*{Private Attributes}
+\begin{CompactItemize}
+\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_f08c449faa6ba7be7c6ed9c07f4226e3}{
+bool \hyperlink{classSortedGenomicRegionSetOverlaps_f08c449faa6ba7be7c6ed9c07f4226e3}{sorted\_\-by\_\-strand}}
+\label{classSortedGenomicRegionSetOverlaps_f08c449faa6ba7be7c6ed9c07f4226e3}
+
+\begin{CompactList}\small\item\em if true, query and index regions sorted by strand \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{
+GenomicRegionList \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{IRegBuffer}}
+\label{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}
+
+\begin{CompactList}\small\item\em temporary buffer containing index regions that overlap with current query; the buffer is cleared only if the next query has no overlap \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_71d6eea0c4bf9f19be6cf0c0c562f297}{
+GenomicRegionList::iterator \hyperlink{classSortedGenomicRegionSetOverlaps_71d6eea0c4bf9f19be6cf0c0c562f297}{IRegBufferIterator}}
+\label{classSortedGenomicRegionSetOverlaps_71d6eea0c4bf9f19be6cf0c0c562f297}
+
+\begin{CompactList}\small\item\em iterator on \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_962f8e6ce8c15703cfefa574a07ce42c}{
+\hyperlink{classGenomicInterval}{GenomicInterval} $\ast$ \hyperlink{classSortedGenomicRegionSetOverlaps_962f8e6ce8c15703cfefa574a07ce42c}{ireg\_\-buffer\_\-interval}}
+\label{classSortedGenomicRegionSetOverlaps_962f8e6ce8c15703cfefa574a07ce42c}
+
+\begin{CompactList}\small\item\em keeps tracks of the (linked) interval stored in \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} \item\end{CompactList}\item 
+\hypertarget{classSortedGenomicRegionSetOverlaps_349d589ff006f742d635b16987fe7b6b}{
+unsigned long int \hyperlink{classSortedGenomicRegionSetOverlaps_349d589ff006f742d635b16987fe7b6b}{max\_\-ireg\_\-buffer\_\-size}}
+\label{classSortedGenomicRegionSetOverlaps_349d589ff006f742d635b16987fe7b6b}
+
+\begin{CompactList}\small\item\em keeps track of the maximum size of \hyperlink{classSortedGenomicRegionSetOverlaps_19fa18e6abd9f045786698fff48a445f}{SortedGenomicRegionSetOverlaps::IRegBuffer} \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This class is used to find overlaps between two genomic regions sets. See detailed description below for an example. 
+
+A simple example for computing RNAseq read densities in known exons (this is actually implemented in the {\bf genomic\_\-overlaps} command-line tool as 'density' operation): 
+
+\begin{Code}\begin{verbatim}    #include "core.h"
+    #include "genomic_intervals.h"
+ 
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+
+    // process overlaps
+    GenomicRegionSetOverlaps *overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    Progress PRG("Printing densities...",RefRegSet.n_regions);
+    for (long int k=0; k<RefRegSet.n_regions; k++) {
+      GenomicRegion *qreg = RefRegSet.R[k];
+      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      double density = (double)coverage[k]/qreg_size;
+      if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
+      PRG.Check();
+    }
+    PRG.Done();
+    delete coverage;
+    delete overlaps;
+\end{verbatim}
+\end{Code}
+
+ A more complex example for creating ChIPseq read profiles in TSS regions (this is actually implemented in the {\bf genomic\_\-overlaps} command-line tool as 'offset' operation): 
+
+\begin{Code}\begin{verbatim}    #include "core.h"
+    #include "genomic_intervals.h"
+ 
+    // open region sets
+    char *QUERY_REG_FILE = "chipseq.reads.reg";
+    char *INDEX_REG_FILE = "TSS.flank10kb.reg";
+    char *OFFSET_OP = "5p";
+    bool SORTED_BY_STRAND = false; 
+    bool MATCH_GAPS = true;
+    bool IGNORE_STRAND = true;
+    GenomicRegionSet QueryRegSet(QUERY_REG_FILE,10000,true,false);
+    GenomicRegionSet IndexRegSet(INDEX_REG_FILE,10000,true,false);
+
+    // process overlaps
+    SortedGenomicRegionSetOverlaps Overlaps(&QueryRegSet,&IndexRegSet,SORTED_BY_STRAND);
+    Progress PRG("Processing queries...",1);
+    for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
+      size_t Qsize = qreg->GetSize();
+      for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
+        cout << qreg->LABEL << '\t';
+        long int start_offset, stop_offset;
+        ireg->I.front()->GetOffsetFrom(qreg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
+        printf("%f", ((float)start_offset/Qsize+(float)stop_offset/Qsize)/2); 
+        cout << '\n';
+      }
+      PRG.Check();
+    }
+    PRG.Done();
+\end{verbatim}
+\end{Code}
+
+ 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classSortedGenomicRegionSetOverlaps_0213f6ea908db759f63cea80db4909aa}{
+\index{SortedGenomicRegionSetOverlaps@{SortedGenomicRegionSetOverlaps}!SortedGenomicRegionSetOverlaps@{SortedGenomicRegionSetOverlaps}}
+\index{SortedGenomicRegionSetOverlaps@{SortedGenomicRegionSetOverlaps}!SortedGenomicRegionSetOverlaps@{SortedGenomicRegionSetOverlaps}}
+\subsubsection[SortedGenomicRegionSetOverlaps]{\setlength{\rightskip}{0pt plus 5cm}SortedGenomicRegionSetOverlaps::SortedGenomicRegionSetOverlaps ({\bf GenomicRegionSet} $\ast$ {\em QuerySet}, \/  {\bf GenomicRegionSet} $\ast$ {\em IndexSet}, \/  bool {\em sorted\_\-by\_\-strand})}}
+\label{classSortedGenomicRegionSetOverlaps_0213f6ea908db759f63cea80db4909aa}
+
+
+Class constructor. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em QuerySet}]pointer to query region set \item[{\em IndexSet}]pointer to index region set \item[{\em sorted\_\-by\_\-strand}]if true, query and index regions are sorted by strand \end{description}
+\end{Desc}
+
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+genomic\_\-intervals.h\item 
+genomic\_\-intervals.cpp\end{CompactItemize}
