@@ -1,0 +1,32 @@
+#!/bin/tcsh
+
+##
+## USAGE: create_downloads DIRECTORY VERSION
+##
+
+if ($#argv != 2) then
+  usage $0
+  exit
+endif
+
+set DIR = $1
+set VERSION = $2
+
+echo "Creating source/documentation/examples archive..."
+tar --exclude="\.svn" -cvzf genomic-tools-v2.0.0-src+doc.tgz $DIR/*
+
+echo "Compiling..."
+cd $DIR
+cd src
+make clean
+make -f Makefile.static
+cd ..
+cd ..
+echo
+
+echo "Creating precompiled archive..."
+tar --exclude="copy_source" --exclude="create_downloads" -cvzf genomic-tools-$VERSION-RHEL-x86_64.tgz $DIR/bin/*
+echo
+
+echo "Done."
+
