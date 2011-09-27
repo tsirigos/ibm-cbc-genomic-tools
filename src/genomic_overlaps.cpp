@@ -98,7 +98,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "Computes the intersection between all pairs of test and reference regions. Results are grouped by test region.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operands: region, region-set\n\
-  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Test region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Reference region requirements: single-interval regions\n\
   * Region-set requirements: none"\
   );
 
