@@ -5103,7 +5103,7 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextMatch()
     stop = current_qreg->I.back()->STOP;
     b = start>>n_bits[l];
     b_stop = min(stop>>n_bits[l],n_bins[l]-1);
-    if (b>n_bins[l]) return (current_ireg=NULL); 
+    if (b>=n_bins[l]) return (current_ireg=NULL);  
     current_k = current_binset->second[l][b];
   }
   while (true) {
