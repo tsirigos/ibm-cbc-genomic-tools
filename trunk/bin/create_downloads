@@ -1,18 +1,31 @@
 #!/bin/tcsh
 
 ##
-## USAGE: create_downloads DIRECTORY VERSION
+## USAGE: create_downloads VERSION [ARCHITECTURE=RedHat-x86_64]
 ##
 
-if ($#argv != 2) then
+if ($#argv < 1) then
   usage $0
   exit
 endif
 
-set DIR = $1
-set VERSION = $2
+set VERSION = $1
+set ARCH = $2
+if ($ARCH == "") then
+  set ARCH = RedHat-x86_64
+endif
+
+set REPODIR = `get_prog_dir $0`/..
+set DIR = genomic-tools-$VERSION
+
+cd ~
+ln -sf $REPODIR $DIR
 
 echo "Creating source/documentation/examples archive..."
+cd $DIR
+cd src
+make clean
+cd ~
 tar --exclude="\.svn" -cvzf genomic-tools-$VERSION-src+doc.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/doc $DIR/examples $DIR/src
 
 echo "Compiling..."
@@ -20,13 +33,13 @@ cd $DIR
 cd src
 make clean
 make -f Makefile.static
-cd ..
-cd ..
 echo
 
 echo "Creating precompiled archive..."
-tar --exclude="copy_source" --exclude="create_downloads" -cvzf genomic-tools-$VERSION-RHEL-x86_64.tgz $DIR/bin/*
+cd ~
+tar --exclude="copy_source" --exclude="create_downloads" -cvzf genomic-tools-$VERSION-$ARCH.tgz $DIR/bin/*
 echo
+
 
 echo "Done."
 
