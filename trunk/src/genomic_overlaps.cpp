@@ -31,7 +31,6 @@ using namespace std;
 //---------------------------------------------------------------------------------//
 
 const string PROGRAM = "genomic_overlaps";
-const string VERSION = "2.0.1";
 const long int BUFFER_SIZE = 10000;
 
 

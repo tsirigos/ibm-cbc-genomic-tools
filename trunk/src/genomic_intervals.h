@@ -4,6 +4,9 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
+const string VERSION = "2.0.2";
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -394,15 +397,15 @@ class Chromosomes
   
   // data
 
-  bool verbose;						//!< if 'true', print messages while loading chromosome sequences
-  bool load_in_memory;					//!< 'true' if reading from FASTA file
-  StringMap map;					//!< maps chromosome names to chromosome sequence file names
-  string map_dir;					//!< the directory where the chromosome map file is located
-  string map_name;					//!< the name of the chromosome map file
+  bool verbose;								//!< if 'true', print messages while loading chromosome sequences
+  bool load_in_memory;						//!< 'true' if reading from FASTA file
+  StringMap chrom_map;						//!< maps chromosome names to chromosome sequence file names
+  string chrom_map_dir;						//!< the directory where the chromosome map file is located
+  string chrom_map_name;					//!< the name of the chromosome map file
   string current_chromosome_name;			//!< name of the currently used chromosome
   size_t current_chromosome_size;			//!< size of the currently used chromosome 
   char *current_chromosome_seq;				//!< pointer to the currently used chromosome sequence
-  ChromosomeSeqData chromosome_seq_data;		//!< all chromosomes sequences and their sizes are stored here
+  ChromosomeSeqData chromosome_seq_data;	//!< all chromosomes sequences and their sizes are stored here
 };
 
 
@@ -2154,7 +2157,7 @@ class GenomicRegionSetScanner
     \param ignore_reverse_strand	if true, no sliding windows on the negative strand are reported
     \param preprocess			if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   */
-  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_reverse_strand, char preprocess='1');
+  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_reverse_strand, char preprocess);
   ~GenomicRegionSetScanner();
   
   // operations

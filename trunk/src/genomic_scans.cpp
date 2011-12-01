@@ -35,7 +35,6 @@ using namespace std;
 //---------------------------------------------------------------------------------//
 
 const string PROGRAM = "genomic_scans";
-const string VERSION = "2.0.1";
 const long int BUFFER_SIZE = 10000;
 gsl_rng *RANDOM_GENERATOR;
 
@@ -51,8 +50,10 @@ bool HELP;
 char *GENOME_REG_FILE = NULL;
 char *REF_REG_FILE = NULL;
 long int MIN_READS;
+bool IGNORE_REVERSE_STRAND;
 long int WIN_DIST;
 long int WIN_SIZE;
+char PREPROCESS;
 bool NORM;
 bool COMPARE;
 bool USE_COUNTS;
@@ -109,6 +110,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-r", &REF_REG_FILE, "", "reference region file");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
+    cmd_line->AddOption("-i", &IGNORE_REVERSE_STRAND, false, "ignore reverse strand");
+    cmd_line->AddOption("-op", &PREPROCESS, 'c', "preprocess operator (1=start, c=center, p=all points)");
     cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
   }
@@ -118,6 +121,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson, binomial2)");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
+    cmd_line->AddOption("-i", &IGNORE_REVERSE_STRAND, false, "ignore reverse strand");
     cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-norm", &NORM, false, "equalize background probabilities");
@@ -188,14 +192,14 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
   SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
-  signal_scanner = new GenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,uniq_reg_file==NULL?'c':'1');
+  signal_scanner = new GenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,uniq_reg_file==NULL?'c':'1');
 
   if (control_reg_file!=NULL) {
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false);
     n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
     ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
-    control_scanner = new GenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,uniq_reg_file==NULL?'c':'1');
+    control_scanner = new GenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,uniq_reg_file==NULL?'c':'1');
   }
   else {
     ControlRegSet = NULL;
@@ -210,7 +214,7 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   fprintf(stderr, "* Signal/Control background probability = %f\n", p_ratio);
 
   UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false);
-  uniq_scanner = uniq_reg_file==NULL?NULL:new GenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,'p');
+  uniq_scanner = uniq_reg_file==NULL?NULL:new GenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_REVERSE_STRAND,'p');
 }
 
 
@@ -333,7 +337,7 @@ void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file)
   // initialize
   StringLIntMap *bounds = ReadBounds(genome_reg_file);
   GenomicRegionSet InputRegSet(input_reg_file,BUFFER_SIZE,VERBOSE,false);
-  GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,'c');
+  GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,PREPROCESS);
   GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,false):NULL;
 
   // run

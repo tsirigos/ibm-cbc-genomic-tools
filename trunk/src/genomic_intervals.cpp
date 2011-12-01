@@ -44,17 +44,17 @@ Chromosomes::Chromosomes(char *map_dir, char *map_name)
   // read sequence map file
   this->verbose = false;
   this->load_in_memory = false;
-  this->map_dir = map_dir;
-  this->map_name = map_name;
-  string map_file = (string)map_dir + "/" + (string)map_name;
-  FileBuffer buffer(map_file.c_str());
+  this->chrom_map_dir = chrom_map_dir;
+  this->chrom_map_name = chrom_map_name;
+  string chrom_map_file = (string)chrom_map_dir + "/" + (string)chrom_map_name;
+  FileBuffer buffer(chrom_map_file.c_str());
   Progress PRG("Reading chromosome map file...",1);
   int c = 0;
   for (; buffer.Next(); c++) {
     char *inp = buffer.Get();
     string chr = GetNextToken(&inp," \t");
     string file = GetNextToken(&inp," \t\n");
-    map[chr] = file;
+    chrom_map[chr] = file;
     PRG.Check();
   }
   PRG.Done();
@@ -112,7 +112,7 @@ Chromosomes::~Chromosomes()
 bool Chromosomes::FindChromosome(char *chromosome_name)
 {
   if (load_in_memory==true) return chromosome_seq_data.find(chromosome_name)!=chromosome_seq_data.end();
-  else return map.find(chromosome_name)!=map.end();
+  else return chrom_map.find(chromosome_name)!=chrom_map.end();
 }
 
 
@@ -131,10 +131,10 @@ void Chromosomes::LoadChromosome(string chromosome_name)
     return;
   }
 
-  else if (map.find(chromosome_name)!=map.end()) {
+  else if (chrom_map.find(chromosome_name)!=chrom_map.end()) {
     current_chromosome_name = chromosome_name;
     if (current_chromosome_seq!=NULL) delete current_chromosome_seq;
-    string chromosome_file = map_dir + "/" + map[chromosome_name];
+    string chromosome_file = chrom_map_dir + "/" + chrom_map[chromosome_name];
 
     // recover file size
     FILE *F = fopen(chromosome_file.c_str(),"r");
@@ -1786,7 +1786,7 @@ GenomicRegion *GenomicRegion::Constrain(GenomicRegion *r, char *label)
 GenomicRegion *GenomicRegion::Diff(GenomicRegion *r)
 {
   GenomicInterval *i = new GenomicInterval(I.front()->CHROMOSOME,I.front()->STRAND,r->I.front()->STOP+1,I.front()->START-1);
-  GenomicRegion *rr = new GenomicRegion("_",i);
+  GenomicRegion *rr = new GenomicRegion((char*)"_",i);
   return rr;
 }
 
@@ -2250,7 +2250,7 @@ void GenomicRegionBED::ModifyPos(char *position_op, long int position_shift)
 {
   GenomicRegion::ModifyPos(position_op,position_shift);
   GenomicRegion::Union();
-  UpdateThick();
+  //UpdateThick();
 }
 
 
@@ -2364,7 +2364,7 @@ GenomicRegionBED *GenomicRegionBED::Constrain(GenomicRegion *r, char *label)
     }
   }
   new_r->n_tokens = n_tokens;
-  new_r->score = n_tokens>=5?score:NULL;
+  new_r->score = n_tokens>=5?score:0;
   new_r->thickStart = n_tokens>=7?max(thickStart,r->I.front()->START-1):r->I.front()->START-1;
   new_r->thickEnd = n_tokens>=8?min(thickEnd,r->I.back()->STOP):r->I.back()->STOP;
   new_r->itemRgb = n_tokens>=9?StrCopy(itemRgb):NULL;
@@ -2378,7 +2378,7 @@ GenomicRegionBED *GenomicRegionBED::Constrain(GenomicRegion *r, char *label)
 GenomicRegion *GenomicRegionBED::Diff(GenomicRegion *r)
 {
   GenomicInterval *i = new GenomicInterval(I.front()->CHROMOSOME,I.front()->STRAND,r->I.front()->STOP+1,I.front()->START-1,n_line);
-  GenomicRegion *rr = new GenomicRegionBED("_",i);
+  GenomicRegion *rr = new GenomicRegionBED((char*)"_",i);
   return rr;
 }
 
@@ -2908,20 +2908,20 @@ void GenomicRegionSAM::RunAlign(Chromosomes *C)
   char *ref_seq;
   if (I.front()->STRAND=='+') ref_seq = GetSeq(C); 
   else {
-    GenomicRegion::ModifyStrand("+"); 							// if this is not done, GetSeq will rev-comp the sequence
+    GenomicRegion::ModifyStrand((char*)"+"); 							// if this is not done, GetSeq will rev-comp the sequence
     ref_seq = GetSeq(C);
-    GenomicRegion::ModifyStrand("-"); 							// restore strands
+    GenomicRegion::ModifyStrand((char*)"-"); 							// restore strands
   }
   if (ref_seq==NULL) return;
   printf(">");
   Print();
 
   // print (gapped) fragment sequence 
-  char *gapped_fragment = GetGappedSequence(SEQ,"DP");
+  char *gapped_fragment = GetGappedSequence(SEQ,(char*)"DP");
   printf("%s\n", gapped_fragment);
 
   // print (gapped) reference sequence
-  char *gapped_reference = GetGappedSequence(ref_seq,"IPS");
+  char *gapped_reference = GetGappedSequence(ref_seq,(char*)"IPS");
   printf("%s\n", gapped_reference);
 
   // print extended CIGAR string
@@ -2937,7 +2937,7 @@ void GenomicRegionSAM::RunAlign(Chromosomes *C)
   printf("\n");
 
   // print (gapped) quality score
-  char *gapped_quality = GetGappedSequence(QUAL,"DP",false);
+  char *gapped_quality = GetGappedSequence(QUAL,(char*)"DP",false);
   printf("%s\n", gapped_quality);
     
   // clean-up
@@ -4439,16 +4439,16 @@ void GenomicRegionSet::RunGlobalInvert(StringLIntMap *bounds)
     if (load_in_memory==false) R[0] = NULL;
     if (bounds->find(r0->I.front()->CHROMOSOME)==bounds->end()) { fprintf(stderr, "Line %ld: chromosome %s not found!\n", buffer->n_line, r0->I.front()->CHROMOSOME); exit(1); } 
     long int chrom_size = (*bounds)[r0->I.front()->CHROMOSOME];
-    if (r0->I.front()->START>1) r0->PrintModified("_",1L,r0->I.front()->START-1); 
+    if (r0->I.front()->START>1) r0->PrintModified((char*)"_",1L,r0->I.front()->START-1); 
     while (((r=Next())!=NULL)&&(r->I.front()->IsCompatibleWith(r0->I.front(),!sorted_by_strand))) {
       if (r->I.size()!=1) r->PrintError("not a single-interval region!");
       PRG.Check();
       if (r->I.front()->IsBefore(r0->I.front(),sorted_by_strand)) r->PrintError("input regions are not sorted (sorted-by-strand = " + (string)(sorted_by_strand?"true":"false") + ")!");
-      if (r->I.front()->START>r0->I.front()->STOP+1) r->PrintModified("_",r0->I.front()->STOP+1,r->I.front()->START-1);
+      if (r->I.front()->START>r0->I.front()->STOP+1) r->PrintModified((char*)"_",r0->I.front()->STOP+1,r->I.front()->START-1);
       if (load_in_memory==false) { R[0] = NULL; delete r0; }
       r0 = r;
     }
-    if (r0->I.front()->STOP+1<chrom_size) r0->PrintModified("_",r0->I.front()->STOP+1,chrom_size);
+    if (r0->I.front()->STOP+1<chrom_size) r0->PrintModified((char*)"_",r0->I.front()->STOP+1,chrom_size);
     if (load_in_memory==false) delete r0;
   }
   PRG.Done();
@@ -4473,7 +4473,7 @@ void GenomicRegionSet::RunGlobalLink(bool sorted_by_strand, long int max_differe
         PRG.Check();
         if (r0->I.front()->IsCompatibleWith(r->I.front(),!sorted_by_strand)&&(r->I.front()->START-new_stop<=max_difference)) { new_stop = max(r->I.front()->STOP,new_stop); continue; }
       }
-      r0->PrintModified("_",r0->I.front()->START,new_stop);
+      r0->PrintModified((char*)"_",r0->I.front()->START,new_stop);
       break;
     }
     Release(r0);
@@ -4960,7 +4960,11 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
     if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
+    long int start = r->I.front()->START;
     long int stop = r->I.back()->STOP;
+    if (start<=0) r->PrintError("start position must be positive!");
+    if (stop<=0) r->PrintError("stop position must be positive!");
+    if (start>stop) r->PrintError("start position cannot be greater than stop position!");
     map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
     if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
     else it->second = max(it->second,stop);
@@ -5101,6 +5105,9 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextMatch()
     l = 0;
     start = current_qreg->I.front()->START;
     stop = current_qreg->I.back()->STOP;
+    if (start<=0) current_qreg->PrintError("start position must be positive!");
+    if (stop<=0) current_qreg->PrintError("stop position must be positive!");
+    if (start>stop) current_qreg->PrintError("start position cannot be greater than stop position!");
     b = start>>n_bits[l];
     b_stop = min(stop>>n_bits[l],n_bins[l]-1);
     if (b>=n_bins[l]) return (current_ireg=NULL);  
