@@ -18,6 +18,7 @@ gtools: genomic_regions genomic_overlaps genomic_scans vectors matrix permutatio
 
 clean:
 	rm -f *.o
+	rm -f $(BINDIR)/*.exe $(BINDIR)/genomic_overlaps $(BINDIR)/genomic_regions $(BINDIR)/genomic_scans $(BINDIR)/matrix $(BINDIR)/permutation_test $(BINDIR)/vectors
 
 genomic_regions: core.h core.o genomic_intervals.h genomic_intervals.o 
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_regions genomic_regions.cpp core.o genomic_intervals.o $(LIB)
