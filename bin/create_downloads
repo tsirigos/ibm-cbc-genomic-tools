@@ -13,7 +13,7 @@ set DIR = $1
 set VERSION = $2
 
 echo "Creating source/documentation/examples archive..."
-tar --exclude="\.svn" -cvzf genomic-tools-$VERSION-src+doc.tgz $DIR/*
+tar --exclude="\.svn" -cvzf genomic-tools-$VERSION-src+doc.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/doc $DIR/examples $DIR/src
 
 echo "Compiling..."
 cd $DIR
