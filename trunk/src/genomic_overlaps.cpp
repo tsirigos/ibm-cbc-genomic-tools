@@ -213,8 +213,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
@@ -237,8 +237,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
@@ -266,8 +266,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
@@ -291,8 +291,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
@@ -320,8 +320,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
@@ -343,8 +343,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     // process overlaps
     GenomicRegionSetOverlaps *overlaps;
@@ -372,8 +372,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     // compute offsets
     SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
@@ -409,8 +409,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
 
     // compute offsets
     UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
@@ -446,8 +446,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,false);
 
     // process
     GenomicRegionSetOverlaps *overlaps;
@@ -476,8 +476,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,false);
 
     // process
     GenomicRegionSetOverlaps *overlaps;
@@ -516,8 +516,8 @@ int main(int argc, char* argv[])
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,IS_SORTED?false:true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,false);
 
     // process
     GenomicRegionSetOverlaps *overlaps;

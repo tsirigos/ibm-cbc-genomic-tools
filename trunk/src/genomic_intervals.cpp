@@ -39,7 +39,7 @@ typedef map<string,long int> StringLIntMap;
 
 //---------Constructor-----------
 //
-Chromosomes::Chromosomes(char *map_dir, char *map_name)
+Chromosomes::Chromosomes(char *chrom_map_dir, char *chrom_map_name)
 {
   // read sequence map file
   this->verbose = false;
@@ -124,7 +124,7 @@ void Chromosomes::LoadChromosome(string chromosome_name)
   if (chromosome_name==current_chromosome_name) return;
   
   else if (load_in_memory==true) {
-    if (chromosome_seq_data.find(chromosome_name)==chromosome_seq_data.end()) { cerr << "Warning: chromosome '" << chromosome_name << "' not found in map file!\n"; return; }
+    if (chromosome_seq_data.find(chromosome_name)==chromosome_seq_data.end()) { cerr << "Error: chromosome '" << chromosome_name << "' not found in FASTA file!\n"; exit(1); }
     current_chromosome_name = chromosome_name;
     current_chromosome_seq = chromosome_seq_data[chromosome_name].first;
     current_chromosome_size = chromosome_seq_data[chromosome_name].second;
@@ -156,7 +156,7 @@ void Chromosomes::LoadChromosome(string chromosome_name)
     current_chromosome_size = strlen(current_chromosome_seq);
   }
 
-  else cerr << "Warning: chromosome '" << chromosome_name << "' not found in map file!\n"; 
+  else { cerr << "Error: chromosome '" << chromosome_name << "' not found in map file!\n"; exit(1); }
 
 }
 
@@ -1704,39 +1704,16 @@ void GenomicRegion::PrintVerifySeq(Chromosomes *C, bool ignore)
 
 
 
-/*
 //---------PrintSearch-----------
 //
 void GenomicRegion::PrintSearch(char *pattern, bool header, bool summary)
 {
-  if (I.size()!=1) { fprintf(stderr, "Line %ld: this operation requires single-interval regions!\n", n_line); exit(1); }
-  if (strlen(pattern)==0) { fprintf(stderr, "Line %ld: pattern is empty!\n", n_line); exit(1); }
-  if (header) { printf(">"); Print(); }
-  
-  long int n = CountTokens(pattern,'|');
-  char **P = new char*[n];
-  for (long int k=0; k<n; k++) P[k] = StrCopy(GetNextToken(&pattern,'|'));
-  for (size_t pos=0; pos<Q[0].size(); pos++) {
-    bool match = false;
-    size_t plen = 0;
-    for (long int k=0; (k<n)&&(match==false); k++) {
-      plen = strlen(P[k]);
-      if (Q[0].size()-pos<plen) continue;
-      for (size_t j=0; j<plen; j++) 
-        if (Q[0][pos+j]!=P[k][j]) { match = false; break; }
-        else match = true;
-    }
-    if (match) {
-      if (I.front()->STRAND=='+') printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->START+pos, I.front()->START+pos+plen-1);
-      else printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->STOP-pos-plen+1, I.front()->STOP-pos);
-    }
-  }
-
-  delete [] P;
+  fprintf(stderr, "Line %ld: this operation requires SEQ format as input!\n", n_line); exit(1);
 }
 
 
 
+/*
 //---------PrintNoGaps-----------
 //
 void GenomicRegion::PrintNoGaps()
@@ -1806,6 +1783,118 @@ GenomicRegion *GenomicRegion::Diff(GenomicRegion *r)
 
 
 
+
+
+
+
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: GenomicRegionSEQ                                                                     //
+//---------------------------------------------------------------------------------------------//
+//                                                                                             //
+// Input formats:                                                                              //
+//  1. LABEL <TAB> CHROMOSOME STRAND START[,START]* STOP[,STOP]* <NEW-LINE> SEQUENCE           //
+//  2. LABEL <TAB> [CHROMOSOME STRAND START STOP]+  <NEW-LINE> SEQUENCE                        //
+//                                                                                             //
+//---------------------------------------------------------------------------------------------//
+
+
+//---------Constructor-----------
+//
+GenomicRegionSEQ::GenomicRegionSEQ(FileBuffer *B) 
+{
+  char *next = B->Get();
+  n_line = B->n_line;
+  if (next[0]!='>') PrintError("sequence header should start with '>'!\n");
+  ++next;
+  Read(next,n_line); 
+  SEQ = StrCopy(B->Next());
+  n_line = B->n_line;
+  if (SEQ[0]=='>') PrintError("sequence should not start with '>'!\n");
+  B->Next();
+}
+
+
+//---------Destructor-----------
+//
+GenomicRegionSEQ::~GenomicRegionSEQ()
+{
+  if (LABEL!=NULL) delete LABEL;
+  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) delete *i;
+  I.clear();
+  delete SEQ;
+}
+
+
+//---------PrintSearch-----------
+//
+void GenomicRegionSEQ::PrintSearch(char *pattern, bool header, bool summary)
+{
+  if (I.size()!=1) { fprintf(stderr, "Line %ld: this operation requires single-interval regions!\n", n_line); exit(1); }
+  if (strlen(pattern)==0) { fprintf(stderr, "Line %ld: pattern is empty!\n", n_line); exit(1); }
+  if (header) { printf(">"); Print(); }
+  
+  long int n = CountTokens(pattern,'|');
+  char **P = new char*[n];
+  for (long int k=0; k<n; k++) P[k] = StrCopy(GetNextToken(&pattern,'|'));
+  size_t seq_len = strlen(SEQ);
+  for (size_t pos=0; pos<seq_len; pos++) {
+    bool match = false;
+    size_t plen = 0;
+    for (long int k=0; (k<n)&&(match==false); k++) {
+      plen = strlen(P[k]);
+      if (seq_len-pos<plen) continue;
+      for (size_t j=0; j<plen; j++) 
+        if (SEQ[pos+j]!=P[k][j]) { match = false; break; }
+        else match = true;
+    }
+    if (match) {
+      if (I.front()->STRAND=='+') printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->START+pos, I.front()->START+pos+plen-1);
+      else printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->STOP-pos-plen+1, I.front()->STOP-pos);
+    }
+  }
+
+  delete [] P;
+}
+
+
+
+/*
+//---------PrintSearch(FULL OLD VERSION)-----------
+//
+void GenomicRegionSEQ::PrintSearch(char *pattern, bool header, bool summary)
+{
+  if (I.size()!=1) { fprintf(stderr, "Line %ld: this operation requires single-interval regions!\n", n_line); exit(1); }
+  if (strlen(pattern)==0) { fprintf(stderr, "Line %ld: pattern is empty!\n", n_line); exit(1); }
+  if (header) { printf(">"); Print(); }
+  
+  long int n = CountTokens(pattern,'|');
+  char **P = new char*[n];
+  for (long int k=0; k<n; k++) P[k] = StrCopy(GetNextToken(&pattern,'|'));
+  for (size_t pos=0; pos<Q[0].size(); pos++) {
+    bool match = false;
+    size_t plen = 0;
+    for (long int k=0; (k<n)&&(match==false); k++) {
+      plen = strlen(P[k]);
+      if (Q[0].size()-pos<plen) continue;
+      for (size_t j=0; j<plen; j++) 
+        if (Q[0][pos+j]!=P[k][j]) { match = false; break; }
+        else match = true;
+    }
+    if (match) {
+      if (I.front()->STRAND=='+') printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->START+pos, I.front()->START+pos+plen-1);
+      else printf("_\t%s %c %ld %ld\n", I.front()->CHROMOSOME, I.front()->STRAND, I.front()->STOP-pos-plen+1, I.front()->STOP-pos);
+    }
+  }
+
+  delete [] P;
+}
+*/
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSEQ                                                                 //
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
 
 
 
@@ -3129,9 +3218,11 @@ void GenomicRegionSAM::RunSplit()
     }
     if (tok_it!=T.end()) tok_it++;
     printf("\t%s\t%ld\t%ld\t", RNEXT, PNEXT, TLEN);									// NOTE: TLEN is not modified
-    for (long int k=0; k<fragment_len; k++) { printf("%c", seq[0]); seq++; }
+	if (strcmp(seq,"*")==0) printf("*");
+	else for (long int k=0; k<fragment_len; k++) { printf("%c", seq[0]); seq++; }
     printf("\t");
-    for (long int k=0; k<fragment_len; k++) { printf("%c", qual[0]); qual++; }
+	if (strcmp(qual,"*")==0) printf("*");
+    else for (long int k=0; k<fragment_len; k++) { printf("%c", qual[0]); qual++; }
     if (n_tokens>11) printf("\t%s", OPTIONAL);
     printf("\n");
   }
@@ -3471,7 +3562,7 @@ void GenomicRegionGFF::PrintWindows(long int win_step, long int win_size)
 
 //---------Constructor--------
 //
-GenomicRegionSet::GenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose, bool load_in_memory)
+GenomicRegionSet::GenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose, bool load_in_memory, bool hide_header)
 {
   // initialize
   this->file = file==NULL?NULL:StrCopy(file);
@@ -3480,6 +3571,7 @@ GenomicRegionSet::GenomicRegionSet(char *file, unsigned long int buffer_size, bo
   this->verbose = verbose;
   this->from_stdin = file==NULL;
   this->load_in_memory = from_stdin==true?false:load_in_memory;
+  this->hide_header = hide_header;
   this->buffer = NULL;
   Init();
 }
@@ -3488,7 +3580,7 @@ GenomicRegionSet::GenomicRegionSet(char *file, unsigned long int buffer_size, bo
 
 //---------Constructor--------
 //
-GenomicRegionSet::GenomicRegionSet(FILE *file_ptr, unsigned long int buffer_size, bool verbose, bool load_in_memory)
+GenomicRegionSet::GenomicRegionSet(FILE *file_ptr, unsigned long int buffer_size, bool verbose, bool load_in_memory, bool hide_header)
 {
   // initialize
   this->file = NULL;
@@ -3541,7 +3633,7 @@ void GenomicRegionSet::ProcessFileHeader(bool hide)
 //
 void GenomicRegionSet::DetectFileFormat()
 {
-  ProcessFileHeader(false);
+  ProcessFileHeader(hide_header);
   char *input_line = buffer->Get();
   if (input_line==NULL) format = "EMPTY";
   if (format!="") return;
@@ -3571,7 +3663,7 @@ void GenomicRegionSet::DetectFileFormat()
 GenomicRegion *GenomicRegionSet::CreateGenomicRegion(FileBuffer *buffer)
 {
   if (format=="REG") return new GenomicRegion(buffer);
-  else if (format=="SEQ") { PrintError("SEQ format not implemented yet!\n"); /*return new GenomicRegionSEQ(buffer);*/ }
+  else if (format=="SEQ") return new GenomicRegionSEQ(buffer);
   else if (format=="BED") return new GenomicRegionBED(buffer);
   else if (format=="SAM") return new GenomicRegionSAM(buffer);
   else if (format=="GFF") return new GenomicRegionGFF(buffer);
@@ -3960,7 +4052,7 @@ void GenomicRegionSet::RunShuffle(gsl_rng *random_generator, char *ref_reg_file)
   bool sorted_by_strand = true;
 
   // step #1
-  GenomicRegionSet refReg(ref_reg_file,10000,verbose,true);
+  GenomicRegionSet refReg(ref_reg_file,10000,verbose,true,false);
   Progress PRG1("Processing reference regions...",refReg.n_regions);
   StringLIntMap index;
   StringVecLIntMap loc;
@@ -4079,7 +4171,6 @@ void GenomicRegionSet::PrintReversePos(StringLIntMap *bounds)
 
 
 
-/*
 //---------PrintSearch--------
 //
 void GenomicRegionSet::PrintSearch(char *pattern, bool header, bool summary)
@@ -4089,7 +4180,7 @@ void GenomicRegionSet::PrintSearch(char *pattern, bool header, bool summary)
   for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) r->PrintSearch(pattern,header,summary);
   PRG.Done();
 }
-*/
+
 
 
 //---------StoreInTempFile-----------
@@ -4116,7 +4207,7 @@ GenomicRegionSet *GenomicRegionSet::StoreInTempFile()
   }
   //fprintf(stderr, "%ld regions stored\n", N);
   rewind(temp_file_ptr);
-  return new GenomicRegionSet(temp_file_ptr,10000,false,false); 
+  return new GenomicRegionSet(temp_file_ptr,10000,false,false,false); 
 }
 
 
@@ -4545,7 +4636,7 @@ void GenomicRegionSet::RunGlobalScan(StringLIntMap *bounds, long int win_step, l
 void GenomicRegionSet::RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads)
 {
   GenomicRegionSetScanner input_scanner(this,bounds,win_step,win_size,use_labels_as_values,ignore_reverse_strand,preprocess);
-  GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,10000,false,false):NULL;
+  GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,10000,false,false,true):NULL;
   Progress PRG("Scanning...",1);
   for (long int v=input_scanner.Next(RefRegSet); v!=-1; v=input_scanner.Next(RefRegSet)) {
     if (v>=min_reads) {
@@ -4956,7 +5047,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
 
   // Calculate basic statistics
   map<string,long int> chrom_size;
-  Progress PRG1("Loading regions into memory...",IndexSet->n_regions);
+  Progress PRG1("Checking index regions...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
     if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
@@ -4991,6 +5082,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   }
 
   // initialize bin structures for each chromosome
+  Progress PRG1a("Initializing bin structures for each chromosome...",1); 
   for (map<string,long int>::iterator it=chrom_size.begin(); it!=chrom_size.end(); it++) {
     long int *chrom_n_bins = new long int[n_levels];
     long int **chrom_bins = new long int*[n_levels];
@@ -5003,8 +5095,10 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
       for (long int b=0; b<chrom_n_bins[l]; b++) chrom_bins[l][b] = -1;
     }
     //cerr << '\n';
+	PRG1a.Check();
   }
-
+  PRG1a.Done();
+  
   // process regions into the bins
   //double mean_bin_occupancy = 0;
   Progress PRG2("Creating index...",IndexSet->n_regions);
@@ -5364,7 +5458,7 @@ StringLIntMap *ReadBounds(char *genome_reg_file, bool verbose)
 {
   if ((genome_reg_file!=NULL)&&(strlen(genome_reg_file)>0)) {
     StringLIntMap *bounds = new StringLIntMap();
-    GenomicRegionSet RegSet(genome_reg_file,10000,verbose,false);
+    GenomicRegionSet RegSet(genome_reg_file,10000,verbose,false,true);
     long int line = 1;
     for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),line++) {
       if (r->I.size()!=1) { cerr << "label = " << r->LABEL << '\n'; r->PrintError("genome regions should be single-interval regions!\n"); }
@@ -5397,7 +5491,7 @@ unsigned long int CalcBoundSize(StringLIntMap *bounds)
 //
 unsigned long int CalcRegSize(char *reg_file)
 {
-  GenomicRegionSet RegSet(reg_file,100000,false,false);
+  GenomicRegionSet RegSet(reg_file,100000,false,false,true);
   unsigned long int N = 0;
   Progress PRG("Calculating region set size...",1);
   for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),PRG.Check()) N += r->GetSize();

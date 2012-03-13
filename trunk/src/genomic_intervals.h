@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "2.0.2";
+const string VERSION = "genomic_tools 2.1.0a";
 
 
 #include <stdio.h>
@@ -315,8 +315,8 @@ class Chromosomes
 
   //! Class constructor.
   /*!
-    \param map_dir 		the directory where the chromosome map file is located
-    \param map_name 	the name of the chromosome map file
+    \param chrom_map_dir 		the directory where the chromosome map file is located
+    \param chrom_map_name 		the name of the chromosome map file
 
   Chromosome sequences are loaded on the fly from the *.dna files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. 
   If not, use the alternative constructor described below. 
@@ -348,7 +348,7 @@ class Chromosomes
 
   Each *.dna file contains the chromosome sequence in one line. 
   */
-  Chromosomes(char *map_dir, char *map_name);
+  Chromosomes(char *chrom_map_dir, char *chrom_map_name);
 
 
   //! Class constructor.
@@ -851,6 +851,10 @@ class GenomicRegion
 
 
 
+  //! Search sequence for short pattern (requires SEQ input)
+  virtual void PrintSearch(char *pattern, bool header, bool summary);
+
+  
   //! Prints region label, intervals and extracted sequence in SEQ format
   void PrintSeq(Chromosomes *C, bool replace=false);
 
@@ -924,28 +928,40 @@ class GenomicRegion
 
 
 
-/*
 //---------------------------------------------------------------------------------------------//
 // CLASS: GenomicRegionSEQ                                                                     //
 //---------------------------------------------------------------------------------------------//
-//!  This class implements the genomic regions with attached sequence.
+//!  This class implements the genomic regions REG format with attached sequence.
 //---------------------------------------------------------------------------------------------//
 
 class GenomicRegionSEQ : public GenomicRegion
 {
+ public:
+  //! Class constructor, see example below.
+  GenomicRegionSEQ(FileBuffer *B);
+
+  //! Class destructor.
+  ~GenomicRegionSEQ();
+  
 
 
+  //------------------------------------------------------//
+  //   Operations                                         //
+  //------------------------------------------------------//
+  
+  //! Search sequence for short pattern (requires SEQ input)
+  void PrintSearch(char *pattern, bool header, bool summary);
+
+  
   //------------------------------------------------------//
   //   Data                                               //
   //------------------------------------------------------//
 
   char *SEQ;							//!< sequence
-  
-  
-  // NOTE: utilize all data & code related to the SEQ format in a new class: GenomicRegionSEQ.
-  //! Search sequence for short pattern (requires SEQ input)
-  void PrintSearch(char *pattern, bool header, bool summary);
 
+  
+/*
+  // NOTE: utilize all data & code related to the SEQ format in a new class: GenomicRegionSEQ.
   //! Print sequence with no alignment gaps (requires SEQ input)
   void PrintNoGaps();											// alignments
 
@@ -954,6 +970,8 @@ class GenomicRegionSEQ : public GenomicRegion
   
   vector<string> Q;						//!< sequences (e.g. from a multiple sequence alignment)
   vector<string> L;						//!< sequence labels (e.g. names of species in multiple sequence alignment)
+*/
+
 };
 
 
@@ -961,7 +979,6 @@ class GenomicRegionSEQ : public GenomicRegion
 //---------------------------------------------------------------------------------------------//
 // END CLASS: GenomicRegionSEQ                                                                 //
 //---------------------------------------------------------------------------------------------//
-*/
 
 
 
@@ -1741,7 +1758,7 @@ class GenomicRegionGFF : public GenomicRegion
 /*!
   Example:
   \code
-    GenomicRegionSet RegSet("test.reg",10000,true);
+    GenomicRegionSet RegSet("test.reg",10000,true,false,false);
     Progress PRG("Printing center of intervals...",1);
     for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next()) {
       r->Center();
@@ -1756,11 +1773,11 @@ class GenomicRegionSet
 {
  public:
   //! Class constructor, see example below.
-  GenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose, bool load_in_memory=true); 
+  GenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose, bool load_in_memory, bool hide_header); 
 
 
   //! Class constructor, see example below.
-  GenomicRegionSet(FILE *file_ptr, unsigned long int buffer_size, bool verbose, bool load_in_memory=true);
+  GenomicRegionSet(FILE *file_ptr, unsigned long int buffer_size, bool verbose, bool load_in_memory, bool hide_header);
 
 
   //! Class destructor.
@@ -1883,14 +1900,14 @@ class GenomicRegionSet
 
   //! Scans input regions in sliding windows (input regions must be sorted). See also class GenomicRegionSetScanner.  
   /*!
-    \param bounds 			chromosome sizes
-    \param ref_reg_file 		only windows that overlap with regions in this file will be reported
-    \param win_step			sliding window step
-    \param win_size			sliding window size (must be a multiple of window step)
+    \param bounds 					chromosome sizes
+    \param ref_reg_file 			only windows that overlap with regions in this file will be reported
+    \param win_step					sliding window step
+    \param win_size					sliding window size (must be a multiple of window step)
     \param ignore_reverse_strand	if true, no sliding windows on the negative strand are reported
-    \param preprocess			if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+    \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
     \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
-    \param min_reads			report windows only if value is greater that this parameter
+    \param min_reads				report windows only if value is greater that this parameter
   */
   void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads);
 
@@ -2085,7 +2102,8 @@ class GenomicRegionSet
   bool verbose;						//!< verbose mode
   bool from_stdin;					//!< 'true' if reading from standard input
   bool load_in_memory;				//!< 'true' if the entire region set is loaded in memory
-  bool use_interval_array; 			//!< if 'true' use an array for storing genomic regions' intervals (for time efficiency)
+  bool hide_header;					//!< if 'true', then do not print file header
+  bool use_interval_array; 			//!< if 'true', use an array for storing genomic regions' intervals (for time efficiency)
   string format;					//!< input format
   Progress progress;	 			//!< keeps track of progress of computation
   FileBuffer *buffer;				//!< pointer to the buffer class used to read the region sets
