@@ -10,9 +10,9 @@ if ($#argv > 1) then
 endif
 
 if ($1 == "") then
-  sort +1 -3 +3 -4n -c
+  sort -c -k2,3 -k4,4n 
 else if ($1 == "-i") then
-  sort +1 -2 +3 -4n -c
+  sort -c -k2,3 -k4,4n 
 else
   exit
 endif
