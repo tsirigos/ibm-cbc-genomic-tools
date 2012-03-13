@@ -288,6 +288,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Region-set requirements: none"\
   );
 
+  cmd_line->AddOperation("search", "[OPTIONS] <REGION-SET>", \
+  "Searches sequences for a short pattern.", \
+  "* Input formats: SEQ\n\
+  * Operand: sequence\n\
+  * Region requirements: single-interval\n\
+  * Region-set requirements: none"\
+  );
+
   cmd_line->AddOperation("select", "[OPTIONS] <REGION-SET>", \
   "Selects a subset of intervals according to their position in the region.", \
   "* Input formats: REG, BED, SAM\n\
@@ -662,7 +670,8 @@ int main(int argc, char* argv[])
 
 
   // open region sets
-  GenomicRegionSet RegSet(REG_FILE,BUFFER_SIZE,VERBOSE);
+  bool hide_header = ((cmd_line->current_cmd_operation=="bed")||(cmd_line->current_cmd_operation=="reg"))?true:false;
+  GenomicRegionSet RegSet(REG_FILE,BUFFER_SIZE,VERBOSE,true,hide_header);
 
   //----------------------------------------------//
   //  Line-based (horizontal) operations          //
@@ -681,6 +690,7 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="pos") RegSet.RunModifyPos(POSITION_OP,POSITION_SHIFT);
   else if (cmd_line->current_cmd_operation=="reg") RegSet.RunConvertToREG(PRINT_COMPACT);
   else if (cmd_line->current_cmd_operation=="rnd") RegSet.RunRandomize(RANDOM_GENERATOR,bounds);
+  else if (cmd_line->current_cmd_operation=="search") RegSet.PrintSearch(PATTERN,HEADER,SUMMARY);
   else if (cmd_line->current_cmd_operation=="select") RegSet.RunSelect(SELECT_FIRST,SELECT_LAST,SELECT_5P,SELECT_3P);
   else if (cmd_line->current_cmd_operation=="shift") RegSet.RunShiftPos(SHIFT_START,SHIFT_STOP,false);
   else if (cmd_line->current_cmd_operation=="shiftp") RegSet.RunShiftPos(SHIFT_5PRIME,SHIFT_3PRIME,true);
@@ -720,7 +730,6 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="rev") RegSet.RunGlobalReverseOrder(); 
   else if (cmd_line->current_cmd_operation=="scan") RegSet.RunGlobalScan(bounds,WIN_STEP,WIN_SIZE);
   else if (cmd_line->current_cmd_operation=="scanc") RegSet.RunGlobalScanCount(bounds,REF_REG_FILE,WIN_STEP,WIN_SIZE,WIN_IGNORE_REVERSE_STRAND,WIN_PREPROCESS,WIN_USE_LABELS_AS_COUNTS,WIN_MIN_READS); 
-  //else if (cmd_line->current_cmd_operation=="search") RegSet.PrintSearch(PATTERN,HEADER,SUMMARY);
   else if (cmd_line->current_cmd_operation=="verify") RegSet.PrintVerifySeq(C,IGNORE);
 #endif
 

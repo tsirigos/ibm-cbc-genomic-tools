@@ -14,11 +14,11 @@ LIB = -lm -lgslcblas -lgsl
 
 # Explicit rules
 
-gtools: genomic_regions genomic_overlaps genomic_scans vectors matrix permutation_test
+gtools: genomic_regions genomic_overlaps genomic_scans genomic_apps vectors matrix permutation_test
 
 clean:
 	rm -f *.o
-	rm -f $(BINDIR)/*.exe $(BINDIR)/genomic_overlaps $(BINDIR)/genomic_regions $(BINDIR)/genomic_scans $(BINDIR)/matrix $(BINDIR)/permutation_test $(BINDIR)/vectors
+	rm -f $(BINDIR)/*.exe $(BINDIR)/genomic_overlaps $(BINDIR)/genomic_regions $(BINDIR)/genomic_scans $(BINDIR)/genomic_apps $(BINDIR)/matrix $(BINDIR)/permutation_test $(BINDIR)/vectors
 
 genomic_regions: core.h core.o genomic_intervals.h genomic_intervals.o 
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_regions genomic_regions.cpp core.o genomic_intervals.o $(LIB)
@@ -26,6 +26,8 @@ genomic_overlaps: core.h core.o genomic_intervals.h genomic_intervals.o
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_overlaps genomic_overlaps.cpp core.o genomic_intervals.o $(LIB)
 genomic_scans: core.h core.o genomic_intervals.h genomic_intervals.o
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_scans genomic_scans.cpp core.o genomic_intervals.o $(LIB)
+genomic_apps: core.h core.o genomic_intervals.h genomic_intervals.o
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_apps genomic_apps.cpp core.o genomic_intervals.o $(LIB)
 vectors: core.h core.o
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp core.o $(LIB)
 matrix: core.h core.o

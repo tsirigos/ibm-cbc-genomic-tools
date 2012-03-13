@@ -19,6 +19,7 @@ cp ~/Code/genomic_tools/genomic_intervals.h src
 cp ~/Code/genomic_tools/genomic_overlaps.cpp src
 cp ~/Code/genomic_tools/genomic_regions.cpp src
 cp ~/Code/genomic_tools/genomic_scans.cpp src
+cp ~/Code/genomic_tools/genomic_apps.cpp src
 
 cp ~/Code/tools/matrix.cpp src
 cp ~/Code/tools/permutation_test.cpp src

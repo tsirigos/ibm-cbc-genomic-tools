@@ -786,8 +786,8 @@ class CmdLineWithOperations : public CmdLine
 {
   public:
     struct cmd_info { 
-      string usage, description, details; 
-      cmd_info(string &usage, string &description, string &details):usage(usage),description(description),details(details) {}
+      string usage, description, details, examples; 
+      cmd_info(string &usage, string &description, string &details, string &examples):usage(usage),description(description),details(details),examples(examples) {}
     }; 
     typedef map<string,cmd_info*> OperationMap;
 
@@ -796,7 +796,7 @@ class CmdLineWithOperations : public CmdLine
     ~CmdLineWithOperations();
 
     // operations
-    void AddOperation(string operation, string usage, string description, string details="");
+    void AddOperation(string operation, string usage, string description, string details="", string examples="");
     void SetCurrentOperation(string operation);
 
     // print info

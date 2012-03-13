@@ -2329,10 +2329,10 @@ CmdLineWithOperations::~CmdLineWithOperations()
 
 //------AddOperation-----------
 //
-void CmdLineWithOperations::AddOperation(string operation, string usage, string description, string details)
+void CmdLineWithOperations::AddOperation(string operation, string usage, string description, string details, string examples)
 {
   if (cmd_operations.find(operation)!=cmd_operations.end()) { fprintf(stderr, "Error: [CmdLine::AddOperation] operation is already defined!\n"); exit(1); }
-  cmd_operations[operation] = new cmd_info(usage,description,details);
+  cmd_operations[operation] = new cmd_info(usage,description,details,examples);
 }
 
 
@@ -2386,6 +2386,11 @@ void CmdLineWithOperations::OperationUsage()
   if (it->second->details!="") {
     cout << "DETAILS: \n";
     cout << "  " << it->second->details << '\n'; 
+    cout << '\n';
+  }
+  if (it->second->examples!="") {
+    cout << "EXAMPLES: \n";
+    cout << "  " << it->second->examples << '\n'; 
     cout << '\n';
   }
   cout << "OPTIONS: \n";

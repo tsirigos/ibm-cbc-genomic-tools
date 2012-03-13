@@ -82,7 +82,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Region-set requirements: sorted by chromosome/strand/start"\
   );
 
-  cmd_line->AddOperation("peaks", "[OPTIONS] SIGNAL-REG-FILE CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]", \
+  cmd_line->AddOperation("peaks", "[OPTIONS] SIGNAL-REG-FILE [CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]]", \
   "Scans input reads to identify peaks.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
@@ -116,7 +116,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
   }
   else if (cmd_line->current_cmd_operation=="peaks") {
-    n_args = 2;
+    n_args = 1;
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
     cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson, binomial2)");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
@@ -188,14 +188,14 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   effective_genome_size = uniq_reg_file==NULL?CalcBoundSize(bounds):CalcRegSize(uniq_reg_file);
   fprintf(stderr, "* Effective genome size = %lu\n", effective_genome_size);
     
-  SignalRegSet = new GenomicRegionSet(signal_reg_file,BUFFER_SIZE,VERBOSE,false);
+  SignalRegSet = new GenomicRegionSet(signal_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
   SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
   signal_scanner = new GenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,uniq_reg_file==NULL?'c':'1');
 
   if (control_reg_file!=NULL) {
-    ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false);
+    ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
     n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
     ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
@@ -213,7 +213,7 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   fprintf(stderr, "* Control input file = %s (reads = %lu; background probability = %.2e)\n", control_reg_file, n_control_reads, p_control);
   fprintf(stderr, "* Signal/Control background probability = %f\n", p_ratio);
 
-  UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false);
+  UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   uniq_scanner = uniq_reg_file==NULL?NULL:new GenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_REVERSE_STRAND,'p');
 }
 
@@ -336,9 +336,9 @@ void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file)
 {
   // initialize
   StringLIntMap *bounds = ReadBounds(genome_reg_file);
-  GenomicRegionSet InputRegSet(input_reg_file,BUFFER_SIZE,VERBOSE,false);
+  GenomicRegionSet InputRegSet(input_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,PREPROCESS);
-  GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,false):NULL;
+  GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,false,true):NULL;
 
   // run
   Progress PRG("Scanning...",1);
@@ -384,7 +384,7 @@ int main(int argc, char* argv[])
   }
   
   else if (cmd_line->current_cmd_operation=="peaks") {
-    char *SIGNAL_REG_FILE = argv[next_arg];
+    char *SIGNAL_REG_FILE = next_arg==argc ? NULL : argv[next_arg];
     char *CONTROL_REG_FILE = next_arg+1<argc?argv[next_arg+1]:NULL; 
     char *UNIQ_REG_FILE = next_arg+2<argc?argv[next_arg+2]:NULL;
     PeakFinder peak_finder(SIGNAL_REG_FILE,CONTROL_REG_FILE,UNIQ_REG_FILE,GENOME_REG_FILE);
