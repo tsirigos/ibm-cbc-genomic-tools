@@ -3,6 +3,8 @@
 ##
 ## USAGE: create_downloads VERSION [ARCHITECTURE=redhat-x86_64]
 ##
+## NOTE: run from the bin directory
+##
 
 if ($#argv < 1) then
   usage $0

@@ -41,7 +41,7 @@ gsl_rng *RANDOM_GENERATOR;
 
 
 
-const char *RSCRIPT_PROFILE = " \n##\n## USAGE: genomic_apps.profile.r DATA-FILE PARAMETER-FILE OUTPUT-IMAGE-FILE\n##\n\nargs <- commandArgs(trailingOnly=T);\nprofile_data_file <- args[1];\nprofile_param_file <- args[2];\nprofile_image_file <- args[3];\n\nparams <- readLines(profile_param_file);\nprofile_upstream <- as.numeric(params[1]);\nprofile_downstream <- as.numeric(params[2]);\nprofile_colors <- strsplit(params[3],',')[[1]];\nprofile_title <- params[4];\nprofile_xlab <- params[5];\nprofile_ylab <- params[6];\n\n  \ntiff(profile_image_file,width=3500,height=3500,res=600,compression='lzw');\nY <- as.matrix(read.table(profile_data_file,header=FALSE,row.names=1,sep='\t'));\nprofile_legend <- labels(Y)[[1]];\n\nd <- (profile_upstream+profile_downstream)/ncol(Y);\nx <- seq(-profile_upstream+d/2,+profile_downstream-d/2,d);\nplot(x,Y[1,],type='l',col=profile_colors[1],main=profile_title,xlab=profile_xlab,ylab=profile_ylab,xlim=c(-profile_upstream,profile_upstream),ylim=c(0,max(Y)));\ni <- 2;\nwhile (i <= nrow(Y))\n{\nlines(x,Y[i,],col=profile_colors[i]);\ni <- i + 1;\n}\nlegend('topright',profile_legend,pch=16,col=profile_colors,inset=0.05);\ndev.off();\n";
+const char *RSCRIPT_PROFILE = "\n##\n## USAGE: genomic_apps.profile.r DATA-FILE PARAMETER-FILE OUTPUT-IMAGE-FILE\n##\n\nargs <- commandArgs(trailingOnly=T);\nprofile_data_file <- args[1];\nprofile_param_file <- args[2];\nprofile_image_file <- args[3];\n\nparams <- readLines(profile_param_file);\nprofile_upstream <- as.numeric(params[1]);\nprofile_downstream <- as.numeric(params[2]);\nprofile_legend <- strsplit(params[3],',')[[1]];\nprofile_colors <- strsplit(params[4],',')[[1]];\nprofile_title <- params[5];\nprofile_xlab <- params[6];\nprofile_ylab <- params[7];\n  \ntiff(profile_image_file,width=3500,height=3500,res=600,compression='lzw',antialias='none');\nY <- as.matrix(read.table(profile_data_file,header=FALSE,row.names=1,sep='\t'));\n\nd <- (profile_upstream+profile_downstream)/ncol(Y);\nx <- seq(-profile_upstream+d/2,+profile_downstream-d/2,d);\nplot(x,Y[1,],type='l',col=profile_colors[1],main=profile_title,xlab=profile_xlab,ylab=profile_ylab,xlim=c(-profile_upstream,profile_upstream),ylim=c(0,max(Y)));\ni <- 2;\nwhile (i <= nrow(Y)) \n{\n  lines(x,Y[i,],col=profile_colors[i]);\n  i <- i + 1;\n}\nlegend('topright',profile_legend,pch=16,col=profile_colors,inset=0.05);\ndev.off();\n\n";
 
 
 
@@ -91,14 +91,15 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   );
 */
 
-  cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES REFERENCE-REG-FILE", \
+  cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILES", \
   "Create profile(s) of signal regions in reference regions.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval\n\
   * Region-set requirements: none", \
-  "* genomic_apps profile -v -i -colors 'red,green' -o profiles Notch1.bed,H3K4me1.bed tss.bed\n\
-  * genomic_apps profile -v -i -xlab 'distance from TSS (nt)' -ylab 'number of reads' -title 'read profiles' -colors 'red,green,blue' -legend 'Notch1,H3K4me1,H3K27me3' -o profiles Notch1.bed,H3K4me1.bed,H3K27me3.bed tss.bed" \
+  "1. genomic_apps profile -v -o profile1 -i -colors red,green -legend 'Notch1 in TSSs','H3K4me3 in TSSs' Notch1.bed,H3K4me3.bed tss.bed\n\
+  2. genomic_apps profile -v -o profile2 -i -colors red,green -legend 'H3K4me1 in Notch1','H3K4me1 in Myc' H3K4me1.bed Notch1.bed,Myc.bed\n\
+  3. genomic_apps profile -v -o profile2 -reuse -i -xlab 'distance from center (nt)' -ylab 'number of reads' -title 'read profiles' -colors red,green -legend 'H3K4me1 in Notch1','H3K4me1 in Myc' H3K4me1.bed Notch1.bed,Myc.bed" \
   );
 
   if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] INPUT-FILES","Implements common genomics applications."); exit(1); }
@@ -187,19 +188,18 @@ int main(int argc, char* argv[])
     if (strlen(OUT_PREFIX)==0) { fprintf(stderr, "Error: prefix for output files must be specified using the -o option!\n"); exit(1); }
 	
     char *SIGNAL_REG_FILES = argv[next_arg];
-    char *REF_REG_FILE = argv[next_arg+1];
+    char *REF_REG_FILES = argv[next_arg+1];
 	
 	// process input parameters
 	char *shift = SHIFT;
 	long int shift_upstream = atol(GetNextToken(&shift,','));
 	long int shift_downstream = atol(GetNextToken(&shift,','));
-	int n_files;
-	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_files);
-	int n_legend;
-	char **legend = Tokenize(LEGEND,',',&n_legend);
-	if ((n_legend!=0)&&(n_legend!=n_files)) { fprintf(stderr, "Error: number of legend labels must match number of signal files!\n"); exit(1); }
+	int n_signal_files;
+	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
+	int n_ref_files;
+	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
 	int n_colors = CountTokens(COLORS,',');
-	if (n_colors!=n_files) { fprintf(stderr, "Error: number of colors must match number of signal files!\n"); exit(1); }
+	if (n_colors!=n_signal_files*n_ref_files) { fprintf(stderr, "Error: number of colors must match total number of lines in the plot!\n"); exit(1); }
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
@@ -212,6 +212,7 @@ int main(int argc, char* argv[])
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
 	fprintf(param_file, "%ld\n", shift_upstream);
 	fprintf(param_file, "%ld\n", shift_downstream);
+	fprintf(param_file, "%s\n", LEGEND);
 	fprintf(param_file, "%s\n", COLORS);
 	fprintf(param_file, "%s\n", TITLE);
 	fprintf(param_file, "%s\n", XLABEL);
@@ -235,14 +236,6 @@ int main(int argc, char* argv[])
 	}
 
     if (REUSE==false) {
-      // open reference region set and shift 5prime position upstream/downstream
-      GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
-      for (GenomicRegion *r=RefRegSet.Get(); r!=NULL; r=RefRegSet.Next()) { 
-	    r->Connect();
-	    r->Center();
-        r->I.front()->ShiftPos(-shift_upstream,shift_downstream,true);
-	  }
-	  
       // set parameters
 	  char *BIN_BITS = StrCopy("17,20,23,26");
 	  bool MATCH_GAPS = false;
@@ -253,28 +246,40 @@ int main(int argc, char* argv[])
 
 	  // compute profiles!
 	  FILE *data_file = fopen(data_file_name.c_str(),"w");
-	  for (int n=0; n<n_files; n++) {
-	    if (VERBOSE) fprintf(stderr, "Processing file '%s'...\n", signal_reg_file[n]); 
-        GenomicRegionSet TestRegSet(signal_reg_file[n],BUFFER_SIZE,VERBOSE,false,true);
-        UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
-        Progress PRG("Processing queries...",1);
-        double *bins;
-        ALLOCATE1D_INIT(bins,n_bins,double,0);
-        for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
-          for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
-            long int start_offset, stop_offset;
-            qreg->I.front()->GetOffsetFrom(ireg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
-            if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
-            long int x = (start_offset+stop_offset)/2-shift_upstream;
-            double z = (double)(x-bin_min)/(bin_max-bin_min);
-            if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)]++;
+	  for (int m=0,k=0; m<n_ref_files; m++) { 
+        // open reference region set and shift 5prime position upstream/downstream
+        GenomicRegionSet RefRegSet(ref_reg_file[m],BUFFER_SIZE,VERBOSE,true,true);
+        for (GenomicRegion *r=RefRegSet.Get(); r!=NULL; r=RefRegSet.Next()) { 
+	      r->Connect();
+	      r->Center();
+          r->I.front()->ShiftPos(-shift_upstream,shift_downstream,true);
+	    }
+	  
+	    // process signal files
+	    for (int n=0; n<n_signal_files; n++,k++) {
+	      if (VERBOSE) fprintf(stderr, "Creating profile of '%s' in '%s'...\n", signal_reg_file[n], ref_reg_file[m]); 
+          GenomicRegionSet TestRegSet(signal_reg_file[n],BUFFER_SIZE,VERBOSE,false,true);
+          UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
+          Progress PRG("Processing queries...",1);
+          double *bins;
+          ALLOCATE1D_INIT(bins,n_bins,double,0);
+          for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
+            for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
+              long int start_offset, stop_offset;
+              qreg->I.front()->GetOffsetFrom(ireg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
+              if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
+              long int x = (start_offset+stop_offset)/2-shift_upstream;
+              double z = (double)(x-bin_min)/(bin_max-bin_min);
+              if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)]++;
+            }
+            PRG.Check();
           }
-          PRG.Check();
-        }
-        PRG.Done();
-	    fprintf(data_file, "%s\t", strlen(LEGEND)==0?signal_reg_file[n]:legend[n]);
-        for (long int b=0; b<n_bins; b++) fprintf(data_file, "%.0f%c", bins[b], b!=n_bins-1?'\t':'\n');
-        delete bins;
+          PRG.Done();
+	      fprintf(data_file, "%s in %s\t", signal_reg_file[n], ref_reg_file[m]);
+          for (long int b=0; b<n_bins; b++) fprintf(data_file, "%.0f%c", bins[b], b!=n_bins-1?'\t':'\n');
+          delete bins;
+	    }
+		
 	  }
 	  fclose(data_file);
       delete BIN_BITS;
@@ -288,8 +293,8 @@ int main(int argc, char* argv[])
 
 	
     // cleanup
-	if (legend!=NULL) delete [] legend;
 	delete [] signal_reg_file;
+	delete [] ref_reg_file;
 	
   }
   
