@@ -133,9 +133,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for heatmap pixels");
-    cmd_line->AddOption("-title", &TITLE, "", "plot title");
-    cmd_line->AddOption("-xlab", &XLABEL, "", "plot x-axis label");
-    cmd_line->AddOption("-ylab", &YLABEL, "", "plot y-axis label");
+    cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
+    cmd_line->AddOption("-xlab", &XLABEL, "", "heatmap x-axis label");
+    cmd_line->AddOption("-ylab", &YLABEL, "", "heatmap y-axis label");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,4000", "comma-separated image dimensions");
     cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 600, "image resolution in dpi");
   }
@@ -267,8 +267,9 @@ int main(int argc, char* argv[])
 	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
 	if (n_ref_files>1) { fprintf(stderr, "Error: only one reference file allowed!\n"); exit(1); }
 	int n_colors = CountTokens(COLORS,',');
-	//if (n_colors!=n_signal_files) { fprintf(stderr, "Error: number of colors must match total number of lines in the plot!\n"); exit(1); }
-	if (n_colors!=1) { fprintf(stderr, "Error: only one color is currently supported for this plot!\n"); exit(1); }
+	if (n_colors!=n_signal_files) { fprintf(stderr, "Error: number of colors must match number of signal files!\n"); exit(1); }
+    int n_titles = CountTokens(TITLE,',');;
+	if (n_titles!=n_signal_files) { fprintf(stderr, "Error: number of titles must match number of signal files!\n"); exit(1); }
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
