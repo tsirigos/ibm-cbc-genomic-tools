@@ -14,7 +14,7 @@ endif
 set VERSION = $1
 set ARCH = $2
 if ($ARCH == "") then
-  set ARCH = RedHat-x86_64
+  set ARCH = redhat-x86_64
 endif
 
 set REPODIR = `get_prog_dir $0`/..
