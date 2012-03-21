@@ -28,8 +28,8 @@ cd $DIR
 cd src
 make clean
 cd ~
-tar --exclude="\.svn" -cvzf genomic-tools-$VERSION-src.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/src
-tar --exclude="\.svn" -cvzf genomic-tools-$VERSION-src+doc+examples.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/doc $DIR/examples $DIR/src
+tar --wildcards-match-slash --exclude="*\/\.svn" -cvzf genomic-tools-$VERSION-src.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/src
+tar --wildcards-match-slash --exclude="*\/\.svn" -cvzf genomic-tools-$VERSION-src+doc+examples.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/doc $DIR/examples $DIR/src
 
 echo "Compiling..."
 cd $DIR
