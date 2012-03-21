@@ -70,6 +70,9 @@ char *COLORS;
 char *TITLE, *XLABEL, *YLABEL;
 char *IMAGE_SIZE;
 int IMAGE_RESOLUTION;
+bool NORMALIZE;
+
+
 
 
 
@@ -149,6 +152,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
+    cmd_line->AddOption("-norm", &NORMALIZE, false, "normalize against total number of reads and number of reference regions");	
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-legend", &LEGEND, "", "comma-separated legend labels for line plot");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for line plot");
@@ -408,6 +412,8 @@ int main(int argc, char* argv[])
 	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
 	int n_colors = CountTokens(COLORS,',');
 	if (n_colors!=n_signal_files*n_ref_files) { fprintf(stderr, "Error: number of colors must match total number of lines in the plot!\n"); exit(1); }
+	int n_legend = CountTokens(LEGEND,',');
+	if (n_legend!=n_signal_files*n_ref_files) { fprintf(stderr, "Error: number of legend labels must match total number of lines in the plot!\n"); exit(1); }
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
@@ -456,9 +462,11 @@ int main(int argc, char* argv[])
           GenomicRegionSet TestRegSet(signal_reg_file[n],BUFFER_SIZE,VERBOSE,false,true);
           UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
           Progress PRG("Processing queries...",1);
-          double *bins;
-          ALLOCATE1D_INIT(bins,n_bins,double,0);
+          unsigned long int *bins;
+          ALLOCATE1D_INIT(bins,n_bins,unsigned long int,0);
+		  unsigned long int n_signal_reg = 0;
           for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
+		    n_signal_reg++;
             for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
               long int start_offset, stop_offset;
               qreg->I.front()->GetOffsetFrom(ireg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
@@ -471,7 +479,8 @@ int main(int argc, char* argv[])
           }
           PRG.Done();
 	      fprintf(data_file, "%s in %s\t", signal_reg_file[n], ref_reg_file[m]);
-          for (long int b=0; b<n_bins; b++) fprintf(data_file, "%.0f%c", bins[b], b!=n_bins-1?'\t':'\n');
+          if (NORMALIZE) for (long int b=0; b<n_bins; b++) fprintf(data_file, "%.6e%c", (double)bins[b]/n_signal_reg/RefRegSet.n_regions, b!=n_bins-1?'\t':'\n');
+          else for (long int b=0; b<n_bins; b++) fprintf(data_file, "%lu%c", bins[b], b!=n_bins-1?'\t':'\n');
           delete bins;
 	    }
 		

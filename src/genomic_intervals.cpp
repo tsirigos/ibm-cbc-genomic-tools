@@ -5053,9 +5053,9 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
     if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
     long int start = r->I.front()->START;
     long int stop = r->I.back()->STOP;
-    if (start<=0) r->PrintError("start position must be positive!");
-    if (stop<=0) r->PrintError("stop position must be positive!");
-    if (start>stop) r->PrintError("start position cannot be greater than stop position!");
+    if (start>stop) continue; // r->PrintError("start position cannot be greater than stop position!");
+    if (stop<=0) continue; // r->PrintError("stop position must be positive!");
+    if (start<=0) continue; //r->PrintError("start position must be positive!");
     map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
     if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
     else it->second = max(it->second,stop);
@@ -5123,6 +5123,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   //fprintf(stderr, "* mean bin occupancy = %.6f\n", mean_bin_occupancy);
 
   // double-check if all regions are stored in the bins
+  /*
   Progress PRG3("Counting used...",index.size());
   long int n_used = 0;
   for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++,PRG3.Check()) {
@@ -5133,7 +5134,9 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
         for (long int z=chrom_bins[l][b]; z!=-1; z=r_next[z]) n_used++;
   }
   PRG3.Done();
+  // The following test will fail in general because 'rogue' regions are not used!
   if (n_used!=IndexSet->n_regions) { fprintf(stderr, "Bug: [UnsortedGenomicRegionSetOverlaps] n_used should equal n_regions!\n"); exit(1); }
+  */
 }
 
 
@@ -5199,9 +5202,9 @@ GenomicRegion *UnsortedGenomicRegionSetOverlaps::NextMatch()
     l = 0;
     start = current_qreg->I.front()->START;
     stop = current_qreg->I.back()->STOP;
-    if (start<=0) current_qreg->PrintError("start position must be positive!");
     if (stop<=0) current_qreg->PrintError("stop position must be positive!");
     if (start>stop) current_qreg->PrintError("start position cannot be greater than stop position!");
+    if (start<=0) start = 1; //current_qreg->PrintError("start position must be positive!");
     b = start>>n_bits[l];
     b_stop = min(stop>>n_bits[l],n_bins[l]-1);
     if (b>=n_bins[l]) return (current_ireg=NULL);  
