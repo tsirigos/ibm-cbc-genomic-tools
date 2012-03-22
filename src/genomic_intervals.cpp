@@ -3560,6 +3560,7 @@ void GenomicRegionGFF::PrintWindows(long int win_step, long int win_size)
 //---------------------------------------------------------------------------------------------//
 
 
+
 //---------Constructor--------
 //
 GenomicRegionSet::GenomicRegionSet(char *file, unsigned long int buffer_size, bool verbose, bool load_in_memory, bool hide_header)
@@ -4858,9 +4859,9 @@ long int GenomicRegionSetScanner::Next(GenomicRegionSet *Ref)
 
 //---------PrintInterval--------
 //
-void GenomicRegionSetScanner::PrintInterval()
+void GenomicRegionSetScanner::PrintInterval(FILE *out_file)
 {
-  printf("%s %c %ld %ld", chr->first.c_str(), strand, stop-win_size+1, stop); 
+  fprintf(out_file, "%s %c %ld %ld", chr->first.c_str(), strand, stop-win_size+1, stop); 
 }
 
 

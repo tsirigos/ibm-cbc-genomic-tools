@@ -72,6 +72,10 @@ char *IMAGE_SIZE;
 int IMAGE_RESOLUTION;
 bool NORMALIZE;
 
+char *GENOME_REG_FILE;
+long int WIN_SIZE, WIN_DIST;
+double PVALUE;
+
 
 
 
@@ -94,15 +98,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "1. genomic_apps heatmap -v -o heatmap1 -i -colors red Notch1.bed tss.bed" \
   );
 
-/*
-  cmd_line->AddOperation("peakdiff", "[OPTIONS] SIGNAL-REG-FILE [CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]]", \
-  "Scans input reads to identify peaks.", \
+  cmd_line->AddOperation("peakdiff", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILE", \
+  "Finds differences in peaks between two samples.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval\n\
-  * Region-set requirements: sorted by chromosome/strand/start"\
+  * Region-set requirements: sorted by chromosome/strand/start", \
+  "1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.sorted.bed,Notch1.r2.sorted.bed Input.r1.sorted.bed,Input.r2.sorted.bed\n" \
   );
-*/
 
   cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILES", \
   "Create profile(s) of signal regions in reference regions.", \
@@ -143,8 +146,15 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 600, "image resolution in dpi");
   }
   else if (cmd_line->current_cmd_operation=="peakdiff") {
-    //n_args = 0;
-    //cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
+    n_args = 2;
+    cmd_line->AddOption("-reuse", &REUSE, false, "reuse histogram data; update paramaters only");	
+    cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
+    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
+    cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
+    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
+    cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
+    cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
+    cmd_line->AddOption("-pval", &PVALUE, 1.0e-05, "p-value cutoff for preliminary peak discovery");
   }
   else if (cmd_line->current_cmd_operation=="profile") {
     n_args = 2;
@@ -226,6 +236,92 @@ void PrintLogFile(string log_file_name)
   FileBuffer buffer(log_file_name.c_str());
   for (char *inp=buffer.Next(); inp!=NULL; inp=buffer.Next()) fprintf(stderr, "%s\n", inp);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----ScanReadFiles----------
+//
+void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_file, int n_ref_files, char *genome_reg_file, const char *out_file_name)
+{
+  bool USE_COUNTS = false;
+  char PREPROCESS = 'c';
+
+  StringLIntMap *bounds = ReadBounds(genome_reg_file);
+  unsigned long int effective_genome_size = CalcBoundSize(bounds);
+  if (VERBOSE) fprintf(stderr, "* Effective genome size = %lu\n", effective_genome_size);
+
+  // open signal files
+  GenomicRegionSet **SignalRegSet = new GenomicRegionSet*[n_signal_files];
+  GenomicRegionSetScanner **SignalRegScanner = new GenomicRegionSetScanner*[n_signal_files];
+  double *p_signal = new double[n_signal_files];
+  for (int s=0; s<n_signal_files; s++) {
+    SignalRegSet[s] = new GenomicRegionSet(signal_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
+    p_signal[s] = (double)CountLines(signal_reg_file[s],BUFFER_SIZE)/effective_genome_size;
+    SignalRegSet[s]->Reset();
+    if (VERBOSE) fprintf(stderr, "* Signal input file = %s; background probability = %.2e\n", signal_reg_file[s], p_signal[s]);
+    SignalRegScanner[s] = new GenomicRegionSetScanner(SignalRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  }
+  
+  // open reference files
+  GenomicRegionSet **RefRegSet = new GenomicRegionSet*[n_ref_files];
+  GenomicRegionSetScanner **RefRegScanner = new GenomicRegionSetScanner*[n_ref_files];
+  double *p_ref = new double[n_ref_files];
+  for (int r=0; r<n_ref_files; r++) {
+    RefRegSet[r] = new GenomicRegionSet(ref_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
+    p_ref[r] = (double)CountLines(ref_reg_file[r],BUFFER_SIZE)/effective_genome_size;
+    RefRegSet[r]->Reset();
+    if (VERBOSE) fprintf(stderr, "* Reference input file = %s; background probability = %.2e\n", ref_reg_file[r], p_ref[r]);
+    RefRegScanner[r] = new GenomicRegionSetScanner(RefRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  }
+  
+  
+  // scanning   
+  long int *signal_val = new long int[n_signal_files];
+  long int *ref_val = new long int[n_ref_files];
+  FILE *out_file = fopen(out_file_name,"w");
+  Progress PRG("Scanning...",1);
+  while (true) {
+    for (int s=0; s<n_signal_files; s++) signal_val[s] = SignalRegScanner[s]->Next();
+    for (int r=0; r<n_ref_files; r++) ref_val[r] = RefRegScanner[r]->Next();
+	if (signal_val[0]==-1) break;
+	
+	bool print_interval = false;
+    for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE) { print_interval = true; break; }
+	if (print_interval==false)
+      for (int r=0; r<n_ref_files; r++) if ((double)gsl_cdf_binomial_Q(ref_val[r],p_ref[r],WIN_SIZE)<=PVALUE) { print_interval = true; break; }
+
+    if (print_interval==true) {
+      SignalRegScanner[0]->PrintInterval(out_file);
+      for (int s=0; s<n_signal_files; s++) fprintf(out_file, "\t%ld", signal_val[s]);
+      for (int r=0; r<n_ref_files; r++) fprintf(out_file, "\t%ld", ref_val[r]);
+	  fprintf(out_file, "\n");
+    }
+
+    PRG.Check();
+  }
+  PRG.Done();
+  fclose(out_file);
+  
+  // cleanup
+  delete [] SignalRegSet;
+  delete [] SignalRegScanner;
+  delete p_signal;
+  delete [] RefRegSet;
+  delete [] RefRegScanner;
+  delete p_ref;
+  delete bounds;
+}
+
 
 
 
@@ -388,6 +484,48 @@ int main(int argc, char* argv[])
   }
 
 
+
+
+  // ************************************************************************************
+  //
+  //     P  E  A  K  D  I  F  F
+  //
+  // ************************************************************************************
+  
+  else if (cmd_line->current_cmd_operation=="peakdiff") {
+    if (strlen(OUT_PREFIX)==0) { fprintf(stderr, "Error: prefix for output files must be specified using the -o option!\n"); exit(1); }
+	
+    char *SIGNAL_REG_FILES = argv[next_arg];
+    char *REF_REG_FILES = argv[next_arg+1];
+	
+	// process input parameters
+	int n_signal_files;
+	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
+	int n_ref_files;
+	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
+
+    // setup output file names
+	string data_file_name = (string)OUT_PREFIX + (string)".dat";
+	string param_file_name = (string)OUT_PREFIX + (string)".params";
+	string rscript_file_name = (string)OUT_PREFIX + (string)".r";
+	string image_file_name = (string)OUT_PREFIX + (string)".tif";
+	string log_file_name = (string)OUT_PREFIX + (string)".log";
+
+	// print parameters to file
+	FILE *param_file = fopen(param_file_name.c_str(),"w");
+	fprintf(param_file, "%d\n", n_signal_files);
+	fprintf(param_file, "%d\n", n_ref_files);
+    fclose(param_file);
+
+	// scan read files for preliminary peak identification
+    if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,GENOME_REG_FILE,data_file_name.c_str());
+
+
+    // cleanup
+    delete [] signal_reg_file;	
+	delete [] ref_reg_file;
+	
+  }
 
 
   // ************************************************************************************
