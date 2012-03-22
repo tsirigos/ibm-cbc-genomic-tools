@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.1.1";
+const string VERSION = "genomic_tools 2.1.2dev1";
 
 
 #include <stdio.h>
@@ -2179,9 +2179,9 @@ class GenomicRegionSetScanner
   ~GenomicRegionSetScanner();
   
   // operations
-  long int Next();				//!< computes value in the next window
-  long int Next(GenomicRegionSet *Ref);		//!< computes value in the next window that overlaps with <b>Ref</b>
-  void PrintInterval();				//!< prints current window's interval
+  long int Next();								//!< computes value in the next window
+  long int Next(GenomicRegionSet *Ref);			//!< computes value in the next window that overlaps with <b>Ref</b>
+  void PrintInterval(FILE *out_file=stdout);	//!< prints current window's interval
   
   // data
  private: 
