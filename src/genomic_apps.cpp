@@ -26,6 +26,7 @@
 #include <sstream>
 #include "core.h"
 #include "genomic_intervals.h"
+#include "genomic_apps.rscripts.h"
 
 
 using namespace std;
@@ -39,14 +40,6 @@ const string PROGRAM = "genomic_apps";
 const long int BUFFER_SIZE = 10000;
 gsl_rng *RANDOM_GENERATOR;
 
-
-
-const char *RSCRIPT_TEMPLATE_PROFILE = \
-"\n##\n## USAGE: genomic_apps.profile.r DATA-FILE PARAMETER-FILE OUTPUT-IMAGE-FILE\n##\n\nargs <- commandArgs(trailingOnly=T);\nprofile_data_file <- args[1];\nprofile_param_file <- args[2];\nprofile_image_file <- args[3];\n\nparams <- readLines(profile_param_file);\nprofile_upstream <- as.numeric(params[1]);\nprofile_downstream <- as.numeric(params[2]);\nprofile_legend <- strsplit(params[3],',')[[1]];\nprofile_colors <- strsplit(params[4],',')[[1]];\nprofile_title <- params[5];\nprofile_xlab <- params[6];\nprofile_ylab <- params[7];\n  \ntiff(profile_image_file,width=3500,height=3500,res=600,compression='lzw',antialias='none');\nY <- as.matrix(read.table(profile_data_file,header=FALSE,row.names=1,sep='\t'));\n\nd <- (profile_upstream+profile_downstream)/ncol(Y);\nx <- seq(-profile_upstream+d/2,+profile_downstream-d/2,d);\nplot(x,Y[1,],type='l',col=profile_colors[1],main=profile_title,xlab=profile_xlab,ylab=profile_ylab,xlim=c(-profile_upstream,profile_upstream),ylim=c(0,max(Y)));\ni <- 2;\nwhile (i <= nrow(Y)) \n{\n  lines(x,Y[i,],col=profile_colors[i]);\n  i <- i + 1;\n}\nlegend('topright',profile_legend,pch=16,col=profile_colors,inset=0.05);\ndev.off();\n\n";
-
-
-const char *RSCRIPT_TEMPLATE_HEATMAP = \
-"\n##\n## USAGE: genomic_apps.heatmap.r DATA-FILE PARAMETER-FILE OUTPUT-IMAGE-FILE\n##\n\nargs <- commandArgs(trailingOnly=T);\ndata_file <- args[1];\nparam_file <- args[2];\nimage_file <- args[3];\n\nparams <- readLines(param_file);\nshift_upstream <- as.numeric(params[1]);\nshift_downstream <- as.numeric(params[2]);\nheatmap_colors <- strsplit(params[3],',')[[1]];\nheatmap_title <- strsplit(params[4],',')[[1]];\nheatmap_xlab <- params[5];\nheatmap_ylab <- params[6];\nheatmap_size <- as.numeric(strsplit(params[7],',')[[1]]);\nheatmap_resolution <- as.numeric(params[8]);\nn_heatmaps <- as.numeric(params[9]);\n\n\nnorm_rows <- function(X) { for (i in 1:nrow(X)) X[i,] <- (X[i,]-mean(X[i,]))/sd(X[i,]); return(X); }\n\nlibrary('MASS');\nlibrary('preprocessCore');           # from Bioconductor\nlibrary('gplots');                   # from Bioconductor\n\n# load data\nD <- as.matrix(read.table(data_file,row.names=1,sep='\t'));\n  \n# create combined heatmap (main version)\ntiff(image_file,width=heatmap_size[1],height=heatmap_size[2],res=heatmap_resolution,compression='lzw');\n\npar(fig=c(0,1,0,1),mar=c(2,2,0,0)); \nplot.new();\nmtext(heatmap_xlab,side=1);\nmtext(heatmap_ylab,side=2);\n\n\nd <- ncol(D)/n_heatmaps;\nI <- 1:d;\ndj <- 0.9/n_heatmaps;\nfor (j in 1:n_heatmaps) {\n  par(fig=c(0.1+(j-1)*dj,0.1+j*dj,0.1,1),mar=c(0.5,0.5,3,0.5),new=TRUE);\n  colorscale <- c(colorpanel(20,low='white',high='white'),colorpanel(50,low='white',high=heatmap_colors[j]),colorpanel(30,low=heatmap_colors[j],high=heatmap_colors[j]));\n  image(z=t(norm_rows(D[,I])),col=colorscale,main=heatmap_title[j],xlab=heatmap_xlab,ylab=heatmap_ylab,xaxt='n',yaxt='n');\n  I <- I+d;\n}\n\ndev.off();\n\n";
 
 
 
@@ -75,6 +68,8 @@ bool NORMALIZE;
 char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
 double PVALUE;
+char *LABELS;
+
 
 
 
@@ -155,6 +150,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE, 1.0e-05, "p-value cutoff for preliminary peak discovery");
+    cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
+    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
+    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi");
   }
   else if (cmd_line->current_cmd_operation=="profile") {
     n_args = 2;
@@ -503,7 +501,8 @@ int main(int argc, char* argv[])
 	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
 	int n_ref_files;
 	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
-
+    if ((n_signal_files<2)||(n_ref_files<2)) { fprintf(stderr, "Error: this method requires at least two replicates per sample!\n"); exit(1); }
+	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
 	string param_file_name = (string)OUT_PREFIX + (string)".params";
@@ -515,12 +514,22 @@ int main(int argc, char* argv[])
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
 	fprintf(param_file, "%d\n", n_signal_files);
 	fprintf(param_file, "%d\n", n_ref_files);
+	fprintf(param_file, "%s\n", LABELS);
+	fprintf(param_file, "%s\n", IMAGE_SIZE);
+	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
     fclose(param_file);
 
 	// scan read files for preliminary peak identification
     if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,GENOME_REG_FILE,data_file_name.c_str());
 
-
+	// execute R script
+	CreateRscript(RSCRIPT_INPUT_FILE_NAME,RSCRIPT_TEMPLATE_PEAKDIFF,rscript_file_name);
+	fprintf(stderr, "Running R script...\n");
+	stringstream s;
+	s << "R CMD BATCH '--args " << data_file_name << " " << param_file_name << " " << image_file_name << "' " << rscript_file_name << " " << log_file_name;
+	system(s.str().c_str()); 
+	PrintLogFile(log_file_name);
+	
     // cleanup
     delete [] signal_reg_file;	
 	delete [] ref_reg_file;
