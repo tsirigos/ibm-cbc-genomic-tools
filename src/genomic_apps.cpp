@@ -67,7 +67,9 @@ bool NORMALIZE;
 
 char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
-double PVALUE;
+double PVALUE_CUTOFF;
+float FDR;
+float OUTLIER_PERCENTILE;
 char *LABELS;
 
 
@@ -149,7 +151,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
-    cmd_line->AddOption("-pval", &PVALUE, 1.0e-05, "p-value cutoff for preliminary peak discovery");
+    cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
+    cmd_line->AddOption("-outliers", &OUTLIER_PERCENTILE, 0.01, "used for outlier detection between replicates");
+    cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
     cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi");
@@ -294,9 +298,9 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
 	if (signal_val[0]==-1) break;
 	
 	bool print_interval = false;
-    for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE) { print_interval = true; break; }
+    for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
 	if (print_interval==false)
-      for (int r=0; r<n_ref_files; r++) if ((double)gsl_cdf_binomial_Q(ref_val[r],p_ref[r],WIN_SIZE)<=PVALUE) { print_interval = true; break; }
+      for (int r=0; r<n_ref_files; r++) if ((double)gsl_cdf_binomial_Q(ref_val[r],p_ref[r],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
 
     if (print_interval==true) {
       SignalRegScanner[0]->PrintInterval(out_file);
@@ -514,6 +518,10 @@ int main(int argc, char* argv[])
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
 	fprintf(param_file, "%d\n", n_signal_files);
 	fprintf(param_file, "%d\n", n_ref_files);
+	fprintf(param_file, "%ld\n", WIN_SIZE);
+	fprintf(param_file, "%.6e\n", PVALUE_CUTOFF);
+	fprintf(param_file, "%.6e\n", OUTLIER_PERCENTILE);
+	fprintf(param_file, "%.6e\n", FDR);
 	fprintf(param_file, "%s\n", LABELS);
 	fprintf(param_file, "%s\n", IMAGE_SIZE);
 	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);

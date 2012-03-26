@@ -1960,8 +1960,8 @@ void CmdOptionPrint(char val) { printf("[%c]", val); }
 void CmdOptionPrint(int val) { printf("[%d]", val); }
 void CmdOptionPrint(long int val) { printf("[%ld]", val); }
 void CmdOptionPrint(unsigned long int val) { printf("[%lu]", val); }
-void CmdOptionPrint(float val) { printf("[%f]", val); }
-void CmdOptionPrint(double val) { printf("[%f]", val); }
+void CmdOptionPrint(float val) { printf("[%.6f]", val); }
+void CmdOptionPrint(double val) { printf("[%.6e]", val); }
 
 void CmdOptionRead(bool *ptr, char *s) { *ptr = !*ptr; }
 void CmdOptionRead(char *ptr, char *s) { *ptr = s[0]; }
