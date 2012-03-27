@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.1.2dev4";
+const string VERSION = "genomic_tools 2.2.0dev1";
 
 
 #include <stdio.h>
@@ -1817,7 +1817,10 @@ class GenomicRegionSet
 
 
   //! Moves pointer to next region in the set; if \ref GenomicRegionSet::load_in_memory is 'false', it deletes the current region.
-  virtual GenomicRegion *Next();
+  /*!
+    \param retain_current	if 'true', the current region is not deleted from memory; this must be done 'manually' using the \ref Release() method (do not use 'delete'). 
+  */
+  virtual GenomicRegion *Next(bool retain_current=false);
 
 
   //! Same as \ref Next() but allows user to check sort order and/or retain the current region into memory. 
@@ -1825,7 +1828,7 @@ class GenomicRegionSet
     \param sorted_by_strand 	if 'true', it takes into account strand information while checking the sort order
     \param retain_current	if 'true', the current region is not deleted from memory; this must be done 'manually' using the \ref Release() method (do not use 'delete'). 
   */
-  GenomicRegion *Next(bool sorted_by_strand, bool retain_current=false);
+  GenomicRegion *Next(bool sorted_by_strand, bool retain_current);
 
 
   //! Deletes genomic region from memory. 
@@ -2558,6 +2561,7 @@ class SortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
 char ProcessStrand(char *strand);
 void PrintChromosome(char *chromosome, bool convert);
 GenomicRegion *RegCenter(GenomicRegion *r);
+long int GetStart(GenomicRegion *r, char preprocess);
 
 StringLIntMap *ReadBounds(char *genome_reg_file, bool verbose=false);		//!< reads chromosome sizes from REG file <b>genome_reg_file</b>
 unsigned long int CalcBoundSize(StringLIntMap *bounds);

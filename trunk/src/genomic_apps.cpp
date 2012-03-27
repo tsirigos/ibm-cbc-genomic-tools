@@ -97,7 +97,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   );
 
   cmd_line->AddOperation("peakdiff", "[OPTIONS] SAMPLE1-FILES SAMPLE2-FILES [SAMPLE1-CONTROL-FILES SAMPLE2-CONTROL-FILES]", \
-  "Finds differences in peak levels between two samples. Two replicates are required per sample. Controls (such as sonicated Input) are optional.", \
+  "Finds differences in peak levels between two samples (two replicates per sample are required).", \
   "* Input files: comma-separated, no spaces!\n\
   * Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
