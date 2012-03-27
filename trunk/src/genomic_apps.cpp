@@ -69,7 +69,7 @@ char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
 double PVALUE_CUTOFF;
 float FDR;
-float OUTLIER_FDR;
+float OUTLIER_PROB;
 unsigned long int PSEUDOCOUNT;
 char *LABELS;
 
@@ -154,8 +154,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
-    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count as a regulatization constant");
-    cmd_line->AddOption("-outliers", &OUTLIER_FDR, 0, "used for outlier detection between replicates");
+    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count as a regularization constant");
+    cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "used for outlier detection between replicates");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
@@ -587,7 +587,7 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%ld\n", WIN_SIZE);
 	fprintf(param_file, "%.6e\n", PVALUE_CUTOFF);
 	fprintf(param_file, "%lu\n", PSEUDOCOUNT);
-	fprintf(param_file, "%.6e\n", OUTLIER_FDR);
+	fprintf(param_file, "%.6e\n", OUTLIER_PROB);
 	fprintf(param_file, "%.6e\n", FDR);
 	fprintf(param_file, "%s\n", LABELS);
 	fprintf(param_file, "%s\n", IMAGE_SIZE);
