@@ -69,7 +69,8 @@ char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
 double PVALUE_CUTOFF;
 float FDR;
-float OUTLIER_PERCENTILE;
+float OUTLIER_FDR;
+unsigned long int PSEUDOCOUNT;
 char *LABELS;
 
 
@@ -95,9 +96,10 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "1. genomic_apps heatmap -v -o heatmap1 -i -colors red Notch1.bed tss.bed" \
   );
 
-  cmd_line->AddOperation("peakdiff", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILE", \
-  "Finds differences in peaks between two samples.", \
-  "* Input formats: REG, GFF, BED, SAM\n\
+  cmd_line->AddOperation("peakdiff", "[OPTIONS] SAMPLE1-FILES SAMPLE2-FILES [SAMPLE1-CONTROL-FILES SAMPLE2-CONTROL-FILES]", \
+  "Finds differences in peak levels between two samples. Two replicates are required per sample. Controls (such as sonicated Input) are optional.", \
+  "* Input files: comma-separated, no spaces!\n\
+  * Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval\n\
   * Region-set requirements: sorted by chromosome/strand/start", \
@@ -152,7 +154,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
-    cmd_line->AddOption("-outliers", &OUTLIER_PERCENTILE, 0.01, "used for outlier detection between replicates");
+    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count as a regulatization constant");
+    cmd_line->AddOption("-outliers", &OUTLIER_FDR, 0, "used for outlier detection between replicates");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
@@ -211,6 +214,7 @@ void CreateRscript(const char *rscript_input_file_name, const char *rscript_temp
 {
   if (strlen(rscript_input_file_name)==0) {
     FILE *rscript_out_file = fopen(rscript_output_file_name.c_str(),"w");
+	if (rscript_out_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", rscript_output_file_name.c_str()); exit(1); }
 	fprintf(rscript_out_file, "%s", rscript_template);
     fclose(rscript_out_file);
   }
@@ -220,6 +224,7 @@ void CreateRscript(const char *rscript_input_file_name, const char *rscript_temp
 	char *rscript = LoadFile(rscript_in_file);
 	fclose(rscript_in_file);
     FILE *rscript_out_file = fopen(rscript_output_file_name.c_str(),"w");
+	if (rscript_out_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", rscript_output_file_name.c_str()); exit(1); }
 	fprintf(rscript_out_file, "%s", rscript);
     fclose(rscript_out_file);
   }
@@ -253,7 +258,9 @@ void PrintLogFile(string log_file_name)
 
 //-----ScanReadFiles----------
 //
-void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_file, int n_ref_files, char *genome_reg_file, const char *out_file_name)
+void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_file, int n_ref_files, \
+                   char **signal_control_reg_file, int n_signal_control_files, char **ref_control_reg_file, int n_ref_control_files, \
+				   char *genome_reg_file, const char *out_file_name)
 {
   bool USE_COUNTS = false;
   char PREPROCESS = 'c';
@@ -274,6 +281,18 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     SignalRegScanner[s] = new GenomicRegionSetScanner(SignalRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
   
+  // open signal control files
+  GenomicRegionSet **SignalControlRegSet = n_signal_control_files>0?new GenomicRegionSet*[n_signal_control_files]:NULL;
+  GenomicRegionSetScanner **SignalControlRegScanner = n_signal_control_files>0?new GenomicRegionSetScanner*[n_signal_control_files]:NULL;
+  double *p_signal_control = n_signal_control_files>0?new double[n_signal_control_files]:NULL;
+  for (int s=0; s<n_signal_control_files; s++) {
+    SignalControlRegSet[s] = new GenomicRegionSet(signal_control_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
+    p_signal_control[s] = (double)CountLines(signal_control_reg_file[s],BUFFER_SIZE)/effective_genome_size;
+    SignalControlRegSet[s]->Reset();
+    if (VERBOSE) fprintf(stderr, "* Signal control input file = %s; background probability = %.2e\n", signal_control_reg_file[s], p_signal_control[s]);
+    SignalControlRegScanner[s] = new GenomicRegionSetScanner(SignalControlRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  }
+  
   // open reference files
   GenomicRegionSet **RefRegSet = new GenomicRegionSet*[n_ref_files];
   GenomicRegionSetScanner **RefRegScanner = new GenomicRegionSetScanner*[n_ref_files];
@@ -286,26 +305,53 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     RefRegScanner[r] = new GenomicRegionSetScanner(RefRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
   
+  // open reference control files
+  GenomicRegionSet **RefControlRegSet = n_ref_control_files>0?new GenomicRegionSet*[n_ref_control_files]:NULL;
+  GenomicRegionSetScanner **RefControlRegScanner = n_ref_control_files>0?new GenomicRegionSetScanner*[n_ref_control_files]:NULL;
+  double *p_ref_control = n_ref_control_files>0?new double[n_ref_control_files]:NULL;
+  for (int r=0; r<n_ref_control_files; r++) {
+    RefControlRegSet[r] = new GenomicRegionSet(ref_control_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
+    p_ref_control[r] = (double)CountLines(ref_control_reg_file[r],BUFFER_SIZE)/effective_genome_size;
+    RefControlRegSet[r]->Reset();
+    if (VERBOSE) fprintf(stderr, "* Reference control input file = %s; background probability = %.2e\n", ref_control_reg_file[r], p_ref_control[r]);
+    RefControlRegScanner[r] = new GenomicRegionSetScanner(RefControlRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  }
+  
   
   // scanning   
   long int *signal_val = new long int[n_signal_files];
+  long int *signal_control_val = n_signal_control_files>0?new long int[n_signal_control_files]:NULL;
   long int *ref_val = new long int[n_ref_files];
+  long int *ref_control_val = n_ref_control_files>0?new long int[n_ref_control_files]:NULL;
   FILE *out_file = fopen(out_file_name,"w");
+  if (out_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", out_file_name); exit(1); }
   Progress PRG("Scanning...",1);
   while (true) {
     for (int s=0; s<n_signal_files; s++) signal_val[s] = SignalRegScanner[s]->Next();
+    for (int s=0; s<n_signal_control_files; s++) signal_control_val[s] = SignalControlRegScanner[s]->Next();
     for (int r=0; r<n_ref_files; r++) ref_val[r] = RefRegScanner[r]->Next();
+    for (int r=0; r<n_ref_control_files; r++) ref_control_val[r] = RefControlRegScanner[r]->Next();
 	if (signal_val[0]==-1) break;
 	
 	bool print_interval = false;
-    for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
-	if (print_interval==false)
-      for (int r=0; r<n_ref_files; r++) if ((double)gsl_cdf_binomial_Q(ref_val[r],p_ref[r],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+    if (n_signal_control_files>0) { 
+      for (int s=0; s<n_signal_files; s++) 
+	    if ((double)gsl_cdf_binomial_Q(signal_val[s],max(p_signal[s],(double)signal_control_val[s]/WIN_SIZE),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+	  if (print_interval==false) 
+	    for (int r=0; r<n_ref_files; r++) 
+		  if ((double)gsl_cdf_binomial_Q(ref_val[r],max(p_ref[r],(double)ref_control_val[r]/WIN_SIZE),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+	}
+	else {
+      for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+	  if (print_interval==false) for (int r=0; r<n_ref_files; r++) if ((double)gsl_cdf_binomial_Q(ref_val[r],p_ref[r],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+	}
 
     if (print_interval==true) {
       SignalRegScanner[0]->PrintInterval(out_file);
       for (int s=0; s<n_signal_files; s++) fprintf(out_file, "\t%ld", signal_val[s]);
       for (int r=0; r<n_ref_files; r++) fprintf(out_file, "\t%ld", ref_val[r]);
+      for (int s=0; s<n_signal_control_files; s++) fprintf(out_file, "\t%ld", signal_control_val[s]);
+      for (int r=0; r<n_ref_control_files; r++) fprintf(out_file, "\t%ld", ref_control_val[r]);
 	  fprintf(out_file, "\n");
     }
 
@@ -321,7 +367,17 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   delete [] RefRegSet;
   delete [] RefRegScanner;
   delete p_ref;
+  if (SignalControlRegSet) delete [] SignalControlRegSet;
+  if (SignalControlRegScanner) delete [] SignalControlRegScanner;
+  if (p_signal_control) delete p_signal_control;
+  if (RefControlRegSet) delete [] RefControlRegSet;
+  if (RefControlRegScanner) delete [] RefControlRegScanner;
+  if (p_ref_control) delete p_ref_control;
   delete bounds;
+  delete signal_val;
+  if (signal_control_val) delete signal_control_val;
+  delete ref_val;
+  if (ref_control_val) delete ref_control_val;
 }
 
 
@@ -382,6 +438,7 @@ int main(int argc, char* argv[])
 
 	// print parameters to file
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
+    if (param_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", param_file_name.c_str()); exit(1); }
 	fprintf(param_file, "%ld\n", shift_upstream);
 	fprintf(param_file, "%ld\n", shift_downstream);
 	fprintf(param_file, "%s\n", COLORS);
@@ -448,6 +505,7 @@ int main(int argc, char* argv[])
 	  
 	  // store bin data in output file
 	  FILE *data_file = fopen(data_file_name.c_str(),"w");
+      if (data_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", data_file_name.c_str()); exit(1); }
       for (int r=0; r<n_ref; r++) {
         fprintf(data_file, "%d\t", r);
 	    for (int s=0; s<n_signal_files; s++) {
@@ -497,15 +555,22 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="peakdiff") {
     if (strlen(OUT_PREFIX)==0) { fprintf(stderr, "Error: prefix for output files must be specified using the -o option!\n"); exit(1); }
 	
-    char *SIGNAL_REG_FILES = argv[next_arg];
-    char *REF_REG_FILES = argv[next_arg+1];
-	
+    char *SIGNAL_REG_FILES = StrCopy(argv[next_arg]);
+    char *REF_REG_FILES = StrCopy(argv[next_arg+1]);
+	char *SIGNAL_CONTROL_REG_FILES = (argc>next_arg+2)?StrCopy(argv[next_arg+2]):NULL;
+	char *REF_CONTROL_REG_FILES = (argc>next_arg+3)?StrCopy(argv[next_arg+3]):NULL;
+
 	// process input parameters
 	int n_signal_files;
 	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
 	int n_ref_files;
 	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
-    if ((n_signal_files<2)||(n_ref_files<2)) { fprintf(stderr, "Error: this method requires at least two replicates per sample!\n"); exit(1); }
+    if ((n_signal_files!=2)||(n_ref_files!=2)) { fprintf(stderr, "Error: this method requires exactly two replicates per sample!\n"); exit(1); }
+	int n_signal_control_files;
+	char **signal_control_reg_file = Tokenize(SIGNAL_CONTROL_REG_FILES,',',&n_signal_control_files);
+	int n_ref_control_files;
+	char **ref_control_reg_file = Tokenize(REF_CONTROL_REG_FILES,',',&n_ref_control_files);
+    if ((n_signal_control_files>0)&&((n_signal_control_files!=n_signal_files)||(n_ref_control_files!=n_ref_files))) { fprintf(stderr, "Error: number of control files should match the number of signal files for each sample!\n"); exit(1); }
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
@@ -516,19 +581,22 @@ int main(int argc, char* argv[])
 
 	// print parameters to file
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
+    if (param_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", param_file_name.c_str()); exit(1); }
 	fprintf(param_file, "%d\n", n_signal_files);
 	fprintf(param_file, "%d\n", n_ref_files);
 	fprintf(param_file, "%ld\n", WIN_SIZE);
 	fprintf(param_file, "%.6e\n", PVALUE_CUTOFF);
-	fprintf(param_file, "%.6e\n", OUTLIER_PERCENTILE);
+	fprintf(param_file, "%lu\n", PSEUDOCOUNT);
+	fprintf(param_file, "%.6e\n", OUTLIER_FDR);
 	fprintf(param_file, "%.6e\n", FDR);
 	fprintf(param_file, "%s\n", LABELS);
 	fprintf(param_file, "%s\n", IMAGE_SIZE);
 	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
+	for (int i=0; i<argc; i++) fprintf(param_file, "%s%c", argv[i], i<argc-1?' ':'\n');
     fclose(param_file);
 
 	// scan read files for preliminary peak identification
-    if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,GENOME_REG_FILE,data_file_name.c_str());
+    if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,signal_control_reg_file,n_signal_control_files,ref_control_reg_file,n_ref_control_files,GENOME_REG_FILE,data_file_name.c_str());
 
 	// execute R script
 	CreateRscript(RSCRIPT_INPUT_FILE_NAME,RSCRIPT_TEMPLATE_PEAKDIFF,rscript_file_name);
@@ -541,7 +609,13 @@ int main(int argc, char* argv[])
     // cleanup
     delete [] signal_reg_file;	
 	delete [] ref_reg_file;
+    if (signal_control_reg_file!=NULL) delete [] signal_control_reg_file;	
+    if (ref_control_reg_file!=NULL) delete [] ref_control_reg_file;	
 	
+    delete SIGNAL_REG_FILES;
+    delete REF_REG_FILES;
+	if (SIGNAL_CONTROL_REG_FILES) delete SIGNAL_CONTROL_REG_FILES;
+	if (REF_CONTROL_REG_FILES) delete REF_CONTROL_REG_FILES;
   }
 
 
@@ -579,6 +653,7 @@ int main(int argc, char* argv[])
 
 	// print parameters to file
 	FILE *param_file = fopen(param_file_name.c_str(),"w");
+    if (param_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", param_file_name.c_str()); exit(1); }
 	fprintf(param_file, "%ld\n", shift_upstream);
 	fprintf(param_file, "%ld\n", shift_downstream);
 	fprintf(param_file, "%s\n", LEGEND);
@@ -602,6 +677,7 @@ int main(int argc, char* argv[])
 
 	  // compute profiles!
 	  FILE *data_file = fopen(data_file_name.c_str(),"w");
+      if (data_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", data_file_name.c_str()); exit(1); }
 	  for (int m=0,k=0; m<n_ref_files; m++) { 
         // open reference region set and shift 5prime position upstream/downstream
         GenomicRegionSet RefRegSet(ref_reg_file[m],BUFFER_SIZE,VERBOSE,true,true);
