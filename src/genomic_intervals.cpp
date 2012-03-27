@@ -3761,11 +3761,11 @@ GenomicRegion *GenomicRegionSet::Get()
 
 //---------Next--------
 //
-GenomicRegion *GenomicRegionSet::Next()
+GenomicRegion *GenomicRegionSet::Next(bool retain_current)
 {
   if (load_in_memory==false) {
     if (buffer->Get()==NULL) return NULL;
-    if (R[0]!=NULL) delete R[0];
+    if ((R[0]!=NULL)&&(retain_current==false)) delete R[0];
     R[0] = CreateGenomicRegion(buffer);
     return R[0];
   }
@@ -3784,8 +3784,7 @@ GenomicRegion *GenomicRegionSet::Next(bool sorted_by_strand, bool retain_current
 {
   GenomicRegion *r0 = Get();
   if (r0==NULL) return NULL;
-  if (load_in_memory==false) R[0] = NULL;
-  GenomicRegion *r = Next();
+  GenomicRegion *r = Next(true);
   if ((r!=NULL)&&(r->I.front()->IsBefore(r0->I.front(),sorted_by_strand))) r->PrintError("input regions are not sorted (sorted-by-strand = " + (string)(sorted_by_strand?"true":"false") + ")!");
   if ((load_in_memory==false)&&(retain_current==false)) delete r0;
   return r;
@@ -4808,22 +4807,19 @@ long int GenomicRegionSetScanner::Next()
   for (; chr!=bounds->end(); chr++,strand='+') {
     while (strand!=' ') {
       for (long int j=0; j<n_win_combine; j++) v[j] = 0;
-      while ((r!=NULL)&&Test()) r = R->Next();
+      while ((r!=NULL)&&Test()) r = R->Next(!ignore_reverse_strand,false);  
       for (k=0,v_sum=0,start=1,stop=start+win_step-1; stop<=chr->second; start+=win_step,stop+=win_step,k=(k+1)%n_win_combine) {
         v_sum -= v[k];
-        if (preprocess=='c') RegCenter(r);
-        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&(r->I.front()->STRAND==strand)&&(r->I.front()->START<=stop); ) {
-          if (r->I.front()->START<start) r->PrintError("input intervals are not properly sorted for this operation!\n"); 
+        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&(r->I.front()->STRAND==strand)&&(GetStart(r,preprocess)<=stop); ) {
+          if (r->I.size()!=1) r->PrintError("single-interval regions expected for this operation!\n"); 
           if (preprocess=='p') {
-            if (r->I.size()!=1) r->PrintError("single-interval regions expected for this operation!\n"); 
-            if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(); }
+            if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(!ignore_reverse_strand,false); }
             else { v[k] += stop-r->I.front()->START+1; r->I.front()->START = stop+1; }
           }
           else {
             if (use_labels_as_values) v[k] += max(1L,atol(r->LABEL));
             else v[k]++;
-            r = R->Next();
-            if (preprocess=='c') RegCenter(r);
+            r = R->Next(!ignore_reverse_strand,false);
           }
         }
         v_sum += v[k];
@@ -4850,7 +4846,7 @@ long int GenomicRegionSetScanner::Next(GenomicRegionSet *Ref)
     if (c==-1) return -1;
     GenomicInterval w(chr->first.c_str(),strand,stop-win_size+1,stop);
     int d = q->I.front()->CalcDirection(&w,true);
-    if (d<0) q = Ref->Next();
+    if (d<0) q = Ref->Next(!ignore_reverse_strand,false);
     else if (d==0) return c;
   }
   return -1;
@@ -5452,6 +5448,17 @@ GenomicRegion *RegCenter(GenomicRegion *r)
   r->I.front()->STOP = stop;
 
   return r;
+}
+
+
+
+//---------GetStart--------
+//
+long int GetStart(GenomicRegion *r, char preprocess)
+{
+  if (r==NULL) return -1;
+  if (preprocess=='c') return r->I.front()->START+(r->I.front()->STOP-r->I.front()->START)/2;
+  else return r->I.front()->START;
 }
 
 
