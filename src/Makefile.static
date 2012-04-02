@@ -9,7 +9,9 @@
 BINDIR = ../bin
 CC = g++
 CFLAGS = -g -O2 -Wall -static
-LIB = -lm -lgslcblas -lgsl 
+HEADER = gzstream.h core.h genomic_intervals.h
+OBJ = gzstream.o core.o genomic_intervals.o
+LIB = -lm -lz -lgslcblas -lgsl 
 
 
 # Explicit rules
@@ -19,25 +21,26 @@ gtools: genomic_regions genomic_overlaps genomic_scans genomic_apps vectors matr
 clean:
 	rm -f *.o
 
-genomic_regions: core.h core.o genomic_intervals.h genomic_intervals.o 
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_regions genomic_regions.cpp core.o genomic_intervals.o $(LIB)
-genomic_overlaps: core.h core.o genomic_intervals.h genomic_intervals.o 
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_overlaps genomic_overlaps.cpp core.o genomic_intervals.o $(LIB)
-genomic_scans: core.h core.o genomic_intervals.h genomic_intervals.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_scans genomic_scans.cpp core.o genomic_intervals.o $(LIB)
-genomic_apps: core.h core.o genomic_intervals.h genomic_intervals.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_apps genomic_apps.cpp core.o genomic_intervals.o $(LIB)
-vectors: core.h core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp core.o $(LIB)
-matrix: core.h core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/matrix matrix.cpp core.o $(LIB)
-permutation_test: core.h core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/permutation_test permutation_test.cpp core.o $(LIB)
+genomic_regions: $(HEADER) $(OBJ) 
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_regions genomic_regions.cpp $(OBJ) $(LIB)
+genomic_overlaps: $(HEADER) $(OBJ) 
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_overlaps genomic_overlaps.cpp $(OBJ) $(LIB)
+genomic_scans: $(HEADER) $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_scans genomic_scans.cpp $(OBJ) $(LIB)
+genomic_apps: $(HEADER) $(OBJ)
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_apps genomic_apps.cpp $(OBJ) $(LIB)
+vectors: gzstream.h core.h gzstream.o core.o
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp gzstream.o core.o $(LIB)
+matrix: gzstream.h core.h gzstream.o core.o
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/matrix matrix.cpp gzstream.o core.o $(LIB)
+permutation_test: gzstream.h core.h gzstream.o core.o
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/permutation_test gzstream.o core.o permutation_test.cpp $(LIB)
 
 
 
 # Implicit rules
+gzstream.o: gzstream.h gzstream.c
 core.o: core.h core.cpp
-genomic_intervals.o: core.h core.cpp genomic_intervals.h genomic_intervals.cpp
+genomic_intervals.o: gzstream.h gzstream.o core.h core.cpp genomic_intervals.h genomic_intervals.cpp
 
 

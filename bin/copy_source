@@ -13,6 +13,8 @@ ua cp
 
 cp ~/Code/basic/core.cpp src
 cp ~/Code/basic/core.h src
+cp ~/Code/basic/gzstream.c src
+cp ~/Code/basic/gzstream.h src
 
 cp ~/Code/genomic_tools/genomic_intervals.cpp src
 cp ~/Code/genomic_tools/genomic_intervals.h src

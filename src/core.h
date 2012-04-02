@@ -350,15 +350,18 @@ class FileBuffer
   FileBuffer(FILE *file_ptr, unsigned long int buffer_size=10000);
   ~FileBuffer();
 
-  void Reset();						//!< Resets the file pointer (obviously this does not work for standard input)
-  char *Next();						//!< Read the next line
-  char *Get();						//!< Returns a pointer to the current line
-  long int CountLines();			//!< Counts the number of lines in the file
+  void Reset();												//!< Resets the file pointer (obviously this does not work for standard input)
+  bool Read(char *buffer, unsigned long int buffer_size);	//!< Read from file or stream into buffer until buffer is full or until <EOL> is reached 
+  char *Next();												//!< Read the next line
+  char *Get();												//!< Returns a pointer to the current line
+  long int CountLines();									//!< Counts the number of lines in the file
 
   unsigned long int n_line;			//!< keeps track of line number
   char *file_name;					//!< file name
   FILE *FILE_PTR;					//!< file pointer
+  istream *file_stream;				//!< input stream (used for gz files)
   bool is_stdin;					//!< true if reading from standard input
+  bool is_gz;						//!< true if input file is in gz format
   char *BUFFER;						//!< where input line is stored
   unsigned long int BUFFER_SIZE;	//!< buffer size (automatically adjusted during execution to accommodate any line size)
 };
@@ -569,6 +572,7 @@ size_t Max_(size_t x, size_t y);
 // VECTOR I/O                                                                                     //
 //------------------------------------------------------------------------------------------------//
 // Exists      | Check whether a file exists                                                      //
+// IsGZFormat  | Tests if file is in gz format                                                    //
 // LoadStdIn   | Load standard input into a buffer                                                //
 // LoadFile    | Load a file into a buffer                                                        //
 // LoadVectors | Load an array of vectors from a file into memory                                 //
@@ -576,6 +580,7 @@ size_t Max_(size_t x, size_t y);
 // LoadMatrix  | load a matrix from a file with error checking                                    //
 //------------------------------------------------------------------------------------------------//
 bool Exists(char *file);
+bool IsGZFormat(char *file);
 char *LoadStdIn();
 FILE *LoadStdIn(long int *n_lines, long int buffer_size=MAX_BUFFER_SIZE);
 char *LoadFile(FILE *F);
