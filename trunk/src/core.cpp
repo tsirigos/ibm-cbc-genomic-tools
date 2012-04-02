@@ -24,6 +24,7 @@
 #include <map>
 #include <list>
 #include "core.h"
+#include "gzstream.h"
 using namespace std;
 
 
@@ -109,6 +110,10 @@ void Progress::Done()
 
 
 
+
+
+
+
 //------------------------------------------------------------------------------------------------//
 // CLASS FileBuffer : for reading files                                                           //
 //------------------------------------------------------------------------------------------------//
@@ -128,12 +133,22 @@ FileBuffer::FileBuffer(const char *file, unsigned long int buffer_size)
     is_stdin = true;
     FILE_PTR = stdin;
     file_name = NULL;
+    is_gz = false;
+    file_stream = NULL;
   }
   else {
     is_stdin = false;
-    FILE_PTR = fopen(file,"r");
-    if (FILE_PTR==0) { fprintf(stderr, "<FileBuffer>: error opening file '%s'!\n", file); exit(1); }
     file_name = StrCopy(file);
+	is_gz = IsGZFormat(file_name);
+	if (is_gz==true) {
+	  FILE_PTR = NULL;
+	  file_stream = new igzstream(file_name);
+	}
+	else {
+	  file_stream = NULL;
+      FILE_PTR = fopen(file_name,"r");
+      if (FILE_PTR==0) { fprintf(stderr, "[FileBuffer] Error: cannot open file '%s' for reading!\n", file); exit(1); }
+    }
   }
   BUFFER_SIZE = buffer_size;
   ALLOCATE1D(BUFFER,BUFFER_SIZE,char);
@@ -149,8 +164,10 @@ FileBuffer::FileBuffer(FILE *file_ptr, unsigned long int buffer_size)
 {
   is_stdin = false;
   file_name = NULL;
+  is_gz = false;
+  file_stream = NULL;
   FILE_PTR = file_ptr;
-  if (FILE_PTR==0) { fprintf(stderr, "<FileBuffer>: invalid file handler!\n"); exit(1); }
+  if (FILE_PTR==0) { fprintf(stderr, "[FileBuffer] Error: invalid file handler!\n"); exit(1); }
   BUFFER_SIZE = buffer_size;
   ALLOCATE1D(BUFFER,BUFFER_SIZE,char);
   BUFFER[0] = 0;
@@ -163,9 +180,10 @@ FileBuffer::FileBuffer(FILE *file_ptr, unsigned long int buffer_size)
 //
 FileBuffer::~FileBuffer()
 {
-  if (is_stdin==false) fclose(FILE_PTR);
+  if ((is_stdin==false)&&(is_gz==false)) fclose(FILE_PTR);
   if (BUFFER!=NULL) delete BUFFER;
   if (file_name!=NULL) delete file_name;
+  if (file_stream!=NULL) delete file_stream;
 }
  
 
@@ -173,9 +191,32 @@ FileBuffer::~FileBuffer()
 //
 void FileBuffer::Reset()
 {
-  if (is_stdin==true) { fprintf(stderr, "<FileBuffer>: cannot reset standard input!\n"); exit(1); }
-  rewind(FILE_PTR);
+  if (is_stdin==true) { fprintf(stderr, "[FileBuffer] Error: cannot reset standard input!\n"); exit(1); }
+  if (is_gz==true) {
+    delete file_stream;
+    file_stream = new igzstream(file_name);
+  }
+  else rewind(FILE_PTR);
   n_line = 0;
+}
+
+
+
+//------Read-------
+//
+bool FileBuffer::Read(char *buffer, unsigned long int buffer_size)
+{
+  if (is_gz==false) {
+    if ((fgets(buffer,buffer_size,FILE_PTR)==NULL)||(feof(FILE_PTR)==true)) return false;
+  } 
+  else {
+    if (file_stream->eof()) return false;
+    file_stream->getline(buffer,buffer_size-1);
+    long int len = (long int)strlen(buffer);
+	if (file_stream->gcount()==len+1) { buffer[len] = '\n'; buffer[len+1] = 0; }          // add <EOL> to maintain consistency with fgets()
+	else if (file_stream->eof()==false) file_stream->clear();
+  }
+  return true;
 }
 
 
@@ -184,7 +225,7 @@ void FileBuffer::Reset()
 //
 char *FileBuffer::Next()
 {
-  if ((fgets(BUFFER,BUFFER_SIZE,FILE_PTR)==NULL)||(feof(FILE_PTR)==true)) { n_line = 0; return NULL; }
+  if (Read(BUFFER,BUFFER_SIZE)==false) { n_line = 0; return NULL; }
   n_line++;
 
   size_t len = strlen(BUFFER);
@@ -194,10 +235,9 @@ char *FileBuffer::Next()
     memcpy(buffer,BUFFER,len);
     delete BUFFER;
     BUFFER = buffer;
-    if ((fgets(BUFFER+len,BUFFER_SIZE/2,FILE_PTR)==NULL)||(feof(FILE_PTR)==true)) { n_line = 0; return NULL; }
+    if (Read(BUFFER+len,BUFFER_SIZE/2)==false) { n_line = 0; return NULL; }
     len = strlen(BUFFER);
   }
-  //if (BUFFER[len-1]!='\n') { fprintf(stderr, "\nLine %lu: only %lu characters read (buffer size = %lu)!\n", n_line, (unsigned long int)strlen(BUFFER), BUFFER_SIZE); exit(1); }
   BUFFER[len-1] = 0;
   
   return BUFFER;
@@ -223,8 +263,7 @@ long int FileBuffer::CountLines()
   Progress PRG("Counting lines in file...",1);
   while (Next()!=NULL) { n++; PRG.Check(); }
   PRG.Done();
-  rewind(FILE_PTR);
-  n_line = 0;
+  Reset();
   return n;
 }
 
@@ -1526,6 +1565,19 @@ bool Exists(char *file)
     return true;
   }
   return false;
+}
+
+
+//-----IsGZFormat---------
+//
+bool IsGZFormat(char *file)
+{
+  FILE *F = fopen(file,"r");
+  if (F==NULL) return false;
+  int byte1 = fgetc(F);
+  int byte2 = fgetc(F);  
+  fclose(F);
+  return (byte1==0x1f)&&(byte2==0x8b);
 }
 
 
