@@ -214,7 +214,7 @@ class VectorBuffer
   void PrintLabel();
   
   // data
-  FileBuffer *buffer;
+  FileBufferText *buffer;
   long int n_vectors;
   long int index;
   bool labels;
@@ -229,7 +229,7 @@ class VectorBuffer
 //
 VectorBuffer::VectorBuffer(char *file, long int buffer_size)
 {
-  buffer = new FileBuffer(file,buffer_size);
+  buffer = new FileBufferText(file,buffer_size);
   n_vectors = buffer->CountLines();
   vec = NULL;
   index = 0;
@@ -242,11 +242,11 @@ VectorBuffer::VectorBuffer(long int buffer_size, bool load_stdin)
 {
   if (load_stdin==true) { 
     FILE *fp = LoadStdIn(&n_vectors,buffer_size);
-    buffer = new FileBuffer(fp,buffer_size);
+    buffer = new FileBufferText(fp,buffer_size);
   }
   else {
     n_vectors = 1;
-    buffer = new FileBuffer((char *)NULL,buffer_size);
+    buffer = new FileBufferText((char *)NULL,buffer_size);
   }
   vec = NULL;
   index = 0;

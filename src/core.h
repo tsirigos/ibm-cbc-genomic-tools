@@ -13,6 +13,8 @@
 #include <fstream>
 #include <map>
 #include <list>
+#include "gzstream.h"
+#include "sam.h"
 using namespace std;
 
 
@@ -323,17 +325,51 @@ class Progress
 
 
 
-
-
+ 
 //------------------------------------------------------------------------------------------------//
 // CLASS FileBuffer                                                                               //
 //------------------------------------------------------------------------------------------------//
-//! Class for reading lines from file or standard input.
-/*!
-  This implementation is significantly faster than getline() on C++ streams because it uses char arrays. It also automatically adjusts buffer size to fit line content. 
-*/
+//! Abstract class for reading lines from file.
 //------------------------------------------------------------------------------------------------//
 class FileBuffer
+{
+ public:
+  //! Empty class constructor.
+  FileBuffer() { };
+
+  //! Class destructor
+  ~FileBuffer();
+
+  // methods
+  long int CountLines();			//!< Counts the number of lines in the file
+  virtual void Reset() = 0;			//!< Resets the file pointer (obviously this does not work for standard input)
+  char *Get();						//!< Returns a pointer to the current line
+  virtual char *Next() = 0;			//!< Read the next line
+
+  // data
+  bool is_stdin;					//!< true if reading from standard input
+  unsigned long int n_line;			//!< keeps track of line number
+  char *file_name;					//!< file name
+  char *BUFFER;						//!< where input line is stored
+  unsigned long int BUFFER_SIZE;	//!< buffer size (automatically adjusted during execution to accommodate any line size)
+};
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBuffer                                                                           //
+//------------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferText                                                                           //
+//------------------------------------------------------------------------------------------------//
+//! Class for reading lines from text file or standard input.
+//------------------------------------------------------------------------------------------------//
+class FileBufferText : public FileBuffer
 {
  public:
   //! Class constructor.
@@ -341,33 +377,105 @@ class FileBuffer
     \param file 		file name, if 'NULL' standard input is read instead
     \param buffer_size 		buffer size (automatically adjusted during execution to accommodate any line size)
   */
-  FileBuffer(const char *file, unsigned long int buffer_size=10000);
+  FileBufferText(const char *file, unsigned long int buffer_size=10000);
+
   //! Class constructor.
   /*!
     \param file_ptr 		file pointer
     \param buffer_size 		buffer size (automatically adjusted during execution to accommodate any line size)
   */
-  FileBuffer(FILE *file_ptr, unsigned long int buffer_size=10000);
-  ~FileBuffer();
+  FileBufferText(FILE *file_ptr, unsigned long int buffer_size=10000);
 
-  void Reset();												//!< Resets the file pointer (obviously this does not work for standard input)
-  bool Read(char *buffer, unsigned long int buffer_size);	//!< Read from file or stream into buffer until buffer is full or until <EOL> is reached 
-  char *Next();												//!< Read the next line
-  char *Get();												//!< Returns a pointer to the current line
-  long int CountLines();									//!< Counts the number of lines in the file
+  //! Class destructor
+  ~FileBufferText();
 
-  unsigned long int n_line;			//!< keeps track of line number
-  char *file_name;					//!< file name
-  FILE *FILE_PTR;					//!< file pointer
-  istream *file_stream;				//!< input stream (used for gz files)
-  bool is_stdin;					//!< true if reading from standard input
-  bool is_gz;						//!< true if input file is in gz format
-  char *BUFFER;						//!< where input line is stored
-  unsigned long int BUFFER_SIZE;	//!< buffer size (automatically adjusted during execution to accommodate any line size)
+  // methods
+  virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
+  virtual char *Next();				//!< Read the next line
+
+  // data
+  FILE *file_ptr;					//!< file pointer
 };
 //------------------------------------------------------------------------------------------------//
-// END CLASS FileBuffer                                                                           //
+// END CLASS FileBufferText                                                                       //
 //------------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferGZ                                                                             //
+//------------------------------------------------------------------------------------------------//
+//! Class for reading lines from file in GZ format.
+//------------------------------------------------------------------------------------------------//
+class FileBufferGZ : public FileBuffer
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param file 		file name, if 'NULL' standard input is read instead
+    \param buffer_size 		buffer size (automatically adjusted during execution to accommodate any line size)
+  */
+  FileBufferGZ(const char *file, unsigned long int buffer_size=10000);
+
+  //! Class destructor
+  ~FileBufferGZ();
+
+  virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
+  virtual char *Next();				//!< Read the next line
+  bool Read(char *buffer, unsigned long int buffer_size); 
+
+  igzstream *file_stream;				//!< input stream (used for gz files)
+};
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBufferGZ                                                                         //
+//------------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferBAM                                                                            //
+//------------------------------------------------------------------------------------------------//
+//! Class for reading lines from file in BAM format.
+//------------------------------------------------------------------------------------------------//
+class FileBufferBAM : public FileBuffer
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param file 		file name, if 'NULL' standard input is read instead
+    \param buffer_size 		buffer size (automatically adjusted during execution to accommodate any line size)
+  */
+  FileBufferBAM(const char *file, unsigned long int buffer_size=10000);
+  ~FileBufferBAM();
+
+  virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
+  virtual char *Next();				//!< Read the next line
+
+  samfile_t *samfile_ptr;			//!< pointer to SAM/BAM file
+  bam1_t *bam_ptr;					//!< pointer to BAM structure
+};
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBufferBAM                                                                        //
+//------------------------------------------------------------------------------------------------//
+
+
+
+
+FileBuffer *CreateFileBuffer(const char *file, unsigned long int buffer_size=10000);
+
+
+
+
 
 
 
@@ -572,7 +680,6 @@ size_t Max_(size_t x, size_t y);
 // VECTOR I/O                                                                                     //
 //------------------------------------------------------------------------------------------------//
 // Exists      | Check whether a file exists                                                      //
-// IsGZFormat  | Tests if file is in gz format                                                    //
 // LoadStdIn   | Load standard input into a buffer                                                //
 // LoadFile    | Load a file into a buffer                                                        //
 // LoadVectors | Load an array of vectors from a file into memory                                 //
@@ -580,7 +687,6 @@ size_t Max_(size_t x, size_t y);
 // LoadMatrix  | load a matrix from a file with error checking                                    //
 //------------------------------------------------------------------------------------------------//
 bool Exists(char *file);
-bool IsGZFormat(char *file);
 char *LoadStdIn();
 FILE *LoadStdIn(long int *n_lines, long int buffer_size=MAX_BUFFER_SIZE);
 char *LoadFile(FILE *F);
@@ -594,6 +700,8 @@ double **LoadDoubleMatrix(char *file, long int *n_rows, long int *n_cols);
 int **LoadIntMatrix(char *file, long int *n_rows, long int *n_cols);
 
 
+//! Determines file type: 0=text; 1=gz; 2=bam
+int GetFileType(const char *file);
 
 
 
@@ -1105,8 +1213,8 @@ template <class T> MatrixTemplate<T>::MatrixTemplate(char *file, bool verbose)
   // Load file or standard input
   FileBuffer *buffer;
   long int n_lines;
-  if (file==NULL) buffer = new FileBuffer(LoadStdIn(&n_lines));
-  else { buffer = new FileBuffer(file); n_lines = buffer->CountLines(); }
+  if (file==NULL) buffer = new FileBufferText(LoadStdIn(&n_lines));
+  else { buffer = new FileBufferText(file); n_lines = buffer->CountLines(); }
   if (n_lines==0) { col_labels = row_labels = NULL; val = NULL; n_rows = n_cols = 0; return; }
 
   // check/read column labels
