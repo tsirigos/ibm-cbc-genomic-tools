@@ -47,7 +47,7 @@ Chromosomes::Chromosomes(char *chrom_map_dir, char *chrom_map_name)
   this->chrom_map_dir = chrom_map_dir;
   this->chrom_map_name = chrom_map_name;
   string chrom_map_file = (string)chrom_map_dir + "/" + (string)chrom_map_name;
-  FileBuffer buffer(chrom_map_file.c_str());
+  FileBufferText buffer(chrom_map_file.c_str());
   Progress PRG("Reading chromosome map file...",1);
   int c = 0;
   for (; buffer.Next(); c++) {
@@ -72,7 +72,7 @@ Chromosomes::Chromosomes(char *fasta_file, bool verbose)
   // read sequence map file
   this->verbose = verbose;
   this->load_in_memory = true;
-  FileBuffer buffer(fasta_file);
+  FileBufferText buffer(fasta_file);
   Progress PRG("Reading chromosome sequences from FASTA file...",1);
   long int n_line = 0;
   for (char *inp=buffer.Next(); inp!=NULL; inp=buffer.Next()) {
@@ -145,7 +145,7 @@ void Chromosomes::LoadChromosome(string chromosome_name)
     fclose(F);
 
     // read file
-    FileBuffer buffer(chromosome_file.c_str(),buffer_size+1);
+    FileBufferText buffer(chromosome_file.c_str(),buffer_size+1);
     char *inp = buffer.Next();
     if (inp==NULL) { cerr << "Error: empty file '" << chromosome_file << "'!\n"; exit(1); }
     if (inp[0]=='>') {
@@ -3679,13 +3679,13 @@ GenomicRegion *GenomicRegionSet::CreateGenomicRegion(FileBuffer *buffer)
 void GenomicRegionSet::Init()
 {
   // open region set file
-  buffer = file_ptr==NULL?new FileBuffer(file,buffer_size):new FileBuffer(file_ptr,buffer_size);
+  buffer = file_ptr==NULL?CreateFileBuffer(file,buffer_size):new FileBufferText(file_ptr,buffer_size);
   if (load_in_memory) {
     ProcessFileHeader(true);
     n_regions = 0;
     for (char *next=buffer->Get(); next!=NULL; next=buffer->Next()) n_regions++;
     delete buffer; 
-    buffer = file_ptr==NULL?new FileBuffer(file,buffer_size):new FileBuffer(file_ptr,buffer_size);
+    buffer = file_ptr==NULL?CreateFileBuffer(file,buffer_size):new FileBufferText(file_ptr,buffer_size);
     DetectFileFormat();   
     if (format=="SEQ") n_regions /= 2;
   }
@@ -3728,7 +3728,7 @@ void GenomicRegionSet::Reset()
   }
   else {
     if (buffer!=NULL) delete buffer;
-    buffer = new FileBuffer(file,buffer_size);
+    buffer = CreateFileBuffer(file,buffer_size);
     n_regions = 1;
     buffer->Next();
     R[0] = CreateGenomicRegion(buffer);

@@ -233,14 +233,14 @@ void CreateRscript(const char *rscript_input_file_name, const char *rscript_temp
 
 
 
-//-------CreateRscript-----------
+//-------PrintLogFile-----------
 //
 void PrintLogFile(string log_file_name)
 {
   fprintf(stderr, "\n***********************************************\n"); 
   fprintf(stderr, "\n  R   S C R I P T   L O G   F I L E            \n"); 
   fprintf(stderr, "\n***********************************************\n"); 
-  FileBuffer buffer(log_file_name.c_str());
+  FileBufferText buffer(log_file_name.c_str());
   for (char *inp=buffer.Next(); inp!=NULL; inp=buffer.Next()) fprintf(stderr, "%s\n", inp);
 }
 

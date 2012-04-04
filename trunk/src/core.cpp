@@ -115,40 +115,75 @@ void Progress::Done()
 
 
 //------------------------------------------------------------------------------------------------//
-// CLASS FileBuffer : for reading files                                                           //
+// CLASS FileBuffer: class for reading files (text, gz, bam)                                      //
 //------------------------------------------------------------------------------------------------//
-// Reset         | Reset file pointer                                                             //
-// Next          | Get next line in the file                                                      //
-// Get           | Get current line                                                               //
-// CountLines    | Count the number of lines in the file                                          //
+
+//------Destructor------
+//
+FileBuffer::~FileBuffer()
+{
+  if (BUFFER!=NULL) delete BUFFER;
+  if (file_name!=NULL) delete file_name;
+}
+ 
+
+//------CountLines-------
+//
+long int FileBuffer::CountLines()
+{
+  if (is_stdin==true) return 1;
+  long int n = 0;
+  Progress PRG("Counting lines in file...",1);
+  while (Next()!=NULL) { n++; PRG.Check(); }
+  PRG.Done();
+  Reset();
+  return n;
+}
+
+
+
+//------Get-------
+//
+char *FileBuffer::Get()
+{
+  return n_line>0 ? BUFFER : NULL;
+}
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBuffer                                                                           //
 //------------------------------------------------------------------------------------------------//
 
 
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferText : for reading files                                                           //
+//------------------------------------------------------------------------------------------------//
 
 //------Constructor------
 //
-FileBuffer::FileBuffer(const char *file, unsigned long int buffer_size)
+FileBufferText::FileBufferText(const char *file, unsigned long int buffer_size)
 {
   if (file==NULL) {
     is_stdin = true;
-    FILE_PTR = stdin;
+    file_ptr = stdin;
     file_name = NULL;
-    is_gz = false;
-    file_stream = NULL;
   }
   else {
     is_stdin = false;
     file_name = StrCopy(file);
-	is_gz = IsGZFormat(file_name);
-	if (is_gz==true) {
-	  FILE_PTR = NULL;
-	  file_stream = new igzstream(file_name);
-	}
-	else {
-	  file_stream = NULL;
-      FILE_PTR = fopen(file_name,"r");
-      if (FILE_PTR==0) { fprintf(stderr, "[FileBuffer] Error: cannot open file '%s' for reading!\n", file); exit(1); }
-    }
+    file_ptr = fopen(file_name,"r");
+    if (file_ptr==0) { fprintf(stderr, "[FileBuffer] Error: cannot open file '%s' for reading!\n", file); exit(1); }
   }
   BUFFER_SIZE = buffer_size;
   ALLOCATE1D(BUFFER,BUFFER_SIZE,char);
@@ -160,14 +195,12 @@ FileBuffer::FileBuffer(const char *file, unsigned long int buffer_size)
 
 //------Constructor------
 //
-FileBuffer::FileBuffer(FILE *file_ptr, unsigned long int buffer_size)
+FileBufferText::FileBufferText(FILE *file_ptr, unsigned long int buffer_size)
 {
   is_stdin = false;
   file_name = NULL;
-  is_gz = false;
-  file_stream = NULL;
-  FILE_PTR = file_ptr;
-  if (FILE_PTR==0) { fprintf(stderr, "[FileBuffer] Error: invalid file handler!\n"); exit(1); }
+  this->file_ptr = file_ptr;
+  if (file_ptr==0) { fprintf(stderr, "[FileBuffer] Error: invalid file handler!\n"); exit(1); }
   BUFFER_SIZE = buffer_size;
   ALLOCATE1D(BUFFER,BUFFER_SIZE,char);
   BUFFER[0] = 0;
@@ -178,25 +211,95 @@ FileBuffer::FileBuffer(FILE *file_ptr, unsigned long int buffer_size)
 
 //------Destructor------
 //
-FileBuffer::~FileBuffer()
+FileBufferText::~FileBufferText()
 {
-  if ((is_stdin==false)&&(is_gz==false)) fclose(FILE_PTR);
-  if (BUFFER!=NULL) delete BUFFER;
-  if (file_name!=NULL) delete file_name;
-  if (file_stream!=NULL) delete file_stream;
+  if (is_stdin==false) if (file_ptr!=NULL) fclose(file_ptr);
+}
+ 
+
+ 
+//------Reset-------
+//
+void FileBufferText::Reset()
+{
+  if (is_stdin==true) { fprintf(stderr, "[FileBuffer] Error: cannot reset standard input!\n"); exit(1); }
+  rewind(file_ptr);
+  n_line = 0;
+}
+
+
+
+//------Next-------
+//
+char *FileBufferText::Next()
+{
+  if ((fgets(BUFFER,BUFFER_SIZE,file_ptr)==NULL)||(feof(file_ptr)==true)) { n_line = 0; return NULL; }
+  n_line++;
+
+  size_t len = strlen(BUFFER);
+  while (BUFFER[len-1]!='\n') { 
+    BUFFER_SIZE *= 2;
+    char *buffer = new char[BUFFER_SIZE];
+    memcpy(buffer,BUFFER,len);
+    delete BUFFER;
+    BUFFER = buffer;
+    if ((fgets(BUFFER+len,BUFFER_SIZE/2,file_ptr)==NULL)||(feof(file_ptr)==true)) { n_line = 0; return NULL; }
+    len = strlen(BUFFER);
+  }
+  BUFFER[len-1] = 0;
+  
+  return BUFFER;
+}
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBufferText                                                                       //
+//------------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferGZ : for reading GZ files                                                      //
+//------------------------------------------------------------------------------------------------//
+
+//------Constructor------
+//
+FileBufferGZ::FileBufferGZ(const char *file, unsigned long int buffer_size)
+{
+  if (file==NULL) { fprintf(stderr, "[FileBufferGZ] Error: cannot read gz file from standard input, use 'gunzip' instead!\n"); exit(1); }
+  is_stdin = false;
+  file_name = StrCopy(file);
+  file_stream = new igzstream(file_name);
+  BUFFER_SIZE = buffer_size;
+  ALLOCATE1D(BUFFER,BUFFER_SIZE,char);
+  BUFFER[0] = 0;
+  n_line = 0;
+}
+ 
+
+//------Destructor------
+//
+FileBufferGZ::~FileBufferGZ()
+{
+  if (file_stream!=NULL) { file_stream->close(); delete file_stream; }
 }
  
 
 //------Reset-------
 //
-void FileBuffer::Reset()
+void FileBufferGZ::Reset()
 {
-  if (is_stdin==true) { fprintf(stderr, "[FileBuffer] Error: cannot reset standard input!\n"); exit(1); }
-  if (is_gz==true) {
-    delete file_stream;
-    file_stream = new igzstream(file_name);
-  }
-  else rewind(FILE_PTR);
+  file_stream->close(); 
+  delete file_stream;
+  file_stream = new igzstream(file_name);
   n_line = 0;
 }
 
@@ -204,18 +307,13 @@ void FileBuffer::Reset()
 
 //------Read-------
 //
-bool FileBuffer::Read(char *buffer, unsigned long int buffer_size)
+bool FileBufferGZ::Read(char *buffer, unsigned long int buffer_size)
 {
-  if (is_gz==false) {
-    if ((fgets(buffer,buffer_size,FILE_PTR)==NULL)||(feof(FILE_PTR)==true)) return false;
-  } 
-  else {
-    if (file_stream->eof()) return false;
-    file_stream->getline(buffer,buffer_size-1);
-    long int len = (long int)strlen(buffer);
-	if (file_stream->gcount()==len+1) { buffer[len] = '\n'; buffer[len+1] = 0; }          // add <EOL> to maintain consistency with fgets()
-	else if (file_stream->eof()==false) file_stream->clear();
-  }
+  if (file_stream->eof()) return false;
+  file_stream->getline(buffer,buffer_size-1);
+  long int len = (long int)strlen(buffer);
+  if (file_stream->gcount()==len+1) { buffer[len] = '\n'; buffer[len+1] = 0; }          // add <EOL> to maintain consistency with fgets()
+  else if (file_stream->eof()==false) file_stream->clear();
   return true;
 }
 
@@ -223,7 +321,7 @@ bool FileBuffer::Read(char *buffer, unsigned long int buffer_size)
 
 //------Next-------
 //
-char *FileBuffer::Next()
+char *FileBufferGZ::Next()
 {
   if (Read(BUFFER,BUFFER_SIZE)==false) { n_line = 0; return NULL; }
   n_line++;
@@ -245,32 +343,8 @@ char *FileBuffer::Next()
 
 
 
-//------Get-------
-//
-char *FileBuffer::Get()
-{
-  return n_line>0 ? BUFFER : NULL;
-}
-
-
-
-//------CountLines-------
-//
-long int FileBuffer::CountLines()
-{
-  if (is_stdin==true) return 1;
-  long int n = 0;
-  Progress PRG("Counting lines in file...",1);
-  while (Next()!=NULL) { n++; PRG.Check(); }
-  PRG.Done();
-  Reset();
-  return n;
-}
-
-
-
 //------------------------------------------------------------------------------------------------//
-// END CLASS FileBuffer                                                                           //
+// END CLASS FileBufferGZ                                                                         //
 //------------------------------------------------------------------------------------------------//
 
 
@@ -278,6 +352,91 @@ long int FileBuffer::CountLines()
 
 
 
+
+
+
+//------------------------------------------------------------------------------------------------//
+// CLASS FileBufferBAM : for reading BAM files                                                    //
+//------------------------------------------------------------------------------------------------//
+
+//------Constructor------
+//
+FileBufferBAM::FileBufferBAM(const char *file, unsigned long int buffer_size)
+{
+  if (file==NULL) { fprintf(stderr, "[FileBufferBAM] Error: cannot read BAM file from standard input, use 'samtools view' instead!\n"); exit(1); }
+  is_stdin = false;
+  file_name = StrCopy(file);
+  if ((samfile_ptr=samopen(file_name,"rb",NULL))==0) { fprintf(stderr, "[FileBufferBAM] Error: cannot open file '%s'!\n", file_name); exit(1); }
+  bam_ptr = bam_init1();
+  BUFFER_SIZE = 0;
+  BUFFER = NULL;
+  n_line = 0;
+}
+ 
+
+
+//------Destructor------
+//
+FileBufferBAM::~FileBufferBAM()
+{
+  bam_destroy1(bam_ptr);
+  samclose(samfile_ptr);
+}
+ 
+
+//------Reset-------
+//
+void FileBufferBAM::Reset()
+{
+  if (BUFFER!=NULL) delete BUFFER;
+  bam_destroy1(bam_ptr);
+  samclose(samfile_ptr);
+  if ((samfile_ptr=samopen(file_name,"rb",NULL))==0) { fprintf(stderr, "[FileBufferBAM] cannot open file '%s'!\n", file_name); exit(1); }
+  bam_ptr = bam_init1();
+  BUFFER_SIZE = 0;
+  BUFFER = NULL;
+  n_line = 0;
+}
+
+
+//------Next-------
+//
+char *FileBufferBAM::Next()
+{
+  if (samread(samfile_ptr,bam_ptr)>=0) {
+    n_line++;
+	if (BUFFER!=NULL) delete BUFFER;
+    BUFFER = bam_format1_core(samfile_ptr->header,bam_ptr,0);
+	return BUFFER;
+  }
+  else { n_line = 0; return NULL; }
+}
+
+
+
+
+//------------------------------------------------------------------------------------------------//
+// END CLASS FileBufferBAM                                                                        //
+//------------------------------------------------------------------------------------------------//
+
+
+
+
+
+//--------CreateFileBuffer----------
+//
+FileBuffer *CreateFileBuffer(const char *file, unsigned long int buffer_size)
+{
+  if (file==NULL) return new FileBufferText(file,buffer_size);
+  int file_type = GetFileType(file);
+  switch (file_type) {
+   case -1: { fprintf(stderr, "[CreateFileBuffer] Error: cannot open file '%s'!\n", file); exit(1); }
+   case 0: return new FileBufferText(file,buffer_size);
+   case 1: return new FileBufferGZ(file,buffer_size);
+   case 2: return new FileBufferBAM(file,buffer_size);
+  }
+  return NULL;
+}
 
 
 
@@ -1568,16 +1727,26 @@ bool Exists(char *file)
 }
 
 
-//-----IsGZFormat---------
+//-----GetFileType---------
 //
-bool IsGZFormat(char *file)
+int GetFileType(const char *file)
 {
   FILE *F = fopen(file,"r");
-  if (F==NULL) return false;
+  if (F==NULL) return -1;
   int byte1 = fgetc(F);
   int byte2 = fgetc(F);  
   fclose(F);
-  return (byte1==0x1f)&&(byte2==0x8b);
+  if ((byte1==0x1f)&&(byte2==0x8b)) {
+    igzstream file_stream(file);
+	char c1 = file_stream.get();
+	char c2 = file_stream.get();
+	char c3 = file_stream.get();
+	char c4 = file_stream.get();
+	file_stream.close();
+    if ((c1=='B')&&(c2=='A')&&(c3=='M')&&(c4=='\1')) return 2;   // bam format
+	else return 1;   // gz format
+  }
+  else return 0;    // text format
 }
 
 
@@ -2908,8 +3077,10 @@ int IsDirectory(char *file)
 //
 unsigned long int CountLines(char *file, unsigned long int buffer_size)
 {
-  FileBuffer buffer(file,buffer_size);
-  return buffer.CountLines();
+  FileBuffer *buffer = CreateFileBuffer(file,buffer_size);
+  unsigned long int n = buffer->CountLines();
+  delete buffer;
+  return n;
 }
 
 
@@ -3598,7 +3769,7 @@ void ColumnNormMean(float **M, int n, int m)
 Sequences::Sequences(char *file, bool uniq)
 {
   // initialize
-  FileBuffer buffer(file);
+  FileBufferText buffer(file);
   n_sequences = buffer.CountLines();
   n_symbols = 0;
   
@@ -3865,8 +4036,8 @@ Matrix::Matrix(char *file, bool integers, bool verbose)
   // Load file or standard input
   FileBuffer *buffer;
   long int n_lines;
-  if (file==NULL) buffer = new FileBuffer(LoadStdIn(&n_lines));
-  else { buffer = new FileBuffer(file); n_lines = buffer->CountLines(); }
+  if (file==NULL) buffer = new FileBufferText(LoadStdIn(&n_lines));
+  else { buffer = new FileBufferText(file); n_lines = buffer->CountLines(); }
   if (n_lines==0) { fprintf(stderr, "Empty matrix!\n"); exit(1); }
   this->integers = integers;
 

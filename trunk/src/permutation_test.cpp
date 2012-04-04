@@ -120,7 +120,7 @@ class StringSets
 StringSets::StringSets(char *file, char *vec_file)
 {
   // initialize
-  FileBuffer buffer(file);
+  FileBufferText buffer(file);
   n_rows = buffer.CountLines();
   ALLOCATE1D(ROW_LABELS,n_rows,char *);
   n_cols = 0;
