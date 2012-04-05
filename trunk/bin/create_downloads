@@ -17,9 +17,9 @@ if ($ARCH == "") then
   set ARCH = redhat-x86_64
 endif
 
-set REPODIR = `get_prog_dir $0`/..
+set REPODIR = `pwd`/..
 set DIR = genomic-tools-$VERSION
-
+ 
 cd ~
 ln -sf $REPODIR $DIR
 
