@@ -167,7 +167,7 @@ char *FileBuffer::Get()
 
 
 //------------------------------------------------------------------------------------------------//
-// CLASS FileBufferText : for reading files                                                           //
+// CLASS FileBufferText : for reading text files                                                  //
 //------------------------------------------------------------------------------------------------//
 
 //------Constructor------
@@ -222,7 +222,7 @@ FileBufferText::~FileBufferText()
 //
 void FileBufferText::Reset()
 {
-  if (is_stdin==true) { fprintf(stderr, "[FileBuffer] Error: cannot reset standard input!\n"); exit(1); }
+  if (is_stdin==true) { fprintf(stderr, "[FileBufferText] Error: cannot reset standard input!\n"); exit(1); }
   rewind(file_ptr);
   n_line = 0;
 }
