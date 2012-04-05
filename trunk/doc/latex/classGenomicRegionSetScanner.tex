@@ -2,133 +2,139 @@
 \section{GenomicRegionSetScanner Class Reference}
 \label{classGenomicRegionSetScanner}\index{GenomicRegionSetScanner@{GenomicRegionSetScanner}}
 }
+
+
 This class is used to scan a set of regions by sliding windows. See detailed description below for an example.  
 
 
-{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+
+{\ttfamily \#include $<$genomic\_\-intervals.h$>$}
 
 \subsection*{Public Member Functions}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hyperlink{classGenomicRegionSetScanner_2703f6892137282f00618895e02f628b}{GenomicRegionSetScanner} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetScanner_f76bf4fef482886f23f58cfa12c3eea1}{R}, StringLIntMap $\ast$\hyperlink{classGenomicRegionSetScanner_7f64551c26331cd4ead1ab01405f1b72}{bounds}, long int \hyperlink{classGenomicRegionSetScanner_b278dfa27c3589865b9243156c1c727f}{win\_\-step}, long int \hyperlink{classGenomicRegionSetScanner_eed625b2a12aa2f7900997c4e20cd9b5}{win\_\-size}, bool \hyperlink{classGenomicRegionSetScanner_d47603d08614ab993fe9036662c421e7}{use\_\-labels\_\-as\_\-values}, bool \hyperlink{classGenomicRegionSetScanner_10c1d22ae74e6f295cd17259f70eff8a}{ignore\_\-reverse\_\-strand}, char \hyperlink{classGenomicRegionSetScanner_f2a536e23023f96c57f51e2276b4be0e}{preprocess}='1')
-\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_d0e45066dc2f22d3c211d1e7d885bd87}{
-long int \hyperlink{classGenomicRegionSetScanner_d0e45066dc2f22d3c211d1e7d885bd87}{Next} ()}
-\label{classGenomicRegionSetScanner_d0e45066dc2f22d3c211d1e7d885bd87}
+\hyperlink{classGenomicRegionSetScanner_a308979aaa369991fcbb3f3f9877c807d}{GenomicRegionSetScanner} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$\hyperlink{classGenomicRegionSetScanner_af76bf4fef482886f23f58cfa12c3eea1}{R}, StringLIntMap $\ast$\hyperlink{classGenomicRegionSetScanner_a7f64551c26331cd4ead1ab01405f1b72}{bounds}, long int \hyperlink{classGenomicRegionSetScanner_ab278dfa27c3589865b9243156c1c727f}{win\_\-step}, long int \hyperlink{classGenomicRegionSetScanner_aeed625b2a12aa2f7900997c4e20cd9b5}{win\_\-size}, bool \hyperlink{classGenomicRegionSetScanner_ad47603d08614ab993fe9036662c421e7}{use\_\-labels\_\-as\_\-values}, bool \hyperlink{classGenomicRegionSetScanner_a10c1d22ae74e6f295cd17259f70eff8a}{ignore\_\-reverse\_\-strand}, char \hyperlink{classGenomicRegionSetScanner_af2a536e23023f96c57f51e2276b4be0e}{preprocess})
+\begin{DoxyCompactList}\small\item\em Class constructor. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_ad0e45066dc2f22d3c211d1e7d885bd87}{
+long int \hyperlink{classGenomicRegionSetScanner_ad0e45066dc2f22d3c211d1e7d885bd87}{Next} ()}
+\label{classGenomicRegionSetScanner_ad0e45066dc2f22d3c211d1e7d885bd87}
 
-\begin{CompactList}\small\item\em computes value in the next window \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_4b8c62b87b640dedb5d37647c5dfb844}{
-long int \hyperlink{classGenomicRegionSetScanner_4b8c62b87b640dedb5d37647c5dfb844}{Next} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$Ref)}
-\label{classGenomicRegionSetScanner_4b8c62b87b640dedb5d37647c5dfb844}
+\begin{DoxyCompactList}\small\item\em computes value in the next window \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a4b8c62b87b640dedb5d37647c5dfb844}{
+long int \hyperlink{classGenomicRegionSetScanner_a4b8c62b87b640dedb5d37647c5dfb844}{Next} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$Ref)}
+\label{classGenomicRegionSetScanner_a4b8c62b87b640dedb5d37647c5dfb844}
 
-\begin{CompactList}\small\item\em computes value in the next window that overlaps with {\bf Ref} \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_e494d96f93477902ca339516906bb6da}{
-void \hyperlink{classGenomicRegionSetScanner_e494d96f93477902ca339516906bb6da}{PrintInterval} ()}
-\label{classGenomicRegionSetScanner_e494d96f93477902ca339516906bb6da}
+\begin{DoxyCompactList}\small\item\em computes value in the next window that overlaps with {\bfseries Ref} \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a142b27e90970f87a2902e62aa143af8e}{
+void \hyperlink{classGenomicRegionSetScanner_a142b27e90970f87a2902e62aa143af8e}{PrintInterval} (FILE $\ast$out\_\-file=stdout)}
+\label{classGenomicRegionSetScanner_a142b27e90970f87a2902e62aa143af8e}
 
-\begin{CompactList}\small\item\em prints current window's interval \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em prints current window's interval \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Private Member Functions}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classGenomicRegionSetScanner_2687f9ec4d1fac4856f6fd8bf823b65d}{
-bool \hyperlink{classGenomicRegionSetScanner_2687f9ec4d1fac4856f6fd8bf823b65d}{Test} ()}
-\label{classGenomicRegionSetScanner_2687f9ec4d1fac4856f6fd8bf823b65d}
+\hypertarget{classGenomicRegionSetScanner_a2687f9ec4d1fac4856f6fd8bf823b65d}{
+bool \hyperlink{classGenomicRegionSetScanner_a2687f9ec4d1fac4856f6fd8bf823b65d}{Test} ()}
+\label{classGenomicRegionSetScanner_a2687f9ec4d1fac4856f6fd8bf823b65d}
 
-\begin{CompactList}\small\item\em tests whether current input region should be skipped because it does not match any chromosome name in the provided bounds \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em tests whether current input region should be skipped because it does not match any chromosome name in the provided bounds \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Private Attributes}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classGenomicRegionSetScanner_f76bf4fef482886f23f58cfa12c3eea1}{
-\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$ \hyperlink{classGenomicRegionSetScanner_f76bf4fef482886f23f58cfa12c3eea1}{R}}
-\label{classGenomicRegionSetScanner_f76bf4fef482886f23f58cfa12c3eea1}
+\hypertarget{classGenomicRegionSetScanner_af76bf4fef482886f23f58cfa12c3eea1}{
+\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$ \hyperlink{classGenomicRegionSetScanner_af76bf4fef482886f23f58cfa12c3eea1}{R}}
+\label{classGenomicRegionSetScanner_af76bf4fef482886f23f58cfa12c3eea1}
 
-\begin{CompactList}\small\item\em pointer to the \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which will be scanned by sliding windows \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_7f64551c26331cd4ead1ab01405f1b72}{
-StringLIntMap $\ast$ \hyperlink{classGenomicRegionSetScanner_7f64551c26331cd4ead1ab01405f1b72}{bounds}}
-\label{classGenomicRegionSetScanner_7f64551c26331cd4ead1ab01405f1b72}
+\begin{DoxyCompactList}\small\item\em pointer to the \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which will be scanned by sliding windows \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a7f64551c26331cd4ead1ab01405f1b72}{
+StringLIntMap $\ast$ \hyperlink{classGenomicRegionSetScanner_a7f64551c26331cd4ead1ab01405f1b72}{bounds}}
+\label{classGenomicRegionSetScanner_a7f64551c26331cd4ead1ab01405f1b72}
 
-\begin{CompactList}\small\item\em chromosome sizes \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_b278dfa27c3589865b9243156c1c727f}{
-long int \hyperlink{classGenomicRegionSetScanner_b278dfa27c3589865b9243156c1c727f}{win\_\-step}}
-\label{classGenomicRegionSetScanner_b278dfa27c3589865b9243156c1c727f}
+\begin{DoxyCompactList}\small\item\em chromosome sizes \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_ab278dfa27c3589865b9243156c1c727f}{
+long int \hyperlink{classGenomicRegionSetScanner_ab278dfa27c3589865b9243156c1c727f}{win\_\-step}}
+\label{classGenomicRegionSetScanner_ab278dfa27c3589865b9243156c1c727f}
 
-\begin{CompactList}\small\item\em sliding window step \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_eed625b2a12aa2f7900997c4e20cd9b5}{
-long int \hyperlink{classGenomicRegionSetScanner_eed625b2a12aa2f7900997c4e20cd9b5}{win\_\-size}}
-\label{classGenomicRegionSetScanner_eed625b2a12aa2f7900997c4e20cd9b5}
+\begin{DoxyCompactList}\small\item\em sliding window step \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_aeed625b2a12aa2f7900997c4e20cd9b5}{
+long int \hyperlink{classGenomicRegionSetScanner_aeed625b2a12aa2f7900997c4e20cd9b5}{win\_\-size}}
+\label{classGenomicRegionSetScanner_aeed625b2a12aa2f7900997c4e20cd9b5}
 
-\begin{CompactList}\small\item\em sliding window size (must be a multiple of window step) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_d47603d08614ab993fe9036662c421e7}{
-bool \hyperlink{classGenomicRegionSetScanner_d47603d08614ab993fe9036662c421e7}{use\_\-labels\_\-as\_\-values}}
-\label{classGenomicRegionSetScanner_d47603d08614ab993fe9036662c421e7}
+\begin{DoxyCompactList}\small\item\em sliding window size (must be a multiple of window step) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_ad47603d08614ab993fe9036662c421e7}{
+bool \hyperlink{classGenomicRegionSetScanner_ad47603d08614ab993fe9036662c421e7}{use\_\-labels\_\-as\_\-values}}
+\label{classGenomicRegionSetScanner_ad47603d08614ab993fe9036662c421e7}
 
-\begin{CompactList}\small\item\em if true, genomic region labels are assumed to be integers and are included in the counting \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_10c1d22ae74e6f295cd17259f70eff8a}{
-bool \hyperlink{classGenomicRegionSetScanner_10c1d22ae74e6f295cd17259f70eff8a}{ignore\_\-reverse\_\-strand}}
-\label{classGenomicRegionSetScanner_10c1d22ae74e6f295cd17259f70eff8a}
+\begin{DoxyCompactList}\small\item\em if true, genomic region labels are assumed to be integers and are included in the counting \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a10c1d22ae74e6f295cd17259f70eff8a}{
+bool \hyperlink{classGenomicRegionSetScanner_a10c1d22ae74e6f295cd17259f70eff8a}{ignore\_\-reverse\_\-strand}}
+\label{classGenomicRegionSetScanner_a10c1d22ae74e6f295cd17259f70eff8a}
 
-\begin{CompactList}\small\item\em if true, no sliding windows on the negative strand are reported \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_f2a536e23023f96c57f51e2276b4be0e}{
-char \hyperlink{classGenomicRegionSetScanner_f2a536e23023f96c57f51e2276b4be0e}{preprocess}}
-\label{classGenomicRegionSetScanner_f2a536e23023f96c57f51e2276b4be0e}
+\begin{DoxyCompactList}\small\item\em if true, no sliding windows on the negative strand are reported \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_af2a536e23023f96c57f51e2276b4be0e}{
+char \hyperlink{classGenomicRegionSetScanner_af2a536e23023f96c57f51e2276b4be0e}{preprocess}}
+\label{classGenomicRegionSetScanner_af2a536e23023f96c57f51e2276b4be0e}
 
-\begin{CompactList}\small\item\em if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_bab8a5c92ec438168e22eb6e33098aba}{
-long int \hyperlink{classGenomicRegionSetScanner_bab8a5c92ec438168e22eb6e33098aba}{n\_\-win\_\-combine}}
-\label{classGenomicRegionSetScanner_bab8a5c92ec438168e22eb6e33098aba}
+\begin{DoxyCompactList}\small\item\em if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_abab8a5c92ec438168e22eb6e33098aba}{
+long int \hyperlink{classGenomicRegionSetScanner_abab8a5c92ec438168e22eb6e33098aba}{n\_\-win\_\-combine}}
+\label{classGenomicRegionSetScanner_abab8a5c92ec438168e22eb6e33098aba}
 
-\begin{CompactList}\small\item\em win\_\-size divided by win\_\-step (note: each window is comprised of non-overlapping sub-windows of size win\_\-step) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_60dff3d69ed195c0492711ee295720c2}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSetScanner_60dff3d69ed195c0492711ee295720c2}{r}}
-\label{classGenomicRegionSetScanner_60dff3d69ed195c0492711ee295720c2}
+\begin{DoxyCompactList}\small\item\em win\_\-size divided by win\_\-step (note: each window is comprised of non-\/overlapping sub-\/windows of size win\_\-step) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a60dff3d69ed195c0492711ee295720c2}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSetScanner_a60dff3d69ed195c0492711ee295720c2}{r}}
+\label{classGenomicRegionSetScanner_a60dff3d69ed195c0492711ee295720c2}
 
-\begin{CompactList}\small\item\em pointer to the most recently scanned region \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_3f0ba2ab42e8029297f63ba5cf2f9b95}{
-StringLIntMap::iterator \hyperlink{classGenomicRegionSetScanner_3f0ba2ab42e8029297f63ba5cf2f9b95}{chr}}
-\label{classGenomicRegionSetScanner_3f0ba2ab42e8029297f63ba5cf2f9b95}
+\begin{DoxyCompactList}\small\item\em pointer to the most recently scanned region \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a3f0ba2ab42e8029297f63ba5cf2f9b95}{
+StringLIntMap::iterator \hyperlink{classGenomicRegionSetScanner_a3f0ba2ab42e8029297f63ba5cf2f9b95}{chr}}
+\label{classGenomicRegionSetScanner_a3f0ba2ab42e8029297f63ba5cf2f9b95}
 
-\begin{CompactList}\small\item\em keeps track of current window's chromosome information \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_0b9c57901528e75d9d32f4f98a708f4b}{
-char \hyperlink{classGenomicRegionSetScanner_0b9c57901528e75d9d32f4f98a708f4b}{strand}}
-\label{classGenomicRegionSetScanner_0b9c57901528e75d9d32f4f98a708f4b}
+\begin{DoxyCompactList}\small\item\em keeps track of current window's chromosome information \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a0b9c57901528e75d9d32f4f98a708f4b}{
+char \hyperlink{classGenomicRegionSetScanner_a0b9c57901528e75d9d32f4f98a708f4b}{strand}}
+\label{classGenomicRegionSetScanner_a0b9c57901528e75d9d32f4f98a708f4b}
 
-\begin{CompactList}\small\item\em keeps track of current window's strand information \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_305a53be4686bb873996e83b3c393701}{
-long int \hyperlink{classGenomicRegionSetScanner_305a53be4686bb873996e83b3c393701}{start}}
-\label{classGenomicRegionSetScanner_305a53be4686bb873996e83b3c393701}
+\begin{DoxyCompactList}\small\item\em keeps track of current window's strand information \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a305a53be4686bb873996e83b3c393701}{
+long int \hyperlink{classGenomicRegionSetScanner_a305a53be4686bb873996e83b3c393701}{start}}
+\label{classGenomicRegionSetScanner_a305a53be4686bb873996e83b3c393701}
 
-\begin{CompactList}\small\item\em keeps track of current window's start information \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_f39ff3f8e4f1a1ab55c004cd06c2378a}{
-long int \hyperlink{classGenomicRegionSetScanner_f39ff3f8e4f1a1ab55c004cd06c2378a}{stop}}
-\label{classGenomicRegionSetScanner_f39ff3f8e4f1a1ab55c004cd06c2378a}
+\begin{DoxyCompactList}\small\item\em keeps track of current window's start information \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_af39ff3f8e4f1a1ab55c004cd06c2378a}{
+long int \hyperlink{classGenomicRegionSetScanner_af39ff3f8e4f1a1ab55c004cd06c2378a}{stop}}
+\label{classGenomicRegionSetScanner_af39ff3f8e4f1a1ab55c004cd06c2378a}
 
-\begin{CompactList}\small\item\em keeps track of current window's stop information \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_19e26d0661ce5f380a72f3eb43b0b07f}{
-long int $\ast$ \hyperlink{classGenomicRegionSetScanner_19e26d0661ce5f380a72f3eb43b0b07f}{v}}
-\label{classGenomicRegionSetScanner_19e26d0661ce5f380a72f3eb43b0b07f}
+\begin{DoxyCompactList}\small\item\em keeps track of current window's stop information \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a19e26d0661ce5f380a72f3eb43b0b07f}{
+long int $\ast$ \hyperlink{classGenomicRegionSetScanner_a19e26d0661ce5f380a72f3eb43b0b07f}{v}}
+\label{classGenomicRegionSetScanner_a19e26d0661ce5f380a72f3eb43b0b07f}
 
-\begin{CompactList}\small\item\em a vector that keeps track of values in the sub-windows (of size win\_\-step) that comprise the window (of size win\_\-size) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_fa341bbfce6cffdc2880c8f1c80abeb1}{
-long int \hyperlink{classGenomicRegionSetScanner_fa341bbfce6cffdc2880c8f1c80abeb1}{k}}
-\label{classGenomicRegionSetScanner_fa341bbfce6cffdc2880c8f1c80abeb1}
+\begin{DoxyCompactList}\small\item\em a vector that keeps track of values in the sub-\/windows (of size win\_\-step) that comprise the window (of size win\_\-size) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_afa341bbfce6cffdc2880c8f1c80abeb1}{
+long int \hyperlink{classGenomicRegionSetScanner_afa341bbfce6cffdc2880c8f1c80abeb1}{k}}
+\label{classGenomicRegionSetScanner_afa341bbfce6cffdc2880c8f1c80abeb1}
 
-\begin{CompactList}\small\item\em the k-th element of v to be updated next (in a round-robin manner) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSetScanner_80be27fad3a3456e7aecd71fb7439c5a}{
-long int \hyperlink{classGenomicRegionSetScanner_80be27fad3a3456e7aecd71fb7439c5a}{v\_\-sum}}
-\label{classGenomicRegionSetScanner_80be27fad3a3456e7aecd71fb7439c5a}
+\begin{DoxyCompactList}\small\item\em the k-\/th element of v to be updated next (in a round-\/robin manner) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSetScanner_a80be27fad3a3456e7aecd71fb7439c5a}{
+long int \hyperlink{classGenomicRegionSetScanner_a80be27fad3a3456e7aecd71fb7439c5a}{v\_\-sum}}
+\label{classGenomicRegionSetScanner_a80be27fad3a3456e7aecd71fb7439c5a}
 
-\begin{CompactList}\small\item\em keeps track of current window's value information (this is the sum of elements in vector v); it is set to '-1' if no more windows are available. \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em keeps track of current window's value information (this is the sum of elements in vector v); it is set to '-\/1' if no more windows are available. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 This class is used to scan a set of regions by sliding windows. See detailed description below for an example. 
 
 Example: 
-
-\begin{Code}\begin{verbatim}    // initialize (note: you need to set inputs and parameters, such as genome_reg_file, input_reg_file, WIN_DIST and WIN_SIZE)
+\begin{DoxyCode}
+    // initialize (note: you need to set inputs and parameters, such as genome_re
+      g_file, input_reg_file, WIN_DIST and WIN_SIZE)
     StringLIntMap *bounds = ReadBounds(genome_reg_file);
     GenomicRegionSet InputRegSet(input_reg_file,10000,true,false);
-    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,false,'c');
+    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,f
+      alse,false,'c');
 
     // run
     Progress PRG("Scanning...",1);
@@ -144,29 +150,49 @@ Example:
   
     // cleanup
     if (bounds!=NULL) delete bounds;
-\end{verbatim}
-\end{Code}
-
+\end{DoxyCode}
  
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classGenomicRegionSetScanner_2703f6892137282f00618895e02f628b}{
+\hypertarget{classGenomicRegionSetScanner_a308979aaa369991fcbb3f3f9877c807d}{
 \index{GenomicRegionSetScanner@{GenomicRegionSetScanner}!GenomicRegionSetScanner@{GenomicRegionSetScanner}}
 \index{GenomicRegionSetScanner@{GenomicRegionSetScanner}!GenomicRegionSetScanner@{GenomicRegionSetScanner}}
-\subsubsection[GenomicRegionSetScanner]{\setlength{\rightskip}{0pt plus 5cm}GenomicRegionSetScanner::GenomicRegionSetScanner ({\bf GenomicRegionSet} $\ast$ {\em R}, \/  StringLIntMap $\ast$ {\em bounds}, \/  long int {\em win\_\-step}, \/  long int {\em win\_\-size}, \/  bool {\em use\_\-labels\_\-as\_\-values}, \/  bool {\em ignore\_\-reverse\_\-strand}, \/  char {\em preprocess} = {\tt '1'})}}
-\label{classGenomicRegionSetScanner_2703f6892137282f00618895e02f628b}
+\subsubsection[{GenomicRegionSetScanner}]{\setlength{\rightskip}{0pt plus 5cm}GenomicRegionSetScanner::GenomicRegionSetScanner (
+\begin{DoxyParamCaption}
+\item[{{\bf GenomicRegionSet} $\ast$}]{R, }
+\item[{StringLIntMap $\ast$}]{bounds, }
+\item[{long int}]{win\_\-step, }
+\item[{long int}]{win\_\-size, }
+\item[{bool}]{use\_\-labels\_\-as\_\-values, }
+\item[{bool}]{ignore\_\-reverse\_\-strand, }
+\item[{char}]{preprocess}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSetScanner_a308979aaa369991fcbb3f3f9877c807d}
 
 
 Class constructor. 
 
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em R}]the \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which will be scanned by sliding windows \item[{\em bounds}]chromosome sizes \item[{\em win\_\-step}]sliding window step \item[{\em win\_\-size}]sliding window size (must be a multiple of window step) \item[{\em use\_\-labels\_\-as\_\-values}]if true, genomic region labels are assumed to be integers and are included in the counting \item[{\em ignore\_\-reverse\_\-strand}]if true, no sliding windows on the negative strand are reported \item[{\em preprocess}]if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \end{description}
-\end{Desc}
+
+\begin{DoxyParams}{Parameters}
+{\em R} & the \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which will be scanned by sliding windows \\
+\hline
+{\em bounds} & chromosome sizes \\
+\hline
+{\em win\_\-step} & sliding window step \\
+\hline
+{\em win\_\-size} & sliding window size (must be a multiple of window step) \\
+\hline
+{\em use\_\-labels\_\-as\_\-values} & if true, genomic region labels are assumed to be integers and are included in the counting \\
+\hline
+{\em ignore\_\-reverse\_\-strand} & if true, no sliding windows on the negative strand are reported \\
+\hline
+{\em preprocess} & if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \\
+\hline
+\end{DoxyParams}
 
 
-The documentation for this class was generated from the following files:\begin{CompactItemize}
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
 \item 
 genomic\_\-intervals.h\item 
-genomic\_\-intervals.cpp\end{CompactItemize}
+genomic\_\-intervals.cpp\end{DoxyCompactItemize}
