@@ -2,108 +2,134 @@
 \section{Progress Class Reference}
 \label{classProgress}\index{Progress@{Progress}}
 }
+
+
 This class is used to report progress of loop computations.  
 
 
-{\tt \#include $<$core.h$>$}
+
+
+{\ttfamily \#include $<$core.h$>$}
 
 \subsection*{Public Member Functions}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hyperlink{classProgress_fc6164b4ac61db61319559b1b8cc99f2}{Progress} (const char $\ast$\hyperlink{classProgress_7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}, long int \hyperlink{classProgress_9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count})
-\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
-\hypertarget{classProgress_01d83f02dc49939dd5d14057932a8a8d}{
-\hyperlink{classProgress_01d83f02dc49939dd5d14057932a8a8d}{Progress} ()}
-\label{classProgress_01d83f02dc49939dd5d14057932a8a8d}
+\hyperlink{classProgress_afc6164b4ac61db61319559b1b8cc99f2}{Progress} (const char $\ast$\hyperlink{classProgress_a7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}, long int \hyperlink{classProgress_a9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count})
+\begin{DoxyCompactList}\small\item\em Class constructor. \end{DoxyCompactList}\item 
+\hypertarget{classProgress_a01d83f02dc49939dd5d14057932a8a8d}{
+\hyperlink{classProgress_a01d83f02dc49939dd5d14057932a8a8d}{Progress} ()}
+\label{classProgress_a01d83f02dc49939dd5d14057932a8a8d}
 
-\begin{CompactList}\small\item\em Class constructor. \item\end{CompactList}\item 
-void \hyperlink{classProgress_3400f3a809c40b45b63c5196e701db8a}{Init} (const char $\ast$\hyperlink{classProgress_7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}, long int \hyperlink{classProgress_9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count})
-\begin{CompactList}\small\item\em Prints message and initializes counter. \item\end{CompactList}\item 
-void \hyperlink{classProgress_58375cdfa5fc9e27d3db6c216c6c2248}{Check} ()
-\begin{CompactList}\small\item\em Updates counter and reports progress every 1sec. \item\end{CompactList}\item 
-void \hyperlink{classProgress_cabb2c4a989f7583dab1c75eb173ebf7}{Done} ()
-\begin{CompactList}\small\item\em Prints final count. \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em Class constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classProgress_a3400f3a809c40b45b63c5196e701db8a}{Init} (const char $\ast$\hyperlink{classProgress_a7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}, long int \hyperlink{classProgress_a9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count})
+\begin{DoxyCompactList}\small\item\em Prints message and initializes counter. \end{DoxyCompactList}\item 
+void \hyperlink{classProgress_a58375cdfa5fc9e27d3db6c216c6c2248}{Check} ()
+\begin{DoxyCompactList}\small\item\em Updates counter and reports progress every 1sec. \end{DoxyCompactList}\item 
+void \hyperlink{classProgress_acabb2c4a989f7583dab1c75eb173ebf7}{Done} ()
+\begin{DoxyCompactList}\small\item\em Prints final count. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Private Attributes}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classProgress_7eeeaec06e0ab3c1fc871ccb225ede3d}{
-char $\ast$ \hyperlink{classProgress_7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}}
-\label{classProgress_7eeeaec06e0ab3c1fc871ccb225ede3d}
+\hypertarget{classProgress_a7eeeaec06e0ab3c1fc871ccb225ede3d}{
+char $\ast$ \hyperlink{classProgress_a7eeeaec06e0ab3c1fc871ccb225ede3d}{msg}}
+\label{classProgress_a7eeeaec06e0ab3c1fc871ccb225ede3d}
 
-\begin{CompactList}\small\item\em message \item\end{CompactList}\item 
-\hypertarget{classProgress_9cfb7b6b93778e9c617c38ab26d3d0a0}{
-long int \hyperlink{classProgress_9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count}}
-\label{classProgress_9cfb7b6b93778e9c617c38ab26d3d0a0}
+\begin{DoxyCompactList}\small\item\em message \end{DoxyCompactList}\item 
+\hypertarget{classProgress_a9cfb7b6b93778e9c617c38ab26d3d0a0}{
+long int \hyperlink{classProgress_a9cfb7b6b93778e9c617c38ab26d3d0a0}{max\_\-count}}
+\label{classProgress_a9cfb7b6b93778e9c617c38ab26d3d0a0}
 
-\begin{CompactList}\small\item\em maximum number of iterations in the loop \item\end{CompactList}\item 
-\hypertarget{classProgress_f7e775f01228c66c3ee7617a2ba1ab5c}{
-long int \hyperlink{classProgress_f7e775f01228c66c3ee7617a2ba1ab5c}{count}}
-\label{classProgress_f7e775f01228c66c3ee7617a2ba1ab5c}
+\begin{DoxyCompactList}\small\item\em maximum number of iterations in the loop \end{DoxyCompactList}\item 
+\hypertarget{classProgress_af7e775f01228c66c3ee7617a2ba1ab5c}{
+long int \hyperlink{classProgress_af7e775f01228c66c3ee7617a2ba1ab5c}{count}}
+\label{classProgress_af7e775f01228c66c3ee7617a2ba1ab5c}
 
-\begin{CompactList}\small\item\em current iteration \item\end{CompactList}\item 
-\hypertarget{classProgress_ac96c2b090cf1fe16e16c9a4be676888}{
-time\_\-t \hyperlink{classProgress_ac96c2b090cf1fe16e16c9a4be676888}{TIME}}
-\label{classProgress_ac96c2b090cf1fe16e16c9a4be676888}
+\begin{DoxyCompactList}\small\item\em current iteration \end{DoxyCompactList}\item 
+\hypertarget{classProgress_aac96c2b090cf1fe16e16c9a4be676888}{
+time\_\-t \hyperlink{classProgress_aac96c2b090cf1fe16e16c9a4be676888}{TIME}}
+\label{classProgress_aac96c2b090cf1fe16e16c9a4be676888}
 
-\begin{CompactList}\small\item\em time stamp (updated every second) \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em time stamp (updated every second) \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 This class is used to report progress of loop computations. 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classProgress_fc6164b4ac61db61319559b1b8cc99f2}{
+\hypertarget{classProgress_afc6164b4ac61db61319559b1b8cc99f2}{
 \index{Progress@{Progress}!Progress@{Progress}}
 \index{Progress@{Progress}!Progress@{Progress}}
-\subsubsection[Progress]{\setlength{\rightskip}{0pt plus 5cm}Progress::Progress (const char $\ast$ {\em msg}, \/  long int {\em max\_\-count})}}
-\label{classProgress_fc6164b4ac61db61319559b1b8cc99f2}
+\subsubsection[{Progress}]{\setlength{\rightskip}{0pt plus 5cm}Progress::Progress (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{long int}]{max\_\-count}
+\end{DoxyParamCaption}
+)}}
+\label{classProgress_afc6164b4ac61db61319559b1b8cc99f2}
 
 
 Class constructor. 
 
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em msg}]message to be displayed in stderr. \item[{\em max\_\-count}]if greater than 1, the progress is shown as percentage \end{description}
-\end{Desc}
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to be displayed in stderr. \\
+\hline
+{\em max\_\-count} & if greater than 1, the progress is shown as percentage \\
+\hline
+\end{DoxyParams}
 
 
 \subsection{Member Function Documentation}
-\hypertarget{classProgress_3400f3a809c40b45b63c5196e701db8a}{
-\index{Progress@{Progress}!Init@{Init}}
-\index{Init@{Init}!Progress@{Progress}}
-\subsubsection[Init]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Init (const char $\ast$ {\em msg}, \/  long int {\em max\_\-count})}}
-\label{classProgress_3400f3a809c40b45b63c5196e701db8a}
-
-
-Prints message and initializes counter. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em msg}]message to be displayed in stderr. \item[{\em max\_\-count}]if greater than 1, the progress is shown as percentage \end{description}
-\end{Desc}
-\hypertarget{classProgress_58375cdfa5fc9e27d3db6c216c6c2248}{
+\hypertarget{classProgress_a58375cdfa5fc9e27d3db6c216c6c2248}{
 \index{Progress@{Progress}!Check@{Check}}
 \index{Check@{Check}!Progress@{Progress}}
-\subsubsection[Check]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Check ()}}
-\label{classProgress_58375cdfa5fc9e27d3db6c216c6c2248}
+\subsubsection[{Check}]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Check (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classProgress_a58375cdfa5fc9e27d3db6c216c6c2248}
 
 
 Updates counter and reports progress every 1sec. 
 
-Call this method inside the loop you want to monitor at the end of each iteration. \hypertarget{classProgress_cabb2c4a989f7583dab1c75eb173ebf7}{
+Call this method inside the loop you want to monitor at the end of each iteration. \hypertarget{classProgress_acabb2c4a989f7583dab1c75eb173ebf7}{
 \index{Progress@{Progress}!Done@{Done}}
 \index{Done@{Done}!Progress@{Progress}}
-\subsubsection[Done]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Done ()}}
-\label{classProgress_cabb2c4a989f7583dab1c75eb173ebf7}
+\subsubsection[{Done}]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Done (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classProgress_acabb2c4a989f7583dab1c75eb173ebf7}
 
 
 Prints final count. 
 
-Call this method after the loop. 
+Call this method after the loop. \hypertarget{classProgress_a3400f3a809c40b45b63c5196e701db8a}{
+\index{Progress@{Progress}!Init@{Init}}
+\index{Init@{Init}!Progress@{Progress}}
+\subsubsection[{Init}]{\setlength{\rightskip}{0pt plus 5cm}void Progress::Init (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{long int}]{max\_\-count}
+\end{DoxyParamCaption}
+)}}
+\label{classProgress_a3400f3a809c40b45b63c5196e701db8a}
 
-The documentation for this class was generated from the following files:\begin{CompactItemize}
+
+Prints message and initializes counter. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to be displayed in stderr. \\
+\hline
+{\em max\_\-count} & if greater than 1, the progress is shown as percentage \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
 \item 
 core.h\item 
-core.cpp\end{CompactItemize}
+core.cpp\end{DoxyCompactItemize}

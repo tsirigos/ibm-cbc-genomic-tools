@@ -10,7 +10,7 @@
 
 \section download Download and install
 
-<b>GenomicTools</b> can be downloaded from <a class="el" href="http://http://code.google.com/p/ibm-cbc-genomic-tools/">code.google.com</a>. To install it, simply enter the src subdirectory and type make. This will create the executables in the bin subdirectory (which you may choose to included in your path).
+<b>GenomicTools</b> can be downloaded from <a class="el" href="http://code.google.com/p/ibm-cbc-genomic-tools/">code.google.com</a>. To install it, simply enter the src subdirectory and type make. This will create the executables in the bin subdirectory (which you may choose to included in your path).
 
 
 */

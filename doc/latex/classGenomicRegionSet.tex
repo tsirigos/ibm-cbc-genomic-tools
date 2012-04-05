@@ -2,395 +2,401 @@
 \section{GenomicRegionSet Class Reference}
 \label{classGenomicRegionSet}\index{GenomicRegionSet@{GenomicRegionSet}}
 }
+
+
 This class is used to read and manipulate a set of genomic regions from a file or from standard input.  
 
 
-{\tt \#include $<$genomic\_\-intervals.h$>$}
+
+
+{\ttfamily \#include $<$genomic\_\-intervals.h$>$}
 
 \subsection*{Public Member Functions}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classGenomicRegionSet_afc417b2a9a27f3ad833828be5720e92}{
-\hyperlink{classGenomicRegionSet_afc417b2a9a27f3ad833828be5720e92}{GenomicRegionSet} (char $\ast$\hyperlink{classGenomicRegionSet_7c593d1beab775590d5b810097644583}{file}, unsigned long int \hyperlink{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}, bool \hyperlink{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}{verbose}, bool \hyperlink{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}=true)}
-\label{classGenomicRegionSet_afc417b2a9a27f3ad833828be5720e92}
+\hypertarget{classGenomicRegionSet_a38420b4118c310bdf694f6138ad08b13}{
+\hyperlink{classGenomicRegionSet_a38420b4118c310bdf694f6138ad08b13}{GenomicRegionSet} (char $\ast$\hyperlink{classGenomicRegionSet_a7c593d1beab775590d5b810097644583}{file}, unsigned long int \hyperlink{classGenomicRegionSet_a4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}, bool \hyperlink{classGenomicRegionSet_a2646e9e6d5da1693b4bea36a5acc082e}{verbose}, bool \hyperlink{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}, bool \hyperlink{classGenomicRegionSet_a84dd2f8055524a933e963175781f7fd2}{hide\_\-header})}
+\label{classGenomicRegionSet_a38420b4118c310bdf694f6138ad08b13}
 
-\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_8d18f09bd536bae9f2a2494d4cc19f65}{
-\hyperlink{classGenomicRegionSet_8d18f09bd536bae9f2a2494d4cc19f65}{GenomicRegionSet} (FILE $\ast$\hyperlink{classGenomicRegionSet_4ca6c6268e39fdea2add6e6381c66962}{file\_\-ptr}, unsigned long int \hyperlink{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}, bool \hyperlink{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}{verbose}, bool \hyperlink{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}=true)}
-\label{classGenomicRegionSet_8d18f09bd536bae9f2a2494d4cc19f65}
+\begin{DoxyCompactList}\small\item\em Class constructor, see example below. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a449c1b13237caa3d16f55500d943f33b}{
+\hyperlink{classGenomicRegionSet_a449c1b13237caa3d16f55500d943f33b}{GenomicRegionSet} (FILE $\ast$\hyperlink{classGenomicRegionSet_a4ca6c6268e39fdea2add6e6381c66962}{file\_\-ptr}, unsigned long int \hyperlink{classGenomicRegionSet_a4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}, bool \hyperlink{classGenomicRegionSet_a2646e9e6d5da1693b4bea36a5acc082e}{verbose}, bool \hyperlink{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}, bool \hyperlink{classGenomicRegionSet_a84dd2f8055524a933e963175781f7fd2}{hide\_\-header})}
+\label{classGenomicRegionSet_a449c1b13237caa3d16f55500d943f33b}
 
-\begin{CompactList}\small\item\em Class constructor, see example below. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_3fc7c6dc31cffcedf97a7b69a7f3c2c8}{
-virtual \hyperlink{classGenomicRegionSet_3fc7c6dc31cffcedf97a7b69a7f3c2c8}{$\sim$GenomicRegionSet} ()}
-\label{classGenomicRegionSet_3fc7c6dc31cffcedf97a7b69a7f3c2c8}
+\begin{DoxyCompactList}\small\item\em Class constructor, see example below. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a3fc7c6dc31cffcedf97a7b69a7f3c2c8}{
+virtual \hyperlink{classGenomicRegionSet_a3fc7c6dc31cffcedf97a7b69a7f3c2c8}{$\sim$GenomicRegionSet} ()}
+\label{classGenomicRegionSet_a3fc7c6dc31cffcedf97a7b69a7f3c2c8}
 
-\begin{CompactList}\small\item\em Class destructor. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_6992ccc0c4dd8be0ad4be9b991ab9f36}{
-void \hyperlink{classGenomicRegionSet_6992ccc0c4dd8be0ad4be9b991ab9f36}{ProcessFileHeader} (bool hide)}
-\label{classGenomicRegionSet_6992ccc0c4dd8be0ad4be9b991ab9f36}
+\begin{DoxyCompactList}\small\item\em Class destructor. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a6992ccc0c4dd8be0ad4be9b991ab9f36}{
+void \hyperlink{classGenomicRegionSet_a6992ccc0c4dd8be0ad4be9b991ab9f36}{ProcessFileHeader} (bool hide)}
+\label{classGenomicRegionSet_a6992ccc0c4dd8be0ad4be9b991ab9f36}
 
-\begin{CompactList}\small\item\em Processes file header. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_5721a1d9ca4ca18ddbcad1e563d42019}{
-void \hyperlink{classGenomicRegionSet_5721a1d9ca4ca18ddbcad1e563d42019}{DetectFileFormat} ()}
-\label{classGenomicRegionSet_5721a1d9ca4ca18ddbcad1e563d42019}
+\begin{DoxyCompactList}\small\item\em Processes file header. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a5721a1d9ca4ca18ddbcad1e563d42019}{
+void \hyperlink{classGenomicRegionSet_a5721a1d9ca4ca18ddbcad1e563d42019}{DetectFileFormat} ()}
+\label{classGenomicRegionSet_a5721a1d9ca4ca18ddbcad1e563d42019}
 
-\begin{CompactList}\small\item\em Detects input format. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_4e8e101aebcedd6a5892d463fe830450}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_4e8e101aebcedd6a5892d463fe830450}{CreateGenomicRegion} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$\hyperlink{classGenomicRegionSet_df3a5598e31ddbb5b381125925362085}{buffer})}
-\label{classGenomicRegionSet_4e8e101aebcedd6a5892d463fe830450}
+\begin{DoxyCompactList}\small\item\em Detects input format. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a4e8e101aebcedd6a5892d463fe830450}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_a4e8e101aebcedd6a5892d463fe830450}{CreateGenomicRegion} (\hyperlink{classFileBuffer}{FileBuffer} $\ast$\hyperlink{classGenomicRegionSet_adf3a5598e31ddbb5b381125925362085}{buffer})}
+\label{classGenomicRegionSet_a4e8e101aebcedd6a5892d463fe830450}
 
-\begin{CompactList}\small\item\em Creates new genomic region based on input format. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_94b1955e7a4127efaceba25429af7568}{
-void \hyperlink{classGenomicRegionSet_94b1955e7a4127efaceba25429af7568}{Init} ()}
-\label{classGenomicRegionSet_94b1955e7a4127efaceba25429af7568}
+\begin{DoxyCompactList}\small\item\em Creates new genomic region based on input format. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a94b1955e7a4127efaceba25429af7568}{
+void \hyperlink{classGenomicRegionSet_a94b1955e7a4127efaceba25429af7568}{Init} ()}
+\label{classGenomicRegionSet_a94b1955e7a4127efaceba25429af7568}
 
-\begin{CompactList}\small\item\em Initializes data structures. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_ae7295913424148013df6a154c5458aa}{
-void \hyperlink{classGenomicRegionSet_ae7295913424148013df6a154c5458aa}{Reset} ()}
-\label{classGenomicRegionSet_ae7295913424148013df6a154c5458aa}
+\begin{DoxyCompactList}\small\item\em Initializes data structures. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_aae7295913424148013df6a154c5458aa}{
+void \hyperlink{classGenomicRegionSet_aae7295913424148013df6a154c5458aa}{Reset} ()}
+\label{classGenomicRegionSet_aae7295913424148013df6a154c5458aa}
 
-\begin{CompactList}\small\item\em Resets file; note, that this is not possible if the regions are being read from the standard input. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_06e2e8f91623c01e6e00500888b9ba3d}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_06e2e8f91623c01e6e00500888b9ba3d}{Begin} ()}
-\label{classGenomicRegionSet_06e2e8f91623c01e6e00500888b9ba3d}
+\begin{DoxyCompactList}\small\item\em Resets file; note, that this is not possible if the regions are being read from the standard input. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a06e2e8f91623c01e6e00500888b9ba3d}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_a06e2e8f91623c01e6e00500888b9ba3d}{Begin} ()}
+\label{classGenomicRegionSet_a06e2e8f91623c01e6e00500888b9ba3d}
 
-\begin{CompactList}\small\item\em Returns pointer to the first region in the set; note, that this is not possible if the regions are being read from the standard input. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_77031066d2648c8935c291ef227b37be}{
-virtual \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_77031066d2648c8935c291ef227b37be}{Get} ()}
-\label{classGenomicRegionSet_77031066d2648c8935c291ef227b37be}
+\begin{DoxyCompactList}\small\item\em Returns pointer to the first region in the set; note, that this is not possible if the regions are being read from the standard input. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a77031066d2648c8935c291ef227b37be}{
+virtual \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_a77031066d2648c8935c291ef227b37be}{Get} ()}
+\label{classGenomicRegionSet_a77031066d2648c8935c291ef227b37be}
 
-\begin{CompactList}\small\item\em Returns pointer to current region in the set. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}{
-virtual \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}{Next} ()}
-\label{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}
+\begin{DoxyCompactList}\small\item\em Returns pointer to current region in the set. \end{DoxyCompactList}\item 
+virtual \hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}{Next} (bool retain\_\-current=false)
+\begin{DoxyCompactList}\small\item\em Moves pointer to next region in the set; if \hyperlink{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{GenomicRegionSet::load\_\-in\_\-memory} is 'false', it deletes the current region. \end{DoxyCompactList}\item 
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_a84c1a9021f1eed8516945abd071e982d}{Next} (bool sorted\_\-by\_\-strand, bool retain\_\-current)
+\begin{DoxyCompactList}\small\item\em Same as \hyperlink{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}{Next()} but allows user to check sort order and/or retain the current region into memory. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a8993c741ef2513ba5c5b88eb390f1f99}{
+void \hyperlink{classGenomicRegionSet_a8993c741ef2513ba5c5b88eb390f1f99}{Release} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r)}
+\label{classGenomicRegionSet_a8993c741ef2513ba5c5b88eb390f1f99}
 
-\begin{CompactList}\small\item\em Moves pointer to next region in the set; if \hyperlink{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}{GenomicRegionSet::load\_\-in\_\-memory} is 'false', it deletes the current region. \item\end{CompactList}\item 
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_c11134b4ccc2ad002ef20ac12d3b70b8}{Next} (bool sorted\_\-by\_\-strand, bool retain\_\-current=false)
-\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}{Next()} but allows user to check sort order and/or retain the current region into memory. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_8993c741ef2513ba5c5b88eb390f1f99}{
-void \hyperlink{classGenomicRegionSet_8993c741ef2513ba5c5b88eb390f1f99}{Release} (\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$r)}
-\label{classGenomicRegionSet_8993c741ef2513ba5c5b88eb390f1f99}
+\begin{DoxyCompactList}\small\item\em Deletes genomic region from memory. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ad7dfea15eb8968d376771d74e042f3a1}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_ad7dfea15eb8968d376771d74e042f3a1}{GetRetain} ()}
+\label{classGenomicRegionSet_ad7dfea15eb8968d376771d74e042f3a1}
 
-\begin{CompactList}\small\item\em Deletes genomic region from memory. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_d7dfea15eb8968d376771d74e042f3a1}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_d7dfea15eb8968d376771d74e042f3a1}{GetRetain} ()}
-\label{classGenomicRegionSet_d7dfea15eb8968d376771d74e042f3a1}
+\begin{DoxyCompactList}\small\item\em \mbox{[}DEPRECATED\mbox{]} Returns current region, and protects its from deletion by \hyperlink{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}{GenomicRegionSet::Next()}. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a39c746333affb32acffbf0f31b7f6fcf}{
+void \hyperlink{classGenomicRegionSet_a39c746333affb32acffbf0f31b7f6fcf}{PrintError} (string error\_\-msg)}
+\label{classGenomicRegionSet_a39c746333affb32acffbf0f31b7f6fcf}
 
-\begin{CompactList}\small\item\em \mbox{[}DEPRECATED\mbox{]} Returns current region, and protects its from deletion by \hyperlink{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}{GenomicRegionSet::Next()}. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_39c746333affb32acffbf0f31b7f6fcf}{
-void \hyperlink{classGenomicRegionSet_39c746333affb32acffbf0f31b7f6fcf}{PrintError} (string error\_\-msg)}
-\label{classGenomicRegionSet_39c746333affb32acffbf0f31b7f6fcf}
+\begin{DoxyCompactList}\small\item\em Prints error message. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a260acb32612d31325099c9e53366c9d2}{
+long int \hyperlink{classGenomicRegionSet_a260acb32612d31325099c9e53366c9d2}{CountRegions} (bool use\_\-label\_\-counts)}
+\label{classGenomicRegionSet_a260acb32612d31325099c9e53366c9d2}
 
-\begin{CompactList}\small\item\em Prints error message. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_260acb32612d31325099c9e53366c9d2}{
-long int \hyperlink{classGenomicRegionSet_260acb32612d31325099c9e53366c9d2}{CountRegions} (bool use\_\-label\_\-counts)}
-\label{classGenomicRegionSet_260acb32612d31325099c9e53366c9d2}
+\begin{DoxyCompactList}\small\item\em Counts the number of regions in the set. If {\bfseries use\_\-label\_\-counts}, the region labels are assumed to be numbers, and the sum of these numbers is reported. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a78c6f4879ac131e6db2094f21b466a98}{
+void \hyperlink{classGenomicRegionSet_a78c6f4879ac131e6db2094f21b466a98}{RunGlobalAnnotate} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSet_a78c6f4879ac131e6db2094f21b466a98}
 
-\begin{CompactList}\small\item\em Counts the number of regions in the set. If {\bf use\_\-label\_\-counts}, the region labels are assumed to be numbers, and the sum of these numbers is reported. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_78c6f4879ac131e6db2094f21b466a98}{
-void \hyperlink{classGenomicRegionSet_78c6f4879ac131e6db2094f21b466a98}{RunGlobalAnnotate} (StringLIntMap $\ast$bounds)}
-\label{classGenomicRegionSet_78c6f4879ac131e6db2094f21b466a98}
+\begin{DoxyCompactList}\small\item\em Annotate input region neighborhoods as upstream, downstream, etc. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a619b51265f7bf5d6c92144de689ca8a2}{
+void \hyperlink{classGenomicRegionSet_a619b51265f7bf5d6c92144de689ca8a2}{RunGlobalCluster} (bool merge=false)}
+\label{classGenomicRegionSet_a619b51265f7bf5d6c92144de689ca8a2}
 
-\begin{CompactList}\small\item\em Annotate input region neighborhoods as upstream, downstream, etc. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_619b51265f7bf5d6c92144de689ca8a2}{
-void \hyperlink{classGenomicRegionSet_619b51265f7bf5d6c92144de689ca8a2}{RunGlobalCluster} (bool merge=false)}
-\label{classGenomicRegionSet_619b51265f7bf5d6c92144de689ca8a2}
+\begin{DoxyCompactList}\small\item\em Cluster input regions based on pair-\/wise overlaps (note that this is computationally intensive). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a3d550572975732566378797ac1d8119b}{
+void \hyperlink{classGenomicRegionSet_a3d550572975732566378797ac1d8119b}{RunGlobalCalcDistances} (char $\ast$op1, char $\ast$op2)}
+\label{classGenomicRegionSet_a3d550572975732566378797ac1d8119b}
 
-\begin{CompactList}\small\item\em Cluster input regions based on pair-wise overlaps (note that this is computationally intensive). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_3d550572975732566378797ac1d8119b}{
-void \hyperlink{classGenomicRegionSet_3d550572975732566378797ac1d8119b}{RunGlobalCalcDistances} (char $\ast$op1, char $\ast$op2)}
-\label{classGenomicRegionSet_3d550572975732566378797ac1d8119b}
+\begin{DoxyCompactList}\small\item\em Print distance between successive regions. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a2d6dc99608a1d4938b421fa5a85f5477}{
+void \hyperlink{classGenomicRegionSet_a2d6dc99608a1d4938b421fa5a85f5477}{RunGlobalSort} ()}
+\label{classGenomicRegionSet_a2d6dc99608a1d4938b421fa5a85f5477}
 
-\begin{CompactList}\small\item\em Print distance between successive regions. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_2d6dc99608a1d4938b421fa5a85f5477}{
-void \hyperlink{classGenomicRegionSet_2d6dc99608a1d4938b421fa5a85f5477}{RunGlobalSort} ()}
-\label{classGenomicRegionSet_2d6dc99608a1d4938b421fa5a85f5477}
+\begin{DoxyCompactList}\small\item\em Prints sorted region set. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a1056659ccda2e39febb6b87d858a88c4}{
+void \hyperlink{classGenomicRegionSet_a1056659ccda2e39febb6b87d858a88c4}{RunGlobalInvert} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSet_a1056659ccda2e39febb6b87d858a88c4}
 
-\begin{CompactList}\small\item\em Prints sorted region set. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_1056659ccda2e39febb6b87d858a88c4}{
-void \hyperlink{classGenomicRegionSet_1056659ccda2e39febb6b87d858a88c4}{RunGlobalInvert} (StringLIntMap $\ast$bounds)}
-\label{classGenomicRegionSet_1056659ccda2e39febb6b87d858a88c4}
+\begin{DoxyCompactList}\small\item\em Prints the difference between chromosome intervals and input region set (input region set must be sorted). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab9783fb4fead289c7fe107f9bec1865b}{
+void \hyperlink{classGenomicRegionSet_ab9783fb4fead289c7fe107f9bec1865b}{RunGlobalLink} (bool sorted\_\-by\_\-strand, long int max\_\-difference)}
+\label{classGenomicRegionSet_ab9783fb4fead289c7fe107f9bec1865b}
 
-\begin{CompactList}\small\item\em Prints the difference between chromosome intervals and input region set (input region set must be sorted). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b9783fb4fead289c7fe107f9bec1865b}{
-void \hyperlink{classGenomicRegionSet_b9783fb4fead289c7fe107f9bec1865b}{RunGlobalLink} (bool sorted\_\-by\_\-strand, long int max\_\-difference)}
-\label{classGenomicRegionSet_b9783fb4fead289c7fe107f9bec1865b}
+\begin{DoxyCompactList}\small\item\em Links successive regions if they overlap (input region set must be sorted). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a40dd79548f9d0333f1169bd17a6e9465}{
+void \hyperlink{classGenomicRegionSet_a40dd79548f9d0333f1169bd17a6e9465}{RunGlobalPartition} ()}
+\label{classGenomicRegionSet_a40dd79548f9d0333f1169bd17a6e9465}
 
-\begin{CompactList}\small\item\em Links successive regions if they overlap (input region set must be sorted). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_40dd79548f9d0333f1169bd17a6e9465}{
-void \hyperlink{classGenomicRegionSet_40dd79548f9d0333f1169bd17a6e9465}{RunGlobalPartition} ()}
-\label{classGenomicRegionSet_40dd79548f9d0333f1169bd17a6e9465}
+\begin{DoxyCompactList}\small\item\em Partitions overlapping regions into a non-\/overlapping region set (input region set must be sorted). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a83853c6af4b779a37de284751d09348d}{
+void \hyperlink{classGenomicRegionSet_a83853c6af4b779a37de284751d09348d}{RunGlobalTest} (bool sorted\_\-by\_\-strand)}
+\label{classGenomicRegionSet_a83853c6af4b779a37de284751d09348d}
 
-\begin{CompactList}\small\item\em Partitions overlapping regions into a non-overlapping region set (input region set must be sorted). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_83853c6af4b779a37de284751d09348d}{
-void \hyperlink{classGenomicRegionSet_83853c6af4b779a37de284751d09348d}{RunGlobalTest} (bool sorted\_\-by\_\-strand)}
-\label{classGenomicRegionSet_83853c6af4b779a37de284751d09348d}
+\begin{DoxyCompactList}\small\item\em Tests if input region set is sorted. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a53885e10c5dc9aa51ebece77dae63313}{
+void \hyperlink{classGenomicRegionSet_a53885e10c5dc9aa51ebece77dae63313}{RunGlobalMerge} (long int merge\_\-win)}
+\label{classGenomicRegionSet_a53885e10c5dc9aa51ebece77dae63313}
 
-\begin{CompactList}\small\item\em Tests if input region set is sorted. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_53885e10c5dc9aa51ebece77dae63313}{
-void \hyperlink{classGenomicRegionSet_53885e10c5dc9aa51ebece77dae63313}{RunGlobalMerge} (long int merge\_\-win)}
-\label{classGenomicRegionSet_53885e10c5dc9aa51ebece77dae63313}
+\begin{DoxyCompactList}\small\item\em Merges successive regions if they are separated by a distance of {\bfseries merge\_\-win} or less (input region set must be sorted). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a962bb1b26543df14b324d7ab4dd8e404}{
+void \hyperlink{classGenomicRegionSet_a962bb1b26543df14b324d7ab4dd8e404}{RunGlobalReverseOrder} ()}
+\label{classGenomicRegionSet_a962bb1b26543df14b324d7ab4dd8e404}
 
-\begin{CompactList}\small\item\em Merges successive regions if they are separated by a distance of {\bf merge\_\-win} or less (input region set must be sorted). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_962bb1b26543df14b324d7ab4dd8e404}{
-void \hyperlink{classGenomicRegionSet_962bb1b26543df14b324d7ab4dd8e404}{RunGlobalReverseOrder} ()}
-\label{classGenomicRegionSet_962bb1b26543df14b324d7ab4dd8e404}
+\begin{DoxyCompactList}\small\item\em Reverses the order of reverse-\/strand regions (for this operation, the entire region set must be loaded in memory). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab8abdbc3c1f4530dc1992fb0766ba5a4}{
+void \hyperlink{classGenomicRegionSet_ab8abdbc3c1f4530dc1992fb0766ba5a4}{PrintDensities} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} \&Index, bool report\_\-exact\_\-boundaries)}
+\label{classGenomicRegionSet_ab8abdbc3c1f4530dc1992fb0766ba5a4}
 
-\begin{CompactList}\small\item\em Reverses the order of reverse-strand regions (for this operation, the entire region set must be loaded in memory). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b8abdbc3c1f4530dc1992fb0766ba5a4}{
-void \hyperlink{classGenomicRegionSet_b8abdbc3c1f4530dc1992fb0766ba5a4}{PrintDensities} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} \&Index, bool report\_\-exact\_\-boundaries)}
-\label{classGenomicRegionSet_b8abdbc3c1f4530dc1992fb0766ba5a4}
+\begin{DoxyCompactList}\small\item\em Computes densities of input regions in index regions in {\bfseries Index}. This is OBSOLETE, use class \hyperlink{classSortedGenomicRegionSetOverlaps}{SortedGenomicRegionSetOverlaps} instead. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a14610521cc47631b1459c2e3488b0eec}{
+void \hyperlink{classGenomicRegionSet_a14610521cc47631b1459c2e3488b0eec}{RunGlobalScan} (StringLIntMap $\ast$bounds, long int win\_\-step, long int win\_\-size)}
+\label{classGenomicRegionSet_a14610521cc47631b1459c2e3488b0eec}
 
-\begin{CompactList}\small\item\em Computes densities of input regions in index regions in {\bf Index}. This is OBSOLETE, use class \hyperlink{classSortedGenomicRegionSetOverlaps}{SortedGenomicRegionSetOverlaps} instead. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_14610521cc47631b1459c2e3488b0eec}{
-void \hyperlink{classGenomicRegionSet_14610521cc47631b1459c2e3488b0eec}{RunGlobalScan} (StringLIntMap $\ast$bounds, long int win\_\-step, long int win\_\-size)}
-\label{classGenomicRegionSet_14610521cc47631b1459c2e3488b0eec}
+\begin{DoxyCompactList}\small\item\em Scans input regions in sliding windows and reports count distribution (input regions must be sorted). \end{DoxyCompactList}\item 
+void \hyperlink{classGenomicRegionSet_a45cac26bedec4d983127b93d2096f735}{RunGlobalScanCount} (StringLIntMap $\ast$bounds, char $\ast$ref\_\-reg\_\-file, long int win\_\-step, long int win\_\-size, bool ignore\_\-reverse\_\-strand, char preprocess, bool use\_\-labels\_\-as\_\-values, long int min\_\-reads)
+\begin{DoxyCompactList}\small\item\em Scans input regions in sliding windows (input regions must be sorted). See also class \hyperlink{classGenomicRegionSetScanner}{GenomicRegionSetScanner}. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a6377c10b1e9903ff5ae3b0ff9fe20e4d}{
+void \hyperlink{classGenomicRegionSet_a6377c10b1e9903ff5ae3b0ff9fe20e4d}{RunConvertToWIG} (char $\ast$title, char $\ast$color, char $\ast$position, char $\ast$options, long int span, bool convert\_\-chromosome)}
+\label{classGenomicRegionSet_a6377c10b1e9903ff5ae3b0ff9fe20e4d}
 
-\begin{CompactList}\small\item\em Scans input regions in sliding windows and reports count distribution (input regions must be sorted). \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_45cac26bedec4d983127b93d2096f735}{RunGlobalScanCount} (StringLIntMap $\ast$bounds, char $\ast$ref\_\-reg\_\-file, long int win\_\-step, long int win\_\-size, bool ignore\_\-reverse\_\-strand, char preprocess, bool use\_\-labels\_\-as\_\-values, long int min\_\-reads)
-\begin{CompactList}\small\item\em Scans input regions in sliding windows (input regions must be sorted). See also class \hyperlink{classGenomicRegionSetScanner}{GenomicRegionSetScanner}. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_6377c10b1e9903ff5ae3b0ff9fe20e4d}{
-void \hyperlink{classGenomicRegionSet_6377c10b1e9903ff5ae3b0ff9fe20e4d}{RunConvertToWIG} (char $\ast$title, char $\ast$color, char $\ast$position, char $\ast$options, long int span, bool convert\_\-chromosome)}
-\label{classGenomicRegionSet_6377c10b1e9903ff5ae3b0ff9fe20e4d}
+\begin{DoxyCompactList}\small\item\em Prints in Wiggle format. If {\bfseries convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ada3da7ef918c09867341cda32881d63e}{
+void \hyperlink{classGenomicRegionSet_ada3da7ef918c09867341cda32881d63e}{RunAlign} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegionSet_ada3da7ef918c09867341cda32881d63e}
 
-\begin{CompactList}\small\item\em Prints in Wiggle format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_da3da7ef918c09867341cda32881d63e}{
-void \hyperlink{classGenomicRegionSet_da3da7ef918c09867341cda32881d63e}{RunAlign} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
-\label{classGenomicRegionSet_da3da7ef918c09867341cda32881d63e}
+\begin{DoxyCompactList}\small\item\em Prints alignments of input sequences to reference genome. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a18669fb4dfdf1287aaf9cfceb8329cb5}{
+void \hyperlink{classGenomicRegionSet_a18669fb4dfdf1287aaf9cfceb8329cb5}{RunConvertToBED} (char $\ast$title, char $\ast$color, char $\ast$position, bool convert\_\-chromosome)}
+\label{classGenomicRegionSet_a18669fb4dfdf1287aaf9cfceb8329cb5}
 
-\begin{CompactList}\small\item\em Prints alignments of input sequences to reference genome. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_18669fb4dfdf1287aaf9cfceb8329cb5}{
-void \hyperlink{classGenomicRegionSet_18669fb4dfdf1287aaf9cfceb8329cb5}{RunConvertToBED} (char $\ast$title, char $\ast$color, char $\ast$position, bool convert\_\-chromosome)}
-\label{classGenomicRegionSet_18669fb4dfdf1287aaf9cfceb8329cb5}
+\begin{DoxyCompactList}\small\item\em Converts to BED format. If {\bfseries convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ad7ad039dd702837f37c2cdfebd9b2845}{
+void \hyperlink{classGenomicRegionSet_ad7ad039dd702837f37c2cdfebd9b2845}{RunBounds} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSet_ad7ad039dd702837f37c2cdfebd9b2845}
 
-\begin{CompactList}\small\item\em Converts to BED format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_d7ad039dd702837f37c2cdfebd9b2845}{
-void \hyperlink{classGenomicRegionSet_d7ad039dd702837f37c2cdfebd9b2845}{RunBounds} (StringLIntMap $\ast$bounds)}
-\label{classGenomicRegionSet_d7ad039dd702837f37c2cdfebd9b2845}
+\begin{DoxyCompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a1aa8f41f0978e9b66c6f11c0ccb95a0b}{
+void \hyperlink{classGenomicRegionSet_a1aa8f41f0978e9b66c6f11c0ccb95a0b}{RunCenter} ()}
+\label{classGenomicRegionSet_a1aa8f41f0978e9b66c6f11c0ccb95a0b}
 
-\begin{CompactList}\small\item\em Corrects interval start/stop positions so as to comply with chromosomal bounds. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_1aa8f41f0978e9b66c6f11c0ccb95a0b}{
-void \hyperlink{classGenomicRegionSet_1aa8f41f0978e9b66c6f11c0ccb95a0b}{RunCenter} ()}
-\label{classGenomicRegionSet_1aa8f41f0978e9b66c6f11c0ccb95a0b}
+\begin{DoxyCompactList}\small\item\em Print intervals' center. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a752b7d4d2ac3568e7bdb13edbfc00af3}{
+void \hyperlink{classGenomicRegionSet_a752b7d4d2ac3568e7bdb13edbfc00af3}{RunConnect} ()}
+\label{classGenomicRegionSet_a752b7d4d2ac3568e7bdb13edbfc00af3}
 
-\begin{CompactList}\small\item\em Print intervals' center. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_752b7d4d2ac3568e7bdb13edbfc00af3}{
-void \hyperlink{classGenomicRegionSet_752b7d4d2ac3568e7bdb13edbfc00af3}{RunConnect} ()}
-\label{classGenomicRegionSet_752b7d4d2ac3568e7bdb13edbfc00af3}
+\begin{DoxyCompactList}\small\item\em Print connected intervals as a single interval from minimum start to maximum stop position. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a90256738bd85501460874ab8e69b894b}{
+void \hyperlink{classGenomicRegionSet_a90256738bd85501460874ab8e69b894b}{RunDiff} ()}
+\label{classGenomicRegionSet_a90256738bd85501460874ab8e69b894b}
 
-\begin{CompactList}\small\item\em Print connected intervals as a single interval from minimum start to maximum stop position. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_90256738bd85501460874ab8e69b894b}{
-void \hyperlink{classGenomicRegionSet_90256738bd85501460874ab8e69b894b}{RunDiff} ()}
-\label{classGenomicRegionSet_90256738bd85501460874ab8e69b894b}
+\begin{DoxyCompactList}\small\item\em Print gap intervals between successive intervals (e.g. for computing intron boundaries) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a22f3fce9421a0f80c96ec0a9346fec19}{
+void \hyperlink{classGenomicRegionSet_a22f3fce9421a0f80c96ec0a9346fec19}{RunCalcDistances} (char $\ast$op1, char $\ast$op2)}
+\label{classGenomicRegionSet_a22f3fce9421a0f80c96ec0a9346fec19}
 
-\begin{CompactList}\small\item\em Print gap intervals between successive intervals (e.g. for computing intron boundaries). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_22f3fce9421a0f80c96ec0a9346fec19}{
-void \hyperlink{classGenomicRegionSet_22f3fce9421a0f80c96ec0a9346fec19}{RunCalcDistances} (char $\ast$op1, char $\ast$op2)}
-\label{classGenomicRegionSet_22f3fce9421a0f80c96ec0a9346fec19}
+\begin{DoxyCompactList}\small\item\em Print distances between successive intervals of each region (i.e. local operation) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a9acb3424739ed62c0efddad01536ad18}{
+void \hyperlink{classGenomicRegionSet_a9acb3424739ed62c0efddad01536ad18}{RunDivide} ()}
+\label{classGenomicRegionSet_a9acb3424739ed62c0efddad01536ad18}
 
-\begin{CompactList}\small\item\em Print distances between successive intervals of each region (i.e. local operation). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_9acb3424739ed62c0efddad01536ad18}{
-void \hyperlink{classGenomicRegionSet_9acb3424739ed62c0efddad01536ad18}{RunDivide} ()}
-\label{classGenomicRegionSet_9acb3424739ed62c0efddad01536ad18}
+\begin{DoxyCompactList}\small\item\em Print intervals divided in half (i.e. two intervals for each original interval in the genomic region) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_aefa09dc62c768a06e4ca1f56fd683be5}{
+void \hyperlink{classGenomicRegionSet_aefa09dc62c768a06e4ca1f56fd683be5}{RunFix} ()}
+\label{classGenomicRegionSet_aefa09dc62c768a06e4ca1f56fd683be5}
 
-\begin{CompactList}\small\item\em Print intervals divided in half (i.e. two intervals for each original interval in the genomic region). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_efa09dc62c768a06e4ca1f56fd683be5}{
-void \hyperlink{classGenomicRegionSet_efa09dc62c768a06e4ca1f56fd683be5}{RunFix} ()}
-\label{classGenomicRegionSet_efa09dc62c768a06e4ca1f56fd683be5}
+\begin{DoxyCompactList}\small\item\em Removes rogue intervals (e.g. start$>$stop) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ae598cd9c5f94555a04e43f9fe6334aec}{
+void \hyperlink{classGenomicRegionSet_ae598cd9c5f94555a04e43f9fe6334aec}{RunIntersection} ()}
+\label{classGenomicRegionSet_ae598cd9c5f94555a04e43f9fe6334aec}
 
-\begin{CompactList}\small\item\em Removes rogue intervals (e.g. start$>$stop). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_e598cd9c5f94555a04e43f9fe6334aec}{
-void \hyperlink{classGenomicRegionSet_e598cd9c5f94555a04e43f9fe6334aec}{RunIntersection} ()}
-\label{classGenomicRegionSet_e598cd9c5f94555a04e43f9fe6334aec}
+\begin{DoxyCompactList}\small\item\em Print intersection among all intervals, i.e. maximum start to minimum stop position. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab1e96bd7781dac63a1745a8cf5ac5538}{
+void \hyperlink{classGenomicRegionSet_ab1e96bd7781dac63a1745a8cf5ac5538}{RunSize} ()}
+\label{classGenomicRegionSet_ab1e96bd7781dac63a1745a8cf5ac5538}
 
-\begin{CompactList}\small\item\em Print intersection among all intervals, i.e. maximum start to minimum stop position. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b1e96bd7781dac63a1745a8cf5ac5538}{
-void \hyperlink{classGenomicRegionSet_b1e96bd7781dac63a1745a8cf5ac5538}{RunSize} ()}
-\label{classGenomicRegionSet_b1e96bd7781dac63a1745a8cf5ac5538}
+\begin{DoxyCompactList}\small\item\em Prints region label and sum of intervals' sizes. \end{DoxyCompactList}\item 
+void \hyperlink{classGenomicRegionSet_a11f1e58c92e9b0b2e3feb5821cff1a55}{RunModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
+\begin{DoxyCompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-\/fixed position. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a8f71dd5fa48a0878751cd78a3b485daf}{
+void \hyperlink{classGenomicRegionSet_a8f71dd5fa48a0878751cd78a3b485daf}{RunConvertToREG} (bool compact=false)}
+\label{classGenomicRegionSet_a8f71dd5fa48a0878751cd78a3b485daf}
 
-\begin{CompactList}\small\item\em Prints region label and sum of intervals' sizes. \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_11f1e58c92e9b0b2e3feb5821cff1a55}{RunModifyPos} (char $\ast$position\_\-op, long int position\_\-shift)
-\begin{CompactList}\small\item\em Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_8f71dd5fa48a0878751cd78a3b485daf}{
-void \hyperlink{classGenomicRegionSet_8f71dd5fa48a0878751cd78a3b485daf}{RunConvertToREG} (bool compact=false)}
-\label{classGenomicRegionSet_8f71dd5fa48a0878751cd78a3b485daf}
+\begin{DoxyCompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end for all regions in the set. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a1b2b9edad211ca961f319921d38bfbf6}{
+void \hyperlink{classGenomicRegionSet_a1b2b9edad211ca961f319921d38bfbf6}{RunRandomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSet_a1b2b9edad211ca961f319921d38bfbf6}
 
-\begin{CompactList}\small\item\em Prints label and genomic region intervals with a newline character at the end for all regions in the set. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_1b2b9edad211ca961f319921d38bfbf6}{
-void \hyperlink{classGenomicRegionSet_1b2b9edad211ca961f319921d38bfbf6}{RunRandomize} (gsl\_\-rng $\ast$random\_\-generator, StringLIntMap $\ast$bounds)}
-\label{classGenomicRegionSet_1b2b9edad211ca961f319921d38bfbf6}
+\begin{DoxyCompactList}\small\item\em Randomizes interval position within chromosomal bounds. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a7b522944fe4f7f489c99fb76ce7f576c}{
+void \hyperlink{classGenomicRegionSet_a7b522944fe4f7f489c99fb76ce7f576c}{RunSelect} (bool first, bool last, bool from5p, bool from3p)}
+\label{classGenomicRegionSet_a7b522944fe4f7f489c99fb76ce7f576c}
 
-\begin{CompactList}\small\item\em Randomizes interval position within chromosomal bounds. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_7b522944fe4f7f489c99fb76ce7f576c}{
-void \hyperlink{classGenomicRegionSet_7b522944fe4f7f489c99fb76ce7f576c}{RunSelect} (bool first, bool last, bool from5p, bool from3p)}
-\label{classGenomicRegionSet_7b522944fe4f7f489c99fb76ce7f576c}
+\begin{DoxyCompactList}\small\item\em Selects a subset of intervals according to their relative positions. \end{DoxyCompactList}\item 
+void \hyperlink{classGenomicRegionSet_a0c9ba06ad5aff586193ba765e6d13a27}{RunShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
+\begin{DoxyCompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a53143cb3271c65fb289faece622cd8bd}{
+void \hyperlink{classGenomicRegionSet_a53143cb3271c65fb289faece622cd8bd}{RunSort} ()}
+\label{classGenomicRegionSet_a53143cb3271c65fb289faece622cd8bd}
 
-\begin{CompactList}\small\item\em Selects a subset of intervals according to their relative positions. \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}{RunShiftPos} (long int start\_\-shift, long int stop\_\-shift, bool strand\_\-aware)
-\begin{CompactList}\small\item\em Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_53143cb3271c65fb289faece622cd8bd}{
-void \hyperlink{classGenomicRegionSet_53143cb3271c65fb289faece622cd8bd}{RunSort} ()}
-\label{classGenomicRegionSet_53143cb3271c65fb289faece622cd8bd}
+\begin{DoxyCompactList}\small\item\em Print sorted intervals according to start position (only for compatible intervals) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a570e56362af1b30e7f5cb149ea42e54e}{
+void \hyperlink{classGenomicRegionSet_a570e56362af1b30e7f5cb149ea42e54e}{RunSplit} ()}
+\label{classGenomicRegionSet_a570e56362af1b30e7f5cb149ea42e54e}
 
-\begin{CompactList}\small\item\em Print sorted intervals according to start position (only for compatible intervals). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_570e56362af1b30e7f5cb149ea42e54e}{
-void \hyperlink{classGenomicRegionSet_570e56362af1b30e7f5cb149ea42e54e}{RunSplit} ()}
-\label{classGenomicRegionSet_570e56362af1b30e7f5cb149ea42e54e}
+\begin{DoxyCompactList}\small\item\em Split regions into intervals which are printed on separate lines. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_af1146729843b82d7637e0adc1b07e51a}{
+void \hyperlink{classGenomicRegionSet_af1146729843b82d7637e0adc1b07e51a}{RunModifyStrand} (char $\ast$strand\_\-op, bool sorted)}
+\label{classGenomicRegionSet_af1146729843b82d7637e0adc1b07e51a}
 
-\begin{CompactList}\small\item\em Split regions into intervals which are printed on separate lines. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_f1146729843b82d7637e0adc1b07e51a}{
-void \hyperlink{classGenomicRegionSet_f1146729843b82d7637e0adc1b07e51a}{RunModifyStrand} (char $\ast$strand\_\-op, bool sorted)}
-\label{classGenomicRegionSet_f1146729843b82d7637e0adc1b07e51a}
+\begin{DoxyCompactList}\small\item\em Print region with modified strands: '+'=only forward, '-\/'=only reverse, 'r'=reverse strands from '+' to '-\/' and vice versa; if {\bfseries sorted} is 'true', it calls \hyperlink{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted} instead. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{
+void \hyperlink{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{RunModifyStrandSorted} (char $\ast$strand\_\-op)}
+\label{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}
 
-\begin{CompactList}\small\item\em Print region with modified strands: '+'=only forward, '-'=only reverse, 'r'=reverse strands from '+' to '-' and vice versa; if {\bf sorted} is 'true', it calls \hyperlink{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted} instead. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{
-void \hyperlink{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{RunModifyStrandSorted} (char $\ast$strand\_\-op)}
-\label{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}
+\begin{DoxyCompactList}\small\item\em Same as \hyperlink{classGenomicRegionSet_af1146729843b82d7637e0adc1b07e51a}{GenomicRegionSet::RunModifyStrand} but returns a sorted region set (note: it only works if the original region set is sorted). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a015049fd0bd08587cbdbb49332ee352d}{
+void \hyperlink{classGenomicRegionSet_a015049fd0bd08587cbdbb49332ee352d}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, char $\ast$ref\_\-reg\_\-file)}
+\label{classGenomicRegionSet_a015049fd0bd08587cbdbb49332ee352d}
 
-\begin{CompactList}\small\item\em Same as \hyperlink{classGenomicRegionSet_f1146729843b82d7637e0adc1b07e51a}{GenomicRegionSet::RunModifyStrand} but returns a sorted region set (note: it only works if the original region set is sorted). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_015049fd0bd08587cbdbb49332ee352d}{
-void \hyperlink{classGenomicRegionSet_015049fd0bd08587cbdbb49332ee352d}{RunShuffle} (gsl\_\-rng $\ast$random\_\-generator, char $\ast$ref\_\-reg\_\-file)}
-\label{classGenomicRegionSet_015049fd0bd08587cbdbb49332ee352d}
+\begin{DoxyCompactList}\small\item\em Shuffles input regions within specified reference regions loaded from file {\bfseries ref\_\-reg\_\-file} \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab281c8ab57c4181a06161182031c9df4}{
+void \hyperlink{classGenomicRegionSet_ab281c8ab57c4181a06161182031c9df4}{RunUnion} ()}
+\label{classGenomicRegionSet_ab281c8ab57c4181a06161182031c9df4}
 
-\begin{CompactList}\small\item\em Shuffles input regions within specified reference regions loaded from file {\bf ref\_\-reg\_\-file}. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b281c8ab57c4181a06161182031c9df4}{
-void \hyperlink{classGenomicRegionSet_b281c8ab57c4181a06161182031c9df4}{RunUnion} ()}
-\label{classGenomicRegionSet_b281c8ab57c4181a06161182031c9df4}
+\begin{DoxyCompactList}\small\item\em Print intervals' union. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_aa326d5adcc97f47ed2de35353b60b393}{
+void \hyperlink{classGenomicRegionSet_aa326d5adcc97f47ed2de35353b60b393}{RunSlidingWindows} (long int win\_\-step, long int win\_\-size)}
+\label{classGenomicRegionSet_aa326d5adcc97f47ed2de35353b60b393}
 
-\begin{CompactList}\small\item\em Print intervals' union. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_a326d5adcc97f47ed2de35353b60b393}{
-void \hyperlink{classGenomicRegionSet_a326d5adcc97f47ed2de35353b60b393}{RunSlidingWindows} (long int win\_\-step, long int win\_\-size)}
-\label{classGenomicRegionSet_a326d5adcc97f47ed2de35353b60b393}
+\begin{DoxyCompactList}\small\item\em Print sliding windows (implemented only for single-\/interval regions) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab219b834c232c091982b066a2163f76a}{
+void \hyperlink{classGenomicRegionSet_ab219b834c232c091982b066a2163f76a}{RunExtractSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
+\label{classGenomicRegionSet_ab219b834c232c091982b066a2163f76a}
 
-\begin{CompactList}\small\item\em Print sliding windows (implemented only for single-interval regions). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b219b834c232c091982b066a2163f76a}{
-void \hyperlink{classGenomicRegionSet_b219b834c232c091982b066a2163f76a}{RunExtractSeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool replace=false)}
-\label{classGenomicRegionSet_b219b834c232c091982b066a2163f76a}
+\begin{DoxyCompactList}\small\item\em Prints region label, intervals and extracted sequence in SEQ format. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ade00553eb76b71f68e540739bdc776f4}{
+void \hyperlink{classGenomicRegionSet_ade00553eb76b71f68e540739bdc776f4}{PrintBEDGraphFormat} (char $\ast$title, char $\ast$color, char $\ast$position, bool convert\_\-chromosome)}
+\label{classGenomicRegionSet_ade00553eb76b71f68e540739bdc776f4}
 
-\begin{CompactList}\small\item\em Prints region label, intervals and extracted sequence in SEQ format. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_de00553eb76b71f68e540739bdc776f4}{
-void \hyperlink{classGenomicRegionSet_de00553eb76b71f68e540739bdc776f4}{PrintBEDGraphFormat} (char $\ast$title, char $\ast$color, char $\ast$position, bool convert\_\-chromosome)}
-\label{classGenomicRegionSet_de00553eb76b71f68e540739bdc776f4}
+\begin{DoxyCompactList}\small\item\em Prints in BEDGraph format. If {\bfseries convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a3da972129b9b69577bbe0bb9837bbea3}{
+void \hyperlink{classGenomicRegionSet_a3da972129b9b69577bbe0bb9837bbea3}{PrintSeqLength} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
+\label{classGenomicRegionSet_a3da972129b9b69577bbe0bb9837bbea3}
 
-\begin{CompactList}\small\item\em Prints in BEDGraph format. If {\bf convert\_\-chromosome} is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_3da972129b9b69577bbe0bb9837bbea3}{
-void \hyperlink{classGenomicRegionSet_3da972129b9b69577bbe0bb9837bbea3}{PrintSeqLength} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)}
-\label{classGenomicRegionSet_3da972129b9b69577bbe0bb9837bbea3}
+\begin{DoxyCompactList}\small\item\em Prints region label and sequence length excluding 'N' characters. \end{DoxyCompactList}\item 
+void \hyperlink{classGenomicRegionSet_a6dc7150acdd7a0614f8a8497da687d0e}{PrintRemoveN} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)
+\begin{DoxyCompactList}\small\item\em Print sequence with no alignment gaps (requires SEQ input) \end{DoxyCompactList}\item 
+void \hyperlink{classGenomicRegionSet_ae27a5c9f17f08afae277603e33d4fb91}{PrintOffsetFormat} (char $\ast$op, bool fraction)
+\begin{DoxyCompactList}\small\item\em Calculates the offset distances of interval start and stop position with respect to the first interval in the set. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ac8de83151ba0cc30ca1b72e83ecea82f}{
+void \hyperlink{classGenomicRegionSet_ac8de83151ba0cc30ca1b72e83ecea82f}{PrintReversePos} (StringLIntMap $\ast$bounds)}
+\label{classGenomicRegionSet_ac8de83151ba0cc30ca1b72e83ecea82f}
 
-\begin{CompactList}\small\item\em Prints region label and sequence length excluding 'N' characters. \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_6dc7150acdd7a0614f8a8497da687d0e}{PrintRemoveN} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C)
-\begin{CompactList}\small\item\em Print sequence with no alignment gaps (requires SEQ input). \item\end{CompactList}\item 
-void \hyperlink{classGenomicRegionSet_e27a5c9f17f08afae277603e33d4fb91}{PrintOffsetFormat} (char $\ast$op, bool fraction)
-\begin{CompactList}\small\item\em Calculates the offset distances of interval start and stop position with respect to the first interval in the set. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_c8de83151ba0cc30ca1b72e83ecea82f}{
-void \hyperlink{classGenomicRegionSet_c8de83151ba0cc30ca1b72e83ecea82f}{PrintReversePos} (StringLIntMap $\ast$bounds)}
-\label{classGenomicRegionSet_c8de83151ba0cc30ca1b72e83ecea82f}
+\begin{DoxyCompactList}\small\item\em Reverses interval start/stop positions with respect to chromosomal bounds, as if the reference point were in the end of the chromosome as opposed to the beginning. \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_adfbad7f0acf42c2179bd33103e5d183c}{
+void \hyperlink{classGenomicRegionSet_adfbad7f0acf42c2179bd33103e5d183c}{PrintSearch} (char $\ast$pattern, bool header, bool summary)}
+\label{classGenomicRegionSet_adfbad7f0acf42c2179bd33103e5d183c}
 
-\begin{CompactList}\small\item\em Reverses interval start/stop positions with respect to chromosomal bounds, as if the reference point were in the end of the chromosome as opposed to the beginning. \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_dfbad7f0acf42c2179bd33103e5d183c}{
-void \hyperlink{classGenomicRegionSet_dfbad7f0acf42c2179bd33103e5d183c}{PrintSearch} (char $\ast$pattern, bool header, bool summary)}
-\label{classGenomicRegionSet_dfbad7f0acf42c2179bd33103e5d183c}
+\begin{DoxyCompactList}\small\item\em Search sequence for short pattern (requires SEQ input) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a4c197a09ffcace2ec2736aa089eec448}{
+void \hyperlink{classGenomicRegionSet_a4c197a09ffcace2ec2736aa089eec448}{PrintVerifySeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool ignore)}
+\label{classGenomicRegionSet_a4c197a09ffcace2ec2736aa089eec448}
 
-\begin{CompactList}\small\item\em Search sequence for short pattern (requires SEQ input). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_4c197a09ffcace2ec2736aa089eec448}{
-void \hyperlink{classGenomicRegionSet_4c197a09ffcace2ec2736aa089eec448}{PrintVerifySeq} (\hyperlink{classChromosomes}{Chromosomes} $\ast$C, bool ignore)}
-\label{classGenomicRegionSet_4c197a09ffcace2ec2736aa089eec448}
-
-\begin{CompactList}\small\item\em Verifies extracted sequence against region label. \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em Verifies extracted sequence against region label. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Public Attributes}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classGenomicRegionSet_7c593d1beab775590d5b810097644583}{
-char $\ast$ \hyperlink{classGenomicRegionSet_7c593d1beab775590d5b810097644583}{file}}
-\label{classGenomicRegionSet_7c593d1beab775590d5b810097644583}
+\hypertarget{classGenomicRegionSet_a7c593d1beab775590d5b810097644583}{
+char $\ast$ \hyperlink{classGenomicRegionSet_a7c593d1beab775590d5b810097644583}{file}}
+\label{classGenomicRegionSet_a7c593d1beab775590d5b810097644583}
 
-\begin{CompactList}\small\item\em file name ('NULL' if reading from standard input) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_4ca6c6268e39fdea2add6e6381c66962}{
-FILE $\ast$ \hyperlink{classGenomicRegionSet_4ca6c6268e39fdea2add6e6381c66962}{file\_\-ptr}}
-\label{classGenomicRegionSet_4ca6c6268e39fdea2add6e6381c66962}
+\begin{DoxyCompactList}\small\item\em file name ('NULL' if reading from standard input) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a4ca6c6268e39fdea2add6e6381c66962}{
+FILE $\ast$ \hyperlink{classGenomicRegionSet_a4ca6c6268e39fdea2add6e6381c66962}{file\_\-ptr}}
+\label{classGenomicRegionSet_a4ca6c6268e39fdea2add6e6381c66962}
 
-\begin{CompactList}\small\item\em file pointer ('NULL' if reading from standard input) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}{
-unsigned long int \hyperlink{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}}
-\label{classGenomicRegionSet_4d60b5403d2d6aaeda541ed45625b245}
+\begin{DoxyCompactList}\small\item\em file pointer ('NULL' if reading from standard input) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a4d60b5403d2d6aaeda541ed45625b245}{
+unsigned long int \hyperlink{classGenomicRegionSet_a4d60b5403d2d6aaeda541ed45625b245}{buffer\_\-size}}
+\label{classGenomicRegionSet_a4d60b5403d2d6aaeda541ed45625b245}
 
-\begin{CompactList}\small\item\em line buffer size (automatically adjusted during execution to ensure the entire line is read) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}{
-bool \hyperlink{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}{verbose}}
-\label{classGenomicRegionSet_2646e9e6d5da1693b4bea36a5acc082e}
+\begin{DoxyCompactList}\small\item\em line buffer size (automatically adjusted during execution to ensure the entire line is read) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a2646e9e6d5da1693b4bea36a5acc082e}{
+bool \hyperlink{classGenomicRegionSet_a2646e9e6d5da1693b4bea36a5acc082e}{verbose}}
+\label{classGenomicRegionSet_a2646e9e6d5da1693b4bea36a5acc082e}
 
-\begin{CompactList}\small\item\em verbose mode \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_bd0fc2542e717e5855e03d3b3892f027}{
-bool \hyperlink{classGenomicRegionSet_bd0fc2542e717e5855e03d3b3892f027}{from\_\-stdin}}
-\label{classGenomicRegionSet_bd0fc2542e717e5855e03d3b3892f027}
+\begin{DoxyCompactList}\small\item\em verbose mode \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_abd0fc2542e717e5855e03d3b3892f027}{
+bool \hyperlink{classGenomicRegionSet_abd0fc2542e717e5855e03d3b3892f027}{from\_\-stdin}}
+\label{classGenomicRegionSet_abd0fc2542e717e5855e03d3b3892f027}
 
-\begin{CompactList}\small\item\em 'true' if reading from standard input \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}{
-bool \hyperlink{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}}
-\label{classGenomicRegionSet_de43c6cd72b95da75395129b00a52687}
+\begin{DoxyCompactList}\small\item\em 'true' if reading from standard input \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{
+bool \hyperlink{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{load\_\-in\_\-memory}}
+\label{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}
 
-\begin{CompactList}\small\item\em 'true' if the entire region set is loaded in memory \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_ea8b5c9bae036da50d4e8720d2e13231}{
-bool \hyperlink{classGenomicRegionSet_ea8b5c9bae036da50d4e8720d2e13231}{use\_\-interval\_\-array}}
-\label{classGenomicRegionSet_ea8b5c9bae036da50d4e8720d2e13231}
+\begin{DoxyCompactList}\small\item\em 'true' if the entire region set is loaded in memory \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a84dd2f8055524a933e963175781f7fd2}{
+bool \hyperlink{classGenomicRegionSet_a84dd2f8055524a933e963175781f7fd2}{hide\_\-header}}
+\label{classGenomicRegionSet_a84dd2f8055524a933e963175781f7fd2}
 
-\begin{CompactList}\small\item\em if 'true' use an array for storing genomic regions' intervals (for time efficiency) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_a4494ed2ae3f7594c29b18c39fed6748}{
-string \hyperlink{classGenomicRegionSet_a4494ed2ae3f7594c29b18c39fed6748}{format}}
-\label{classGenomicRegionSet_a4494ed2ae3f7594c29b18c39fed6748}
+\begin{DoxyCompactList}\small\item\em if 'true', then do not print file header \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_aea8b5c9bae036da50d4e8720d2e13231}{
+bool \hyperlink{classGenomicRegionSet_aea8b5c9bae036da50d4e8720d2e13231}{use\_\-interval\_\-array}}
+\label{classGenomicRegionSet_aea8b5c9bae036da50d4e8720d2e13231}
 
-\begin{CompactList}\small\item\em input format \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_08d9a35a7688ac2c193b53c9a8693c6e}{
-\hyperlink{classProgress}{Progress} \hyperlink{classGenomicRegionSet_08d9a35a7688ac2c193b53c9a8693c6e}{progress}}
-\label{classGenomicRegionSet_08d9a35a7688ac2c193b53c9a8693c6e}
+\begin{DoxyCompactList}\small\item\em if 'true', use an array for storing genomic regions' intervals (for time efficiency) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_aa4494ed2ae3f7594c29b18c39fed6748}{
+string \hyperlink{classGenomicRegionSet_aa4494ed2ae3f7594c29b18c39fed6748}{format}}
+\label{classGenomicRegionSet_aa4494ed2ae3f7594c29b18c39fed6748}
 
-\begin{CompactList}\small\item\em keeps track of progress of computation \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_df3a5598e31ddbb5b381125925362085}{
-\hyperlink{classFileBuffer}{FileBuffer} $\ast$ \hyperlink{classGenomicRegionSet_df3a5598e31ddbb5b381125925362085}{buffer}}
-\label{classGenomicRegionSet_df3a5598e31ddbb5b381125925362085}
+\begin{DoxyCompactList}\small\item\em input format \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a08d9a35a7688ac2c193b53c9a8693c6e}{
+\hyperlink{classProgress}{Progress} \hyperlink{classGenomicRegionSet_a08d9a35a7688ac2c193b53c9a8693c6e}{progress}}
+\label{classGenomicRegionSet_a08d9a35a7688ac2c193b53c9a8693c6e}
 
-\begin{CompactList}\small\item\em pointer to the buffer class used to read the region sets \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_5293292428aa06145b38be4b96ab05e4}{
-long int \hyperlink{classGenomicRegionSet_5293292428aa06145b38be4b96ab05e4}{n\_\-regions}}
-\label{classGenomicRegionSet_5293292428aa06145b38be4b96ab05e4}
+\begin{DoxyCompactList}\small\item\em keeps track of progress of computation \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_adf3a5598e31ddbb5b381125925362085}{
+\hyperlink{classFileBuffer}{FileBuffer} $\ast$ \hyperlink{classGenomicRegionSet_adf3a5598e31ddbb5b381125925362085}{buffer}}
+\label{classGenomicRegionSet_adf3a5598e31ddbb5b381125925362085}
 
-\begin{CompactList}\small\item\em number of regions ('1' if the regions are not loaded in memory) \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_206d91b443832800afc04f786d15971d}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$$\ast$ \hyperlink{classGenomicRegionSet_206d91b443832800afc04f786d15971d}{R}}
-\label{classGenomicRegionSet_206d91b443832800afc04f786d15971d}
+\begin{DoxyCompactList}\small\item\em pointer to the buffer class used to read the region sets \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a5293292428aa06145b38be4b96ab05e4}{
+long int \hyperlink{classGenomicRegionSet_a5293292428aa06145b38be4b96ab05e4}{n\_\-regions}}
+\label{classGenomicRegionSet_a5293292428aa06145b38be4b96ab05e4}
 
-\begin{CompactList}\small\item\em array where the regions are stored; if the region set is not entirely loaded in memory, only {\bf R\mbox{[}0\mbox{]}} is used \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_d89185b88d5b37161cc65bc84b421c0e}{
-long int \hyperlink{classGenomicRegionSet_d89185b88d5b37161cc65bc84b421c0e}{r\_\-index}}
-\label{classGenomicRegionSet_d89185b88d5b37161cc65bc84b421c0e}
+\begin{DoxyCompactList}\small\item\em number of regions ('1' if the regions are not loaded in memory) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_a206d91b443832800afc04f786d15971d}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$$\ast$ \hyperlink{classGenomicRegionSet_a206d91b443832800afc04f786d15971d}{R}}
+\label{classGenomicRegionSet_a206d91b443832800afc04f786d15971d}
 
-\begin{CompactList}\small\item\em index pointing to the current region in {\bf R} \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em array where the regions are stored; if the region set is not entirely loaded in memory, only {\bfseries R\mbox{[}0\mbox{]}} is used \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ad89185b88d5b37161cc65bc84b421c0e}{
+long int \hyperlink{classGenomicRegionSet_ad89185b88d5b37161cc65bc84b421c0e}{r\_\-index}}
+\label{classGenomicRegionSet_ad89185b88d5b37161cc65bc84b421c0e}
+
+\begin{DoxyCompactList}\small\item\em index pointing to the current region in {\bfseries R} \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Private Member Functions}
-\begin{CompactItemize}
+\begin{DoxyCompactItemize}
 \item 
-\hypertarget{classGenomicRegionSet_cd823956ec9f510ee3d52b08eec1b2f6}{
-\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$ \hyperlink{classGenomicRegionSet_cd823956ec9f510ee3d52b08eec1b2f6}{StoreInTempFile} ()}
-\label{classGenomicRegionSet_cd823956ec9f510ee3d52b08eec1b2f6}
+\hypertarget{classGenomicRegionSet_acd823956ec9f510ee3d52b08eec1b2f6}{
+\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$ \hyperlink{classGenomicRegionSet_acd823956ec9f510ee3d52b08eec1b2f6}{StoreInTempFile} ()}
+\label{classGenomicRegionSet_acd823956ec9f510ee3d52b08eec1b2f6}
 
-\begin{CompactList}\small\item\em Creates a temporary file from this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which contains the current chromosome's positive strand regions (used in \hyperlink{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_b118bb8a6b63ae47a37ef89bff25ab72}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_b118bb8a6b63ae47a37ef89bff25ab72}{PrintMergeSort} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$rtempSet, char strand)}
-\label{classGenomicRegionSet_b118bb8a6b63ae47a37ef89bff25ab72}
+\begin{DoxyCompactList}\small\item\em Creates a temporary file from this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} which contains the current chromosome's positive strand regions (used in \hyperlink{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ab118bb8a6b63ae47a37ef89bff25ab72}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_ab118bb8a6b63ae47a37ef89bff25ab72}{PrintMergeSort} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$rtempSet, char strand)}
+\label{classGenomicRegionSet_ab118bb8a6b63ae47a37ef89bff25ab72}
 
-\begin{CompactList}\small\item\em Uses mergesort between {\bf tempSet} and this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} (used in \hyperlink{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}). \item\end{CompactList}\item 
-\hypertarget{classGenomicRegionSet_e601878a7754a7e5bc8b4ed340d012f4}{
-\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_e601878a7754a7e5bc8b4ed340d012f4}{PrintReverse} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$rtempSet)}
-\label{classGenomicRegionSet_e601878a7754a7e5bc8b4ed340d012f4}
+\begin{DoxyCompactList}\small\item\em Uses mergesort between {\bfseries tempSet} and this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} (used in \hyperlink{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}) \end{DoxyCompactList}\item 
+\hypertarget{classGenomicRegionSet_ae601878a7754a7e5bc8b4ed340d012f4}{
+\hyperlink{classGenomicRegion}{GenomicRegion} $\ast$ \hyperlink{classGenomicRegionSet_ae601878a7754a7e5bc8b4ed340d012f4}{PrintReverse} (\hyperlink{classGenomicRegionSet}{GenomicRegionSet} $\ast$rtempSet)}
+\label{classGenomicRegionSet_ae601878a7754a7e5bc8b4ed340d012f4}
 
-\begin{CompactList}\small\item\em Reverses the order between {\bf tempSet} and this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} (used in \hyperlink{classGenomicRegionSet_7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}). \item\end{CompactList}\end{CompactItemize}
+\begin{DoxyCompactList}\small\item\em Reverses the order between {\bfseries tempSet} and this instance of \hyperlink{classGenomicRegionSet}{GenomicRegionSet} (used in \hyperlink{classGenomicRegionSet_a7c0a328896b88a0c837f60e89fd85584}{GenomicRegionSet::RunModifyStrandSorted}) \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 This class is used to read and manipulate a set of genomic regions from a file or from standard input. 
 
 Example: 
-
-\begin{Code}\begin{verbatim}    GenomicRegionSet RegSet("test.reg",10000,true);
+\begin{DoxyCode}
+    GenomicRegionSet RegSet("test.reg",10000,true,false,false);
     Progress PRG("Printing center of intervals...",1);
     for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next()) {
       r->Center();
@@ -398,94 +404,170 @@ Example:
       PRG.Check();
     }
     PRG.Done();
-\end{verbatim}
-\end{Code}
-
+\end{DoxyCode}
  
 
 \subsection{Member Function Documentation}
-\hypertarget{classGenomicRegionSet_c11134b4ccc2ad002ef20ac12d3b70b8}{
+\hypertarget{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}{
 \index{GenomicRegionSet@{GenomicRegionSet}!Next@{Next}}
 \index{Next@{Next}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[Next]{\setlength{\rightskip}{0pt plus 5cm}{\bf GenomicRegion} $\ast$ GenomicRegionSet::Next (bool {\em sorted\_\-by\_\-strand}, \/  bool {\em retain\_\-current} = {\tt false})}}
-\label{classGenomicRegionSet_c11134b4ccc2ad002ef20ac12d3b70b8}
+\subsubsection[{Next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf GenomicRegion} $\ast$ GenomicRegionSet::Next (
+\begin{DoxyParamCaption}
+\item[{bool}]{retain\_\-current = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}
+\label{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}
 
 
-Same as \hyperlink{classGenomicRegionSet_4f7501a27d13cae65247686182b78d51}{Next()} but allows user to check sort order and/or retain the current region into memory. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em sorted\_\-by\_\-strand}]if 'true', it takes into account strand information while checking the sort order \item[{\em retain\_\-current}]if 'true', the current region is not deleted from memory; this must be done 'manually' using the \hyperlink{classGenomicRegionSet_8993c741ef2513ba5c5b88eb390f1f99}{Release()} method (do not use 'delete'). \end{description}
-\end{Desc}
-\hypertarget{classGenomicRegionSet_45cac26bedec4d983127b93d2096f735}{
-\index{GenomicRegionSet@{GenomicRegionSet}!RunGlobalScanCount@{RunGlobalScanCount}}
-\index{RunGlobalScanCount@{RunGlobalScanCount}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[RunGlobalScanCount]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunGlobalScanCount (StringLIntMap $\ast$ {\em bounds}, \/  char $\ast$ {\em ref\_\-reg\_\-file}, \/  long int {\em win\_\-step}, \/  long int {\em win\_\-size}, \/  bool {\em ignore\_\-reverse\_\-strand}, \/  char {\em preprocess}, \/  bool {\em use\_\-labels\_\-as\_\-values}, \/  long int {\em min\_\-reads})}}
-\label{classGenomicRegionSet_45cac26bedec4d983127b93d2096f735}
+Moves pointer to next region in the set; if \hyperlink{classGenomicRegionSet_ade43c6cd72b95da75395129b00a52687}{GenomicRegionSet::load\_\-in\_\-memory} is 'false', it deletes the current region. 
 
 
-Scans input regions in sliding windows (input regions must be sorted). See also class \hyperlink{classGenomicRegionSetScanner}{GenomicRegionSetScanner}. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em bounds}]chromosome sizes \item[{\em ref\_\-reg\_\-file}]only windows that overlap with regions in this file will be reported \item[{\em win\_\-step}]sliding window step \item[{\em win\_\-size}]sliding window size (must be a multiple of window step) \item[{\em ignore\_\-reverse\_\-strand}]if true, no sliding windows on the negative strand are reported \item[{\em preprocess}]if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \item[{\em use\_\-labels\_\-as\_\-values}]if true, genomic region labels are assumed to be integers and are included in the counting \item[{\em min\_\-reads}]report windows only if value is greater that this parameter \end{description}
-\end{Desc}
-\hypertarget{classGenomicRegionSet_11f1e58c92e9b0b2e3feb5821cff1a55}{
-\index{GenomicRegionSet@{GenomicRegionSet}!RunModifyPos@{RunModifyPos}}
-\index{RunModifyPos@{RunModifyPos}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[RunModifyPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunModifyPos (char $\ast$ {\em position\_\-op}, \/  long int {\em position\_\-shift})}}
-\label{classGenomicRegionSet_11f1e58c92e9b0b2e3feb5821cff1a55}
-
-
-Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em position\_\-op}]selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime \item[{\em position\_\-shift}]determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \end{description}
-\end{Desc}
-\hypertarget{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}{
-\index{GenomicRegionSet@{GenomicRegionSet}!RunShiftPos@{RunShiftPos}}
-\index{RunShiftPos@{RunShiftPos}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[RunShiftPos]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunShiftPos (long int {\em start\_\-shift}, \/  long int {\em stop\_\-shift}, \/  bool {\em strand\_\-aware})}}
-\label{classGenomicRegionSet_0c9ba06ad5aff586193ba765e6d13a27}
+\begin{DoxyParams}{Parameters}
+{\em retain\_\-current} & if 'true', the current region is not deleted from memory; this must be done 'manually' using the \hyperlink{classGenomicRegionSet_a8993c741ef2513ba5c5b88eb390f1f99}{Release()} method (do not use 'delete'). \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenomicRegionSet_a84c1a9021f1eed8516945abd071e982d}{
+\index{GenomicRegionSet@{GenomicRegionSet}!Next@{Next}}
+\index{Next@{Next}!GenomicRegionSet@{GenomicRegionSet}}
+\subsubsection[{Next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf GenomicRegion} $\ast$ GenomicRegionSet::Next (
+\begin{DoxyParamCaption}
+\item[{bool}]{sorted\_\-by\_\-strand, }
+\item[{bool}]{retain\_\-current}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_a84c1a9021f1eed8516945abd071e982d}
 
 
-Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em start\_\-shift}]determines the shift of the start position \item[{\em stop\_\-shift}]determines the shift of the stop position \item[{\em strand\_\-aware}]if 'true', then start=5-prime and stop=3-prime \end{description}
-\end{Desc}
-\hypertarget{classGenomicRegionSet_6dc7150acdd7a0614f8a8497da687d0e}{
-\index{GenomicRegionSet@{GenomicRegionSet}!PrintRemoveN@{PrintRemoveN}}
-\index{PrintRemoveN@{PrintRemoveN}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[PrintRemoveN]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::PrintRemoveN ({\bf Chromosomes} $\ast$ {\em C})}}
-\label{classGenomicRegionSet_6dc7150acdd7a0614f8a8497da687d0e}
+Same as \hyperlink{classGenomicRegionSet_a43326ec3c27a0c5c2c8b617509078ff7}{Next()} but allows user to check sort order and/or retain the current region into memory. 
 
 
-Print sequence with no alignment gaps (requires SEQ input). 
-
-Remove sub-intervals that correspond to sequences of 'N' characters \hypertarget{classGenomicRegionSet_e27a5c9f17f08afae277603e33d4fb91}{
+\begin{DoxyParams}{Parameters}
+{\em sorted\_\-by\_\-strand} & if 'true', it takes into account strand information while checking the sort order \\
+\hline
+{\em retain\_\-current} & if 'true', the current region is not deleted from memory; this must be done 'manually' using the \hyperlink{classGenomicRegionSet_a8993c741ef2513ba5c5b88eb390f1f99}{Release()} method (do not use 'delete'). \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenomicRegionSet_ae27a5c9f17f08afae277603e33d4fb91}{
 \index{GenomicRegionSet@{GenomicRegionSet}!PrintOffsetFormat@{PrintOffsetFormat}}
 \index{PrintOffsetFormat@{PrintOffsetFormat}!GenomicRegionSet@{GenomicRegionSet}}
-\subsubsection[PrintOffsetFormat]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::PrintOffsetFormat (char $\ast$ {\em op}, \/  bool {\em fraction})}}
-\label{classGenomicRegionSet_e27a5c9f17f08afae277603e33d4fb91}
+\subsubsection[{PrintOffsetFormat}]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::PrintOffsetFormat (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{op, }
+\item[{bool}]{fraction}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_ae27a5c9f17f08afae277603e33d4fb91}
 
 
 Calculates the offset distances of interval start and stop position with respect to the first interval in the set. 
 
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em op}]determines reference point as follows: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position \item[{\em fraction}]if 'true', offsets are reported as a fraction of the total region length \end{description}
-\end{Desc}
+
+\begin{DoxyParams}{Parameters}
+{\em op} & determines reference point as follows: '1'=start position, '2'=stop position, '5p'=5-\/prime position, '3p'=3-\/prime position \\
+\hline
+{\em fraction} & if 'true', offsets are reported as a fraction of the total region length \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenomicRegionSet_a6dc7150acdd7a0614f8a8497da687d0e}{
+\index{GenomicRegionSet@{GenomicRegionSet}!PrintRemoveN@{PrintRemoveN}}
+\index{PrintRemoveN@{PrintRemoveN}!GenomicRegionSet@{GenomicRegionSet}}
+\subsubsection[{PrintRemoveN}]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::PrintRemoveN (
+\begin{DoxyParamCaption}
+\item[{{\bf Chromosomes} $\ast$}]{C}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_a6dc7150acdd7a0614f8a8497da687d0e}
 
 
-The documentation for this class was generated from the following files:\begin{CompactItemize}
+Print sequence with no alignment gaps (requires SEQ input) 
+
+Remove sub-\/intervals that correspond to sequences of 'N' characters \hypertarget{classGenomicRegionSet_a45cac26bedec4d983127b93d2096f735}{
+\index{GenomicRegionSet@{GenomicRegionSet}!RunGlobalScanCount@{RunGlobalScanCount}}
+\index{RunGlobalScanCount@{RunGlobalScanCount}!GenomicRegionSet@{GenomicRegionSet}}
+\subsubsection[{RunGlobalScanCount}]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunGlobalScanCount (
+\begin{DoxyParamCaption}
+\item[{StringLIntMap $\ast$}]{bounds, }
+\item[{char $\ast$}]{ref\_\-reg\_\-file, }
+\item[{long int}]{win\_\-step, }
+\item[{long int}]{win\_\-size, }
+\item[{bool}]{ignore\_\-reverse\_\-strand, }
+\item[{char}]{preprocess, }
+\item[{bool}]{use\_\-labels\_\-as\_\-values, }
+\item[{long int}]{min\_\-reads}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_a45cac26bedec4d983127b93d2096f735}
+
+
+Scans input regions in sliding windows (input regions must be sorted). See also class \hyperlink{classGenomicRegionSetScanner}{GenomicRegionSetScanner}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bounds} & chromosome sizes \\
+\hline
+{\em ref\_\-reg\_\-file} & only windows that overlap with regions in this file will be reported \\
+\hline
+{\em win\_\-step} & sliding window step \\
+\hline
+{\em win\_\-size} & sliding window size (must be a multiple of window step) \\
+\hline
+{\em ignore\_\-reverse\_\-strand} & if true, no sliding windows on the negative strand are reported \\
+\hline
+{\em preprocess} & if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted \\
+\hline
+{\em use\_\-labels\_\-as\_\-values} & if true, genomic region labels are assumed to be integers and are included in the counting \\
+\hline
+{\em min\_\-reads} & report windows only if value is greater that this parameter \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenomicRegionSet_a11f1e58c92e9b0b2e3feb5821cff1a55}{
+\index{GenomicRegionSet@{GenomicRegionSet}!RunModifyPos@{RunModifyPos}}
+\index{RunModifyPos@{RunModifyPos}!GenomicRegionSet@{GenomicRegionSet}}
+\subsubsection[{RunModifyPos}]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunModifyPos (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{position\_\-op, }
+\item[{long int}]{position\_\-shift}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_a11f1e58c92e9b0b2e3feb5821cff1a55}
+
+
+Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-\/fixed position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position\_\-op} & selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-\/prime, '3p'=3-\/prime \\
+\hline
+{\em position\_\-shift} & determines the shift of the non-\/fixed position (in the 'c' case, both positions are shifted symmetrically around the center) \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenomicRegionSet_a0c9ba06ad5aff586193ba765e6d13a27}{
+\index{GenomicRegionSet@{GenomicRegionSet}!RunShiftPos@{RunShiftPos}}
+\index{RunShiftPos@{RunShiftPos}!GenomicRegionSet@{GenomicRegionSet}}
+\subsubsection[{RunShiftPos}]{\setlength{\rightskip}{0pt plus 5cm}void GenomicRegionSet::RunShiftPos (
+\begin{DoxyParamCaption}
+\item[{long int}]{start\_\-shift, }
+\item[{long int}]{stop\_\-shift, }
+\item[{bool}]{strand\_\-aware}
+\end{DoxyParamCaption}
+)}}
+\label{classGenomicRegionSet_a0c9ba06ad5aff586193ba765e6d13a27}
+
+
+Shifts interval start/stop positions. First it chooses reference position, and then shifts start and stop positions separately. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em start\_\-shift} & determines the shift of the start position \\
+\hline
+{\em stop\_\-shift} & determines the shift of the stop position \\
+\hline
+{\em strand\_\-aware} & if 'true', then start=5-\/prime and stop=3-\/prime \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
 \item 
 genomic\_\-intervals.h\item 
-genomic\_\-intervals.cpp\end{CompactItemize}
+genomic\_\-intervals.cpp\end{DoxyCompactItemize}
