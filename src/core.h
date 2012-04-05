@@ -427,7 +427,7 @@ class FileBufferGZ : public FileBuffer
 
   virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
   virtual char *Next();				//!< Read the next line
-  bool Read(char *buffer, unsigned long int buffer_size); 
+  bool Read(char *buffer, unsigned long int buffer_size); 		//!< Auxiliary function for reading into buffer
 
   igzstream *file_stream;				//!< input stream (used for gz files)
 };

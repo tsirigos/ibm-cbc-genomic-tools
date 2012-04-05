@@ -321,7 +321,7 @@ class Chromosomes
   Chromosome sequences are loaded on the fly from the *.dna files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. 
   If not, use the alternative constructor described below. 
 
-  Example of map file (stored in \ref map_name):
+  Example of map file (stored in \ref chrom_map_name):
 
 	1 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.1.fa.dna		\n
 	10 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.10.fa.dna	\n
