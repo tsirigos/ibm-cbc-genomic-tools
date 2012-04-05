@@ -338,7 +338,7 @@ class FileBuffer
   FileBuffer() { };
 
   //! Class destructor
-  ~FileBuffer();
+  virtual ~FileBuffer();
 
   // methods
   long int CountLines();			//!< Counts the number of lines in the file
@@ -387,7 +387,7 @@ class FileBufferText : public FileBuffer
   FileBufferText(FILE *file_ptr, unsigned long int buffer_size=10000);
 
   //! Class destructor
-  ~FileBufferText();
+  virtual ~FileBufferText();
 
   // methods
   virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
@@ -423,7 +423,7 @@ class FileBufferGZ : public FileBuffer
   FileBufferGZ(const char *file, unsigned long int buffer_size=10000);
 
   //! Class destructor
-  ~FileBufferGZ();
+  virtual ~FileBufferGZ();
 
   virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
   virtual char *Next();				//!< Read the next line
@@ -456,7 +456,9 @@ class FileBufferBAM : public FileBuffer
     \param buffer_size 		buffer size (automatically adjusted during execution to accommodate any line size)
   */
   FileBufferBAM(const char *file, unsigned long int buffer_size=10000);
-  ~FileBufferBAM();
+  
+  //! destructor
+  virtual ~FileBufferBAM();
 
   virtual void Reset();				//!< Resets the file pointer (obviously this does not work for standard input)
   virtual char *Next();				//!< Read the next line
