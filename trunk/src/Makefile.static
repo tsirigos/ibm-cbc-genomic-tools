@@ -9,32 +9,38 @@
 BINDIR = ../bin
 CC = g++
 CFLAGS = -g -O2 -Wall -static
-HEADER = gzstream.h core.h genomic_intervals.h
-OBJ = gzstream.o core.o genomic_intervals.o
-LIB = -lm -lz -lgslcblas -lgsl 
+INCLUDE = -Isamtools
+HEADER = gzstream.h core.h genomic_intervals.h 
+OBJ = gzstream.o core.o genomic_intervals.o 
+LIB = -Lsamtools -lbam -lm -lz -lgslcblas -lgsl 
 
 
 # Explicit rules
+
 
 gtools: genomic_regions genomic_overlaps genomic_scans genomic_apps vectors matrix permutation_test
 
 clean:
 	rm -f *.o
+	rm -rf $(BINDIR)/*.exe $(BINDIR)/*.dSYM $(BINDIR)/genomic_overlaps $(BINDIR)/genomic_regions $(BINDIR)/genomic_scans $(BINDIR)/genomic_apps $(BINDIR)/matrix $(BINDIR)/permutation_test $(BINDIR)/vectors
+	cd samtools; make clean
 
-genomic_regions: $(HEADER) $(OBJ) 
+libbam.a: 
+	cd samtools; make libbam.a; cd ..
+genomic_regions: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_regions genomic_regions.cpp $(OBJ) $(LIB)
-genomic_overlaps: $(HEADER) $(OBJ) 
+genomic_overlaps: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_overlaps genomic_overlaps.cpp $(OBJ) $(LIB)
-genomic_scans: $(HEADER) $(OBJ)
+genomic_scans: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_scans genomic_scans.cpp $(OBJ) $(LIB)
-genomic_apps: $(HEADER) $(OBJ)
+genomic_apps: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_apps genomic_apps.cpp $(OBJ) $(LIB)
-vectors: gzstream.h core.h gzstream.o core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp gzstream.o core.o $(LIB)
-matrix: gzstream.h core.h gzstream.o core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/matrix matrix.cpp gzstream.o core.o $(LIB)
-permutation_test: gzstream.h core.h gzstream.o core.o
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/permutation_test gzstream.o core.o permutation_test.cpp $(LIB)
+vectors: $(HEADER) $(OBJ) libbam.a
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp $(OBJ) $(LIB)
+matrix: $(HEADER) $(OBJ) libbam.a
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/matrix matrix.cpp $(OBJ) $(LIB)
+permutation_test: $(HEADER) $(OBJ) libbam.a
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/permutation_test permutation_test.cpp $(OBJ) $(LIB)
 
 
 
