@@ -464,6 +464,8 @@ class FileBufferBAM : public FileBuffer
   virtual char *Next();				//!< Read the next line
 
   samfile_t *samfile_ptr;			//!< pointer to SAM/BAM file
+  char *header;						//!< copy of BAM header
+  char *next_header_line;			//!< pointer to beginning of next header line to be placed into BUFFER
   bam1_t *bam_ptr;					//!< pointer to BAM structure
 };
 //------------------------------------------------------------------------------------------------//

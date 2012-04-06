@@ -367,6 +367,8 @@ FileBufferBAM::FileBufferBAM(const char *file, unsigned long int buffer_size)
   is_stdin = false;
   file_name = StrCopy(file);
   if ((samfile_ptr=samopen(file_name,"rb",NULL))==0) { fprintf(stderr, "[FileBufferBAM] Error: cannot open file '%s'!\n", file_name); exit(1); }
+  header = StrCopy(samfile_ptr->header->text);
+  next_header_line = header; 
   bam_ptr = bam_init1();
   BUFFER_SIZE = 0;
   BUFFER = NULL;
@@ -379,6 +381,7 @@ FileBufferBAM::FileBufferBAM(const char *file, unsigned long int buffer_size)
 //
 FileBufferBAM::~FileBufferBAM()
 {
+  delete header;
   bam_destroy1(bam_ptr);
   samclose(samfile_ptr);
 }
@@ -392,6 +395,7 @@ void FileBufferBAM::Reset()
   bam_destroy1(bam_ptr);
   samclose(samfile_ptr);
   if ((samfile_ptr=samopen(file_name,"rb",NULL))==0) { fprintf(stderr, "[FileBufferBAM] cannot open file '%s'!\n", file_name); exit(1); }
+  next_header_line = header; 
   bam_ptr = bam_init1();
   BUFFER_SIZE = 0;
   BUFFER = NULL;
@@ -403,7 +407,13 @@ void FileBufferBAM::Reset()
 //
 char *FileBufferBAM::Next()
 {
-  if (samread(samfile_ptr,bam_ptr)>=0) {
+  if (next_header_line[0]!=0) {
+    n_line++;
+	if (BUFFER!=NULL) delete BUFFER;
+    BUFFER = StrCopy(GetNextToken(&next_header_line,'\n'));
+	return BUFFER;
+  }
+  else if (samread(samfile_ptr,bam_ptr)>=0) {
     n_line++;
 	if (BUFFER!=NULL) delete BUFFER;
     BUFFER = bam_format1_core(samfile_ptr->header,bam_ptr,0);
@@ -2426,7 +2436,7 @@ void CmdLine::Init()
 void CmdLine::Print()
 {
   for (OptionList::iterator x=cmd_option_list.begin(); x!=cmd_option_list.end(); x++) {
-    printf("  %-10s %-80s ", (*x)->opt, (*x)->description);
+    printf("  %-20s %-80s ", (*x)->opt, (*x)->description);
     (*x)->Print();
     printf("\n");
   }
