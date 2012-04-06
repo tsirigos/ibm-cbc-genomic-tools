@@ -97,13 +97,24 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   );
 
   cmd_line->AddOperation("peakdiff", "[OPTIONS] SAMPLE1-FILES SAMPLE2-FILES [SAMPLE1-CONTROL-FILES SAMPLE2-CONTROL-FILES]", \
-  "Finds differences in peak levels between two samples (two replicates per sample are required).", \
-  "* Input files: comma-separated, no spaces!\n\
+"Finds differences in peak levels between two samples (two replicates per sample are required).", \
+"This operation finds differences in read density levels of genomic windows between two samples. The algorithm used here is an adaptation of the method presented in Ntziachristos et al. (Nature Medicine, Feb 2012) and follows these steps: \n\
+  1. identifies enriched genomic windows (i.e. peaks) in the input sample files based on the binomial distribution against random background or supplied control files (see options -i, -w, -d and -pval)\n\
+  2. normalizes the genomic windows densities inside the identified peaks across replicates and samples using quantile normalization\n\
+  3. for each sample, checks replicate reproducibility and removes outliers by first fitting a smooth line between two replicates and then applying a cutoff at the residual values whose distribution is modeled as a normal distribution (see option -outliers)\n\
+  4. computes significant fold changes between samples for the identified peaks (see options -pseudo and -fdr)\n\
+\n\
+REQUIREMENTS: \n\
+  * Input files: comma-separated, no spaces!\n\
   * Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval\n\
-  * Region-set requirements: sorted by chromosome/strand/start", \
-  "1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.sorted.bed,Notch1.r2.sorted.bed Input.r1.sorted.bed,Input.r2.sorted.bed\n" \
+  * Region-set requirements: sorted by chromosome/strand/start\n\
+\n\
+EXAMPLES: \n\
+  1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.sorted.bed,Notch1.r2.sorted.bed Input.r1.sorted.bed,Input.r2.sorted.bed\n\
+  2. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal -g genome.bed Notch1_cancer.r1.sorted.bed,Notch1_cancer.r2.sorted.bed Notch1_normal.r1.sorted.bed,Notch1_normal.r2.sorted.bed\n\
+  3. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal.with_controls -g genome.bed Notch1_cancer.r1.sorted.bed,Notch1_cancer.r2.sorted.bed Notch1_normal.r1.sorted.bed,Notch1_normal.r2.sorted.bed Input_cancer.r1.sorted.bed,Input_cancer.r2.sorted.bed Input_normal.r1.sorted.bed,Input_normal.r2.sorted.bed" \
   );
 
   cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILES", \
@@ -154,8 +165,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
-    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count as a regularization constant");
-    cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "used for outlier detection between replicates");
+    cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "probability cutoff for residuals in outlier detection between replicates");
+    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count for fold-change computations");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
