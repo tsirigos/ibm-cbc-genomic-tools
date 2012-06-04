@@ -48,6 +48,7 @@ bool SORTED_BY_STRAND;
 bool IGNORE_STRAND;
 bool MERGE_LABELS;
 bool PRINT_LABELS;
+bool PRINT_REGIONS;
 bool MATCH_GAPS;
 bool USE_VALUES;
 unsigned long int MIN_COUNT;
@@ -69,6 +70,17 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetProgramName(PROGRAM,VERSION);
 
   // set operations
+  cmd_line->AddOperation("bin", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "UNDER DEVELOPMENT: Classifies a pair of intervals into reference regions.", \
+  "* Test region file format: REG (because interchromosomal associations must be allowed)\n\
+  * Reference region file format: REG, GFF, BED, SAM\n\
+  * Operands: interval, region-set\n\
+  * Test region requirements: none\n\
+  * Reference region requirements: chromosome/strand-compatible, sorted and non-overlapping\n\
+  * Test region-set requirements: none\n\
+  * Reference region-set requirements: non-overlapping"\
+  );
+
   cmd_line->AddOperation("count", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
   "Counts the number of overlapping test regions per reference region.", \
   "* Input formats: REG, GFF, BED, SAM\n\
@@ -91,6 +103,17 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Operands: region, region-set\n\
   * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
   * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("dist", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "UNDER DEVELOPMENT: Computes the distance between a pair of intervals given breakpoints in reference file (e.g. restriction enzyme sites).", \
+  "* Test region file format: REG (because interchromosomal associations must be allowed)\n\
+  * Reference region file format: REG, GFF, BED, SAM\n\
+  * Operands: interval pair, region-set\n\
+  * Test region requirements: none\n\
+  * Reference region requirements: chromosome/strand-compatible, sorted and non-overlapping\n\
+  * Test region-set requirements: none\n\
+  * Reference region-set requirements: non-overlapping"\
   );
 
   cmd_line->AddOperation("intersect", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
@@ -143,7 +166,11 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
    
   // Main options
-  if (op=="count") {
+  if (op=="bin") {
+    cmd_line->AddOption("--print-labels", &PRINT_LABELS, false, "print test region labels");
+    cmd_line->AddOption("--print-regions", &PRINT_REGIONS, false, "print test regions");
+  }
+  else if (op=="count") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-min", &MIN_COUNT, 0, "minimum count");
@@ -157,6 +184,10 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
     cmd_line->AddOption("-min", &MIN_DENSITY, 0.0, "minimum density");
+  }
+  else if (op=="dist") {
+    cmd_line->AddOption("--print-labels", &PRINT_LABELS, false, "print test region labels");
+    cmd_line->AddOption("--print-regions", &PRINT_REGIONS, false, "print test regions");
   }
   else if (op=="intersect") {
     cmd_line->AddOption("-label", &MERGE_LABELS, false, "print query label for each match");
@@ -207,6 +238,46 @@ int main(int argc, char* argv[])
   if (IS_SORTED&&SORTED_BY_STRAND&&IGNORE_STRAND) { fprintf(stderr, "[Error]: the input is sorted by chromosome/strand/start (i.e. -S and -s are set), therefore the overlap algorithm can only report strand-specific results (i.e. -i cannot be set)!\n"); exit(1); }
 
   //--------------------
+  // bin/unsorted
+  //--------------------
+  if (cmd_line->current_cmd_operation=="bin") {
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    if (TestRegSet.format!="REG") { fprintf(stderr, "Error: test region set should be in REG format for this operation!\n"); exit(1); }
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+
+    // classify into bins
+    GenomicRegionSetIndex RefIndex(&RefRegSet,BIN_BITS);
+    Progress PRG("Classifying interval pairs into reference bins...",1);
+	unsigned long int not_binned = 0;
+    for (GenomicRegion *qreg=TestRegSet.Get(); qreg!=NULL; qreg=TestRegSet.Next()) {
+	  if (qreg->I.size()!=2) qreg->PrintError("interval pairs are required for this operation!");
+	  GenomicInterval *qint1 = qreg->I[0]->CreateCenter(true);
+	  GenomicInterval *qint2 = qreg->I[1]->CreateCenter(true);
+	  GenomicRegion *ireg1 = RefIndex.GetMatch(qint1);
+	  GenomicRegion *ireg2 = RefIndex.GetMatch(qint2);
+	  if (ireg1&&ireg2) {
+        printf("%s\t", qreg->LABEL); 
+	    ireg1->I[0]->PrintInterval(); 
+		printf(" "); 
+		ireg2->I[0]->PrintInterval(); 
+		if (PRINT_LABELS) printf("\t%s\t%s", ireg1->LABEL, ireg2->LABEL); 
+		if (PRINT_REGIONS) { printf("\t"); qreg->I[0]->PrintInterval(); printf(" "); qreg->I[1]->PrintInterval(); }
+		printf("\n");
+	  }
+	  else not_binned++;
+	  delete qint1;
+	  delete qint2;
+      PRG.Check();
+    }
+    PRG.Done();
+	if (VERBOSE&&(not_binned>0)) fprintf(stderr, "Warning: %lu regions were not binned!\n", not_binned); 
+  }
+
+  
+  //--------------------
   // count/sorted
   //--------------------
   /*if ((cmd_line->current_cmd_operation=="count")&&(IS_SORTED==true)) {
@@ -233,7 +304,7 @@ int main(int argc, char* argv[])
   //--------------------
   // count
   //--------------------
-  if (cmd_line->current_cmd_operation=="count") {
+  else if (cmd_line->current_cmd_operation=="count") {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
@@ -362,6 +433,57 @@ int main(int argc, char* argv[])
     PRG.Done();
     delete coverage;
     delete overlaps;
+  }
+
+
+  //--------------------
+  // dist/unsorted
+  //--------------------
+  else if (cmd_line->current_cmd_operation=="dist") {
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    if (TestRegSet.format!="REG") { fprintf(stderr, "Error: test region set should be in REG format for this operation!\n"); exit(1); }
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+
+    // compute distances
+    GenomicRegionSetIndex RefIndex(&RefRegSet,BIN_BITS);
+    Progress PRG("Processing interval pairs...",1);
+    for (GenomicRegion *qreg=TestRegSet.Get(); qreg!=NULL; qreg=TestRegSet.Next()) {
+	  if (qreg->I.size()!=2) qreg->PrintError("interval pairs are required for this operation!");
+	  const char *op[] = { "3p", "5p" };
+	  bool matched = false;
+	  long int offsets[4];
+	  for (int t=0,k=0; t<=1; t++) {
+	    for (int q=0; q<=1; q++,k++) {
+	      GenomicInterval interval = qreg->I[q];
+	      interval.ModifyPos(op[t],0);
+          for (GenomicRegion *ireg=RefIndex.GetMatch(&interval); ireg!=NULL; ireg=RefIndex.NextMatch()) {
+            long int start_offset, stop_offset;
+            interval.GetOffsetFrom(ireg->I.front(),op[1-t],true,&start_offset,&stop_offset);
+            offsets[k] = start_offset;
+			matched = true;
+		  }
+        }
+	  }
+	  if (matched) {
+        if (PRINT_LABELS) printf("%s\t", qreg->LABEL);
+	    if (PRINT_REGIONS) { qreg->I[0]->PrintInterval(); printf(" "); qreg->I[1]->PrintInterval(); printf("\t"); }
+	    for (int k=0; k<4; k++) printf("%ld%c", offsets[k], k==3?'\t':' ');
+		//if (qreg->I[0]->STRAND==qreg->I[1]->STRAND) printf("%ld", min(offsets[0]+offsets[1],offsets[2]+offsets[3]));
+		//else printf("%ld", min(offsets[0]+offsets[3],offsets[1]+offsets[2]));
+		long int d1 = min(offsets[0]+offsets[1],offsets[2]+offsets[3]);
+		long int d2 = min(offsets[0]+offsets[3],offsets[1]+offsets[2]);
+		printf("%ld", min(d1,d2));
+		printf("\t");
+		if (strcmp(qreg->I[0]->CHROMOSOME,qreg->I[1]->CHROMOSOME)==0) printf("%ld", max(qreg->I[0]->STOP,qreg->I[1]->STOP)-min(qreg->I[0]->START,qreg->I[1]->START));
+		else printf("Inf");
+        printf("\n");
+	  }
+      PRG.Check();
+    }
+    PRG.Done();
   }
 
 

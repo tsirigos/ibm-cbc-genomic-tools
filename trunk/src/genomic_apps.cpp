@@ -1,4 +1,4 @@
-//
+
 // Copyright (c) 2011 IBM Corporation. 
 // All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v2.0 
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -61,6 +61,7 @@ char *SHIFT;
 char *LEGEND;
 char *COLORS;
 char *TITLE, *XLABEL, *YLABEL;
+char *IMAGE_TYPE; 
 char *IMAGE_SIZE;
 int IMAGE_RESOLUTION;
 bool NORMALIZE;
@@ -152,8 +153,9 @@ EXAMPLES: \n\
     cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
     cmd_line->AddOption("-xlab", &XLABEL, "", "heatmap x-axis label");
     cmd_line->AddOption("-ylab", &YLABEL, "", "heatmap y-axis label");
-    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,4000", "comma-separated image dimensions");
-    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 600, "image resolution in dpi");
+    cmd_line->AddOption("-itype", &IMAGE_TYPE, "pdf", "image format type {pdf,tif}");
+    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,4000", "comma-separated image dimensions (for tif format only)");
+    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 600, "image resolution in dpi (for tif format only)");
   }
   else if (cmd_line->current_cmd_operation=="peakdiff") {
     n_args = 2;
@@ -169,8 +171,9 @@ EXAMPLES: \n\
     cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count for fold-change computations");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
-    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions");
-    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi");
+    cmd_line->AddOption("-itype", &IMAGE_TYPE, "pdf", "image format type {pdf,tif}");
+    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions (for tif format only)");
+    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi (for tif format only)");
   }
   else if (cmd_line->current_cmd_operation=="profile") {
     n_args = 2;
@@ -185,6 +188,9 @@ EXAMPLES: \n\
     cmd_line->AddOption("-title", &TITLE, "", "plot title");
     cmd_line->AddOption("-xlab", &XLABEL, "", "plot x-axis label");
     cmd_line->AddOption("-ylab", &YLABEL, "", "plot y-axis label");
+    cmd_line->AddOption("-itype", &IMAGE_TYPE, "pdf", "image format type {pdf,tif}");
+    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions (for tif format only)");
+    cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi (for tif format only)");
   }
   else {
     cerr << "Unknown operation '" << op << "'!\n";
@@ -195,6 +201,8 @@ EXAMPLES: \n\
   // process command line
   *next_arg = cmd_line->Read(argv+1,argc-1) + 1;
   if (HELP||(argc-*next_arg<n_args)) { cmd_line->OperationUsage(); delete cmd_line; exit(1); }
+  
+  if ((strcmp(IMAGE_TYPE,"pdf")!=0)&&(strcmp(IMAGE_TYPE,"tif")!=0)) { fprintf(stderr, "Error: unsupported image format '%s'!\n", IMAGE_TYPE); exit(1); }
   
   return cmd_line;
 }
@@ -444,7 +452,7 @@ int main(int argc, char* argv[])
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
 	string param_file_name = (string)OUT_PREFIX + (string)".params";
 	string rscript_file_name = (string)OUT_PREFIX + (string)".r";
-	string image_file_name = (string)OUT_PREFIX + (string)".tif";
+	string image_file_name = (string)OUT_PREFIX + "." + (string)IMAGE_TYPE;
 	string log_file_name = (string)OUT_PREFIX + (string)".log";
 
 	// print parameters to file
@@ -459,6 +467,7 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%s\n", IMAGE_SIZE);
 	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
 	fprintf(param_file, "%d\n", n_signal_files);
+	for (int i=0; i<argc; i++) fprintf(param_file, "%s%c", argv[i], i<argc-1?' ':'\n');
     fclose(param_file);
 
 	// create R script
@@ -587,7 +596,7 @@ int main(int argc, char* argv[])
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
 	string param_file_name = (string)OUT_PREFIX + (string)".params";
 	string rscript_file_name = (string)OUT_PREFIX + (string)".r";
-	string image_file_name = (string)OUT_PREFIX + (string)".tif";
+	string image_file_name = (string)OUT_PREFIX + "." + (string)IMAGE_TYPE;
 	string log_file_name = (string)OUT_PREFIX + (string)".log";
 
 	// print parameters to file
@@ -659,7 +668,7 @@ int main(int argc, char* argv[])
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
 	string param_file_name = (string)OUT_PREFIX + (string)".params";
 	string rscript_file_name = (string)OUT_PREFIX + (string)".r";
-	string image_file_name = (string)OUT_PREFIX + (string)".tif";
+	string image_file_name = (string)OUT_PREFIX + "." + (string)IMAGE_TYPE;
 	string log_file_name = (string)OUT_PREFIX + (string)".log";
 
 	// print parameters to file
@@ -672,6 +681,9 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%s\n", TITLE);
 	fprintf(param_file, "%s\n", XLABEL);
 	fprintf(param_file, "%s\n", YLABEL);
+	fprintf(param_file, "%s\n", IMAGE_SIZE);
+	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
+	for (int i=0; i<argc; i++) fprintf(param_file, "%s%c", argv[i], i<argc-1?' ':'\n');
     fclose(param_file);
 
 	// create R script

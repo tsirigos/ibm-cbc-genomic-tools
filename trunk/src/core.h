@@ -283,7 +283,7 @@ class Progress
     \param msg 		message to be displayed in stderr.
     \param max_count	if greater than 1, the progress is shown as percentage
   */
-  Progress(const char *msg, long int max_count);
+  Progress(const char *msg, long int max_count, bool print_remaining=false);
 
   //! Class constructor.
   Progress();
@@ -301,7 +301,7 @@ class Progress
   /*!
     Call this method inside the loop you want to monitor at the end of each iteration.
   */
-  void Check();
+  void Check(long int c=1);
 
   //! Prints final count.
   /*!
@@ -310,10 +310,12 @@ class Progress
   void Done();
 
  private:
-  char *msg;			//!< message
-  long int max_count;		//!< maximum number of iterations in the loop
-  long int count;		//!< current iteration
-  time_t TIME;			//!< time stamp (updated every second)
+  char *msg;					//!< message
+  long int max_count;			//!< maximum number of iterations in the loop
+  bool print_remaining;			//!< if true and max_count>1, prints an update of estimated remaining time 
+  long int count;				//!< current iteration
+  time_t TIME0;					//!< time stamp for beginning of computation
+  time_t TIME;					//!< time stamp (updated every second)
 };
 
 
