@@ -77,13 +77,13 @@ Chromosomes::Chromosomes(char *fasta_file, bool verbose)
   long int n_line = 0;
   for (char *inp=buffer.Next(); inp!=NULL; inp=buffer.Next()) {
     n_line++;
-    if (inp[0]!='>') { fprintf(stderr, "Error: Line %ld: chromosome file '%s' is not in FASTA format!\n", n_line, fasta_file); exit(1); }
+    if (inp[0]!='>') { fprintf(stderr, "[Chromosomes] Error: Line %ld: chromosome file '%s' is not in FASTA format!\n", n_line, fasta_file); exit(1); }
     ++inp;
     string chromosome_name = GetNextToken(&inp," \t");
-    if (chromosome_seq_data.find(chromosome_name)!=chromosome_seq_data.end()) { fprintf(stderr, "Error: Line %ld: duplicate chromosome name in '%s'!\n", n_line, fasta_file); exit(1); }
+    if (chromosome_seq_data.find(chromosome_name)!=chromosome_seq_data.end()) { fprintf(stderr, "[Chromosomes] Error: Line %ld: duplicate chromosome name in '%s'!\n", n_line, fasta_file); exit(1); }
     inp = buffer.Next();
     n_line++;
-    if ((inp==NULL)||(inp[0]=='>')) { fprintf(stderr, "Error: Line %ld: sequence missing in chromosome file '%s'!\n", n_line, fasta_file); exit(1); }
+    if ((inp==NULL)||(inp[0]=='>')) { fprintf(stderr, "[Chromosomes] Error: Line %ld: sequence missing in chromosome file '%s'!\n", n_line, fasta_file); exit(1); }
     chromosome_seq_data[chromosome_name] = pair<char*,size_t>(inp,strlen(inp));
     buffer.BUFFER = new char[buffer.BUFFER_SIZE];									// using this trick to avoid duplicating inp
     //if (verbose) cerr << "* Read chromosome " << chromosome_name << " of size " << chromosome_seq_data[chromosome_name].second << ".\n";
@@ -124,7 +124,7 @@ void Chromosomes::LoadChromosome(string chromosome_name)
   if (chromosome_name==current_chromosome_name) return;
   
   else if (load_in_memory==true) {
-    if (chromosome_seq_data.find(chromosome_name)==chromosome_seq_data.end()) { cerr << "Error: chromosome '" << chromosome_name << "' not found in FASTA file!\n"; exit(1); }
+    if (chromosome_seq_data.find(chromosome_name)==chromosome_seq_data.end()) { cerr << "[Chromosomes] Error: chromosome '" << chromosome_name << "' not found in FASTA file!\n"; exit(1); }
     current_chromosome_name = chromosome_name;
     current_chromosome_seq = chromosome_seq_data[chromosome_name].first;
     current_chromosome_size = chromosome_seq_data[chromosome_name].second;
@@ -136,27 +136,28 @@ void Chromosomes::LoadChromosome(string chromosome_name)
     if (current_chromosome_seq!=NULL) delete current_chromosome_seq;
     string chromosome_file = chrom_map_dir + "/" + chrom_map[chromosome_name];
 
-    // recover file size
     FILE *F = fopen(chromosome_file.c_str(),"r");
-    if (F==0) { cerr << "Error: can't open file '" << chromosome_file << "'!\n"; exit(1); }
+    if (F==0) { cerr << "[Chromosomes] Error: can't open file '" << chromosome_file << "'!\n"; exit(1); }
     fseek(F,0,SEEK_END);
-    long int buffer_size = ftell(F);
-    if (buffer_size<0) { cerr << "Error reading file '" << chromosome_file << "'!\n"; exit(1); }
+    long int file_size = ftell(F);
+    if (file_size<0) { cerr << "[Chromosomes] Error reading file '" << chromosome_file << "'!\n"; exit(1); }
     fclose(F);
-
-    // read file
-    FileBufferText buffer(chromosome_file.c_str(),buffer_size+1);
-    char *inp = buffer.Next();
-    if (inp==NULL) { cerr << "Error: empty file '" << chromosome_file << "'!\n"; exit(1); }
-    if (inp[0]=='>') {
-      inp = buffer.Next();
-      if (inp==NULL) { cerr << "Error: no DNA sequence in file '" << chromosome_file << "'!\n"; exit(1); }
-    }
-    current_chromosome_seq = StrCopy(inp);			// NOTE: no easy to avoid this duplication...
+	current_chromosome_seq = new char[file_size+1];
+	current_chromosome_seq[0] = 0;
+    FileBufferText buffer(chromosome_file.c_str(),10000);
+	char *inp = buffer.Next();
+    if (inp==NULL) { cerr << "[Chromosomes] Error: chromosome file '" << chromosome_file << "' is empty!\n"; exit(1); }
+	if (inp[0]=='>') inp = buffer.Next();
+	char *s = current_chromosome_seq;
+	while (inp!=NULL) {
+	  strcpy(s,inp);
+	  s += strlen(inp);
+	  inp = buffer.Next();
+	}
     current_chromosome_size = strlen(current_chromosome_seq);
   }
 
-  else { cerr << "Error: chromosome '" << chromosome_name << "' not found in map file!\n"; exit(1); }
+  else { cerr << "[Chromosomes] Error: chromosome '" << chromosome_name << "' not found in map file!\n"; exit(1); }
 
 }
 
@@ -190,7 +191,7 @@ void Chromosomes::PrintSeq(GenomicInterval *I, bool replace)
 {
   LoadChromosome(I->CHROMOSOME);
   size_t n = I->GetSize();
-  if ((size_t)I->STOP>current_chromosome_size) { cerr << "Error: interval [" << I->CHROMOSOME << ' ' <<  I->STRAND << ' ' << I->START << ' ' << I->STOP << "] exceeds chromosome bounds!\n"; exit(1); }
+  if ((size_t)I->STOP>current_chromosome_size) { cerr << "[Chromosomes] Error: interval [" << I->CHROMOSOME << ' ' <<  I->STRAND << ' ' << I->START << ' ' << I->STOP << "] exceeds chromosome bounds!\n"; exit(1); }
   if (I->STRAND=='+') {
     char *p = current_chromosome_seq + I->START - 1;
     for (size_t k=0; (p[0]!=0)&&(k<n); k++,p++) printf("%c", replace&&(p[0]=='N') ? 'a' : p[0]);
@@ -433,7 +434,7 @@ long int GenomicInterval::CalcOverlap(GenomicInterval *I, bool ignore_strand)
 
 //---------CalcDistanceFrom----------
 //
-long int GenomicInterval::CalcDistanceFrom(GenomicInterval *I, char *op, char *I_op)
+long int GenomicInterval::CalcDistanceFrom(GenomicInterval *I, const char *op, const char *I_op)
 {
   return GetCoordinate(op) - I->GetCoordinate(I_op);
 }
@@ -460,7 +461,7 @@ int GenomicInterval::CalcDirection(GenomicInterval *i, bool sorted_by_strand)
 
 //---------GetCoordinate-----------
 //
-long int GenomicInterval::GetCoordinate(char *op)
+long int GenomicInterval::GetCoordinate(const char *op)
 {
   if (strcmp(op,"1")==0) return START;
   else if (strcmp(op,"2")==0) return STOP;
@@ -531,7 +532,7 @@ void GenomicInterval::ShiftPos(long int start_shift, long int stop_shift, bool s
 
 //---------ModifyPos-----------
 //
-void GenomicInterval::ModifyPos(char *position_op, long int position_shift)
+void GenomicInterval::ModifyPos(const char *position_op, long int position_shift)
 {
   if (strcmp(position_op,"c")==0) {
     long int center = START + (STOP-START+1)/2;
@@ -618,7 +619,7 @@ bool GenomicInterval::OverlapsWith(GenomicInterval *I, bool ignore_strand)
 
 //---------GetOffsetFrom-----------
 //
-void GenomicInterval::GetOffsetFrom(GenomicInterval *ReferenceI, char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
+void GenomicInterval::GetOffsetFrom(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
 {
   if (IsCompatibleWith(ReferenceI,ignore_strand)==false) { cerr << "[GetOffsetFrom] Error: intervals must have the same chromosome/strand for this operation!\n"; exit(1); }
   long int ref = ReferenceI->GetCoordinate(op);
@@ -630,6 +631,15 @@ void GenomicInterval::GetOffsetFrom(GenomicInterval *ReferenceI, char *op, bool 
 
 
 
+//---------CreateCenter-----------
+//
+GenomicInterval *GenomicInterval::CreateCenter(bool stop_equals_start)
+{
+  long int new_start = START+(STOP-START)/2;
+  long int new_stop = stop_equals_start?STOP-(STOP-START)/2:new_start;
+  GenomicInterval *i = new GenomicInterval(CHROMOSOME,STRAND,new_start,new_stop);
+  return i;
+}
 
 
 //---------------------------------------------------------------------------------------------//
@@ -1287,11 +1297,12 @@ void GenomicRegion::RunCalcDistances(char *op1, char *op2)
 {
   if (I.size()<=1) return;     		// NOTE: maybe we want to do this: printf("%s\tNaN\n", LABEL);
   else {
-    if (IsCompatible(false)==false) PrintError("region intervals must have the same chromosome/strand for this operation!");
     printf("%s\t", LABEL);
     GenomicIntervalSet::iterator i = I.begin();
     GenomicIntervalSet::iterator j = i;
-    for (i++; i!=I.end(); i++,j++) printf("%ld%c", (*i)->CalcDistanceFrom(*j,op2,op1), *i==I.back()?'\n':' ');
+    for (i++; i!=I.end(); i++,j++) 
+	  if (strcmp((*i)->CHROMOSOME,(*j)->CHROMOSOME)==0) printf("%ld%c", (*i)->CalcDistanceFrom(*j,op2,op1), *i==I.back()?'\n':' ');
+	  else printf("Inf%c", *i==I.back()?'\n':' ');
   }
 }
 
@@ -1384,7 +1395,7 @@ void GenomicRegion::ReversePos(StringLIntMap *bounds)
 
 //---------ModifyPos-----------
 //
-void GenomicRegion::ModifyPos(char *position_op, long int position_shift)
+void GenomicRegion::ModifyPos(const char *position_op, long int position_shift)
 {
   for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->ModifyPos(position_op,position_shift);
 }
@@ -1482,7 +1493,6 @@ void GenomicRegion::RunShuffle(gsl_rng *random_generator, GenomicRegionSet *refR
 void GenomicRegion::Sort()
 {
   if (I.size()<=1) return;
-  if (IsCompatible(false)==false) PrintError("region intervals must have the same chromosome/strand for this operation!");
   SortGenomicIntervals(&I);
 }
 
@@ -2335,7 +2345,7 @@ void GenomicRegionBED::Intersect()
 
 //---------ModifyPos-----------
 //
-void GenomicRegionBED::ModifyPos(char *position_op, long int position_shift)
+void GenomicRegionBED::ModifyPos(const char *position_op, long int position_shift)
 {
   GenomicRegion::ModifyPos(position_op,position_shift);
   GenomicRegion::Union();
@@ -2688,6 +2698,7 @@ void GenomicRegionSAM::Read(char *inp, long int n_line)
 
   long int start = POS;
   char strand = CalcStrandFromFlag(FLAG);
+  if (strcmp(CIGAR,"*")==0) { stringstream ss; ss << strlen(SEQ) << "M"; delete CIGAR; CIGAR = StrCopy(ss.str().c_str()); }   // WARNING: Invalid CIGAR string!!!
   TokenizeCIGAR();
   if ((strcmp(SEQ,"*")!=0)&&((long int)strlen(SEQ)!=CalcFragmentLengthFromCIGAR())) {
     stringstream err_msg;
@@ -3147,7 +3158,7 @@ void GenomicRegionSAM::Randomize(gsl_rng *random_generator, StringLIntMap *bound
 
 //---------ModifyPos-----------
 //
-void GenomicRegionSAM::ModifyPos(char *position_op, long int position_shift)
+void GenomicRegionSAM::ModifyPos(const char *position_op, long int position_shift)
 {
   GenomicRegion::ModifyPos(position_op,position_shift);
   GenomicRegion::Union();
@@ -3986,7 +3997,7 @@ void GenomicRegionSet::RunSize()
 
 //---------RunModifyPos--------
 //
-void GenomicRegionSet::RunModifyPos(char *position_op, long int position_shift)
+void GenomicRegionSet::RunModifyPos(const char *position_op, long int position_shift)
 {
   if ((strcmp(position_op,"1")!=0)&&(strcmp(position_op,"2")!=0)&&(strcmp(position_op,"5p")!=0)&&(strcmp(position_op,"3p")!=0)&&(strcmp(position_op,"c")!=0)) { cerr << "Error: unknown operation!\n"; exit(1); }
   if (n_regions==0) return;
@@ -5022,6 +5033,211 @@ unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps,
 
 
 
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: GenomicRegionSetIndex                                                                //
+//---------------------------------------------------------------------------------------------//
+
+
+//---------Constructor--------
+//
+GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin_bits)
+{
+  this->regSet = regSet;
+  
+  if (regSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetIndex] Error: index regions must be loaded in memory!\n"); exit(1); }
+
+  // book-keeping for regions that fall in the same bin
+  r_next = new long int[regSet->n_regions];
+  for (long int k=0; k<regSet->n_regions; k++) r_next[k] = -1;
+
+  // Calculate basic statistics
+  map<string,long int> chrom_size;
+  Progress PRG1("Checking index regions...",regSet->n_regions);
+  for (long int k=0; k<regSet->n_regions; k++) {
+    GenomicRegion *r = regSet->R[k];
+    if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
+    long int start = r->I.front()->START;
+    long int stop = r->I.back()->STOP;
+    if (start>stop) continue; // r->PrintError("start position cannot be greater than stop position!");
+    if (stop<=0) continue; // r->PrintError("stop position must be positive!");
+    if (start<=0) continue; //r->PrintError("start position must be positive!");
+    map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
+    if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
+    else it->second = max(it->second,stop);
+    PRG1.Check();
+  }
+  PRG1.Done();
+
+  // set bin parameters 
+  if (bin_bits==NULL) {
+    n_levels = 5;				// use Kent et al. (UCSC Genome Browser) settings as default
+    n_bits = new int[n_levels];
+    n_bits[0] = 17;
+    n_bits[1] = 20;
+    n_bits[2] = 23;
+    n_bits[3] = 26;
+    n_bits[n_levels-1] = 60;			// the last bin level should only have one bin, i think 60 bits will guarrantee that :-) 
+  }
+  else {
+    n_levels = CountTokens(bin_bits,',')+1;
+    n_bits = new int[n_levels];
+    int l = 0;
+    for (char *s=GetNextToken(&bin_bits,','); s[0]!=0; s=GetNextToken(&bin_bits,',')) n_bits[l++] = atoi(s);
+    n_bits[n_levels-1] = 60;
+  }
+
+  // initialize bin structures for each chromosome
+  Progress PRG1a("Initializing bin structures for each chromosome...",1); 
+  for (map<string,long int>::iterator it=chrom_size.begin(); it!=chrom_size.end(); it++) {
+    long int *chrom_n_bins = new long int[n_levels];
+    long int **chrom_bins = new long int*[n_levels];
+    index[it->first] = new BinSet(chrom_n_bins,chrom_bins);
+    //cerr << "* chrom = " << it->first << "; size = " << it->second;
+    for (int l=0; l<n_levels; l++) {
+      chrom_n_bins[l] = (it->second>>n_bits[l])+1;
+      //cerr << "; n_bins[" << l << "] = " << chrom_n_bins[l];
+      chrom_bins[l] = new long int[chrom_n_bins[l]];
+      for (long int b=0; b<chrom_n_bins[l]; b++) chrom_bins[l][b] = -1;
+    }
+    //cerr << '\n';
+	PRG1a.Check();
+  }
+  PRG1a.Done();
+  
+  // process regions into the bins
+  //double mean_bin_occupancy = 0;
+  Progress PRG2("Creating index...",regSet->n_regions);
+  for (long int k=0; k<regSet->n_regions; k++) {
+    GenomicRegion *r = regSet->R[k];
+    long int **chrom_bins = index[r->I.front()->CHROMOSOME]->second;
+    for (int l=0; l<n_levels; l++) {
+      long int b_start = r->I.front()->START>>n_bits[l];
+      long int b_stop = r->I.back()->STOP>>n_bits[l];
+      if (b_start==b_stop) {
+        long int z = chrom_bins[l][b_start]; 
+        if (z!=-1) r_next[k] = z;
+        chrom_bins[l][b_start] = k;
+        //mean_bin_occupancy += min(1.0,(double)(r->I.back()->STOP-r->I.front()->START+1+100)/(1<<n_bits[l]));
+        break;
+      }
+    }
+    PRG2.Check();
+  }
+  //mean_bin_occupancy /= regSet->n_regions;
+  PRG2.Done();
+  //fprintf(stderr, "* mean bin occupancy = %.6f\n", mean_bin_occupancy);
+
+  // double-check if all regions are stored in the bins
+  /*
+  Progress PRG3("Counting used...",index.size());
+  long int n_used = 0;
+  for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++,PRG3.Check()) {
+    long int *chrom_n_bins = it->second->first;
+    long int **chrom_bins = it->second->second; 
+    for (int l=0; l<n_levels; l++)
+      for (long int b=0; b<chrom_n_bins[l]; b++) 
+        for (long int z=chrom_bins[l][b]; z!=-1; z=r_next[z]) n_used++;
+  }
+  PRG3.Done();
+  // The following test will fail in general because 'rogue' regions are not used!
+  if (n_used!=regSet->n_regions) { fprintf(stderr, "Bug: [UnsortedGenomicRegionSetOverlaps] n_used should equal n_regions!\n"); exit(1); }
+  */
+}
+
+
+
+//---------Destructor--------
+//
+GenomicRegionSetIndex::~GenomicRegionSetIndex()
+{
+  delete r_next;
+  delete n_bits;
+  for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++) {
+    delete it->second->first; 
+    delete [] it->second->second;
+  }
+}
+
+
+
+//---------GetMatch--------
+//
+GenomicRegion *GenomicRegionSetIndex::GetMatch(GenomicInterval *i)
+{
+  current_qint = i;
+  map<string,BinSet*>::iterator it = index.find(i->CHROMOSOME);
+  current_binset = it!=index.end()?it->second:NULL;
+  new_query = true;
+  return NextMatch();
+}
+
+
+
+//---------NextMatch--------
+//
+GenomicRegion *GenomicRegionSetIndex::NextMatch()
+{
+  if (current_binset==NULL) return (current_ireg=NULL); 
+  static long int start, stop, l, b, b_stop, current_k;
+  static long int *n_bins;
+  if (new_query) {
+    new_query = false;
+    n_bins = current_binset->first;
+    l = 0;
+    start = current_qint->START;
+    stop = current_qint->STOP;
+    if (stop<=0) return (current_ireg=NULL);
+    if (start>stop) return (current_ireg=NULL);
+    if (start<=0) start = 1; //current_qint->PrintError("start position must be positive!");
+    b = start>>n_bits[l];
+    b_stop = min(stop>>n_bits[l],n_bins[l]-1);
+    if (b>=n_bins[l]) return (current_ireg=NULL);  
+    current_k = current_binset->second[l][b];
+  }
+  while (true) {
+    while (current_k!=-1) {
+      current_ireg = regSet->R[current_k];
+      current_k = r_next[current_k];
+      if ((start<=current_ireg->I.back()->STOP)&&(stop>=current_ireg->I.front()->START)) return current_ireg;  
+    }
+    b++;
+    if (b>b_stop) { 
+      l++;
+      if (l>=n_levels) break; 
+      b = start>>n_bits[l];
+      b_stop = min(stop>>n_bits[l],n_bins[l]-1);
+    }
+    current_k = current_binset->second[l][b];
+  }
+  return (current_ireg=NULL);
+}
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetIndex                                                            //    
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5084,20 +5300,16 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
     long int *chrom_n_bins = new long int[n_levels];
     long int **chrom_bins = new long int*[n_levels];
     index[it->first] = new BinSet(chrom_n_bins,chrom_bins);
-    //cerr << "* chrom = " << it->first << "; size = " << it->second;
     for (int l=0; l<n_levels; l++) {
       chrom_n_bins[l] = (it->second>>n_bits[l])+1;
-      //cerr << "; n_bins[" << l << "] = " << chrom_n_bins[l];
       chrom_bins[l] = new long int[chrom_n_bins[l]];
       for (long int b=0; b<chrom_n_bins[l]; b++) chrom_bins[l][b] = -1;
     }
-    //cerr << '\n';
 	PRG1a.Check();
   }
   PRG1a.Done();
   
   // process regions into the bins
-  //double mean_bin_occupancy = 0;
   Progress PRG2("Creating index...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
@@ -5109,31 +5321,12 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
         long int z = chrom_bins[l][b_start]; 
         if (z!=-1) r_next[k] = z;
         chrom_bins[l][b_start] = k;
-        //mean_bin_occupancy += min(1.0,(double)(r->I.back()->STOP-r->I.front()->START+1+100)/(1<<n_bits[l]));
         break;
       }
     }
     PRG2.Check();
   }
-  //mean_bin_occupancy /= IndexSet->n_regions;
   PRG2.Done();
-  //fprintf(stderr, "* mean bin occupancy = %.6f\n", mean_bin_occupancy);
-
-  // double-check if all regions are stored in the bins
-  /*
-  Progress PRG3("Counting used...",index.size());
-  long int n_used = 0;
-  for (map<string,BinSet*>::iterator it=index.begin(); it!=index.end(); it++,PRG3.Check()) {
-    long int *chrom_n_bins = it->second->first;
-    long int **chrom_bins = it->second->second; 
-    for (int l=0; l<n_levels; l++)
-      for (long int b=0; b<chrom_n_bins[l]; b++) 
-        for (long int z=chrom_bins[l][b]; z!=-1; z=r_next[z]) n_used++;
-  }
-  PRG3.Done();
-  // The following test will fail in general because 'rogue' regions are not used!
-  if (n_used!=IndexSet->n_regions) { fprintf(stderr, "Bug: [UnsortedGenomicRegionSetOverlaps] n_used should equal n_regions!\n"); exit(1); }
-  */
 }
 
 

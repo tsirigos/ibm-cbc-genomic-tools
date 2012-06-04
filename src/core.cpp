@@ -42,12 +42,13 @@ int _MESSAGES_ = 0;
 // CLASS Progress                                                                                 //
 //------------------------------------------------------------------------------------------------//
 
-Progress::Progress(const char *msg, long int max_count)
+Progress::Progress(const char *msg, long int max_count, bool print_remaining)
 {
   if (_MESSAGES_) fprintf(stderr, "%s\n", msg);
   this->max_count = max_count;
+  this->print_remaining = print_remaining;
   this->count = 0;
-  TIME = time(NULL);
+  TIME0 = TIME = time(NULL);
 }
 
 
@@ -70,18 +71,24 @@ void Progress::Init(const char *msg, long int max_count)
   if (_MESSAGES_) fprintf(stderr, "%s\n", msg);
   this->max_count = max_count;
   this->count = 0;
-  TIME = time(NULL);
+  TIME0 = TIME = time(NULL);
 }
 
 
-void Progress::Check()
+void Progress::Check(long int c)
 {
   if (max_count<=0) return;
-  count++;
+  count += c;
   if (_MESSAGES_==0) return;
   if (time(NULL)-TIME>=1) { 
     TIME=time(NULL); 
-    if (max_count>1) fprintf(stderr, "%10.2f%%\r", 100.0*count/max_count); 
+    if (max_count>1) {
+	  if (print_remaining) {
+	    unsigned long int sec = (unsigned long int)(TIME-TIME0)*(max_count-count)/count;
+	    fprintf(stderr, "%10.2f%% [%5lu:%02lu remaining]\r", 100.0*count/max_count, sec/60, sec%60);
+	  }
+      else fprintf(stderr, "%10.2f%%\r", 100.0*count/max_count); 
+	}
     else fprintf(stderr, "%15ld\r", count);
   }
 }

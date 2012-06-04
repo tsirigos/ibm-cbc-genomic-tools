@@ -179,7 +179,7 @@ class GenomicInterval
   
 
   //! If: op='1' returns start position, op='2' returns stop position, op='5p' returns 5-prime, op='3p' returns 3-prime. 
-  long int GetCoordinate(char *op);
+  long int GetCoordinate(const char *op);
   
 
 
@@ -209,7 +209,7 @@ class GenomicInterval
 
 
   //! Calculates the distance from input interval <b>I</b> based on position operators <b>op</b> and <b>I_op</b>.
-  long int CalcDistanceFrom(GenomicInterval *I, char *op, char *I_op);
+  long int CalcDistanceFrom(GenomicInterval *I, const char *op, const char *I_op);
   
 
 
@@ -243,7 +243,7 @@ class GenomicInterval
     \param position_op 		selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime
     \param position_shift	determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center)
   */
-  void ModifyPos(char *position_op, long int position_shift);           
+  void ModifyPos(const char *position_op, long int position_shift);           
 
 
 
@@ -275,7 +275,20 @@ class GenomicInterval
     \param start_offset 	return value: the start offset
     \param stop_offset 		return value: the stop offset
   */
-  void GetOffsetFrom(GenomicInterval *ReferenceI, char *op, bool ignore_strand, long int *start_offset, long int *stop_offset);
+  void GetOffsetFrom(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset);
+
+
+  
+
+  //------------------------------------------------------//
+  //   Create                                             //
+  //------------------------------------------------------//
+
+  //! Creates a new interval which is the center of this instance. 
+  /*!
+    \param stop_equals_start 		if true, new interval stop coordinate will be equal to start coordinate
+  */
+  GenomicInterval *CreateCenter(bool stop_equals_start=false);
 
 
   
@@ -318,35 +331,34 @@ class Chromosomes
     \param chrom_map_dir 		the directory where the chromosome map file is located
     \param chrom_map_name 		the name of the chromosome map file
 
-  Chromosome sequences are loaded on the fly from the *.dna files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. 
+  Chromosome sequences are loaded on the fly from the *.fa files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. 
   If not, use the alternative constructor described below. 
 
   Example of map file (stored in \ref chrom_map_name):
 
-	1 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.1.fa.dna		\n
-	10 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.10.fa.dna	\n
-	11 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.11.fa.dna	\n
-	12 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.12.fa.dna	\n
-	13 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.13.fa.dna	\n
-	14 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.14.fa.dna	\n
-	15 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.15.fa.dna	\n
-	16 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.16.fa.dna	\n
-	17 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.17.fa.dna	\n
-	18 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.18.fa.dna	\n
-	19 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.19.fa.dna	\n
-	2 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.2.fa.dna	\n
-	3 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.3.fa.dna	\n
-	4 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.4.fa.dna	\n
-	5 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.5.fa.dna	\n
-	6 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.6.fa.dna	\n
-	7 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.7.fa.dna	\n
-	8 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.8.fa.dna	\n
-	9 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.9.fa.dna	\n
-	MT \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.MT.fa.dna	\n
-	X \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.X.fa.dna	\n
-	Y \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.Y.fa.dna	\n
+	1 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.1.fa		\n
+	10 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.10.fa	\n
+	11 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.11.fa	\n
+	12 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.12.fa	\n
+	13 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.13.fa	\n
+	14 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.14.fa	\n
+	15 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.15.fa	\n
+	16 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.16.fa	\n
+	17 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.17.fa	\n
+	18 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.18.fa	\n
+	19 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.19.fa	\n
+	2 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.2.fa	\n
+	3 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.3.fa	\n
+	4 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.4.fa	\n
+	5 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.5.fa	\n
+	6 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.6.fa	\n
+	7 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.7.fa	\n
+	8 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.8.fa	\n
+	9 \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.9.fa	\n
+	MT \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.MT.fa	\n
+	X \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.X.fa	\n
+	Y \a \<TAB\> Mus_musculus.NCBIM37.52.dna.chromosome.Y.fa	\n
 
-  Each *.dna file contains the chromosome sequence in one line. 
   */
   Chromosomes(char *chrom_map_dir, char *chrom_map_name);
 
@@ -782,7 +794,7 @@ class GenomicRegion
     \param position_op 		selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime
     \param position_shift	determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center)
   */
-  virtual void ModifyPos(char *position_op, long int position_shift);           
+  virtual void ModifyPos(const char *position_op, long int position_shift);           
 
 
 
@@ -896,6 +908,7 @@ class GenomicRegion
 
   //! Returns the difference of this genomic region and region <b>r</b>.
   virtual GenomicRegion *Diff(GenomicRegion *r);
+
 
   
 
@@ -1176,7 +1189,7 @@ class GenomicRegionBED : public GenomicRegion
     \param position_op 		selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime
     \param position_shift	determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center)
   */
-  void ModifyPos(char *position_op, long int position_shift);           
+  void ModifyPos(const char *position_op, long int position_shift);           
 
 
 
@@ -1500,7 +1513,7 @@ class GenomicRegionSAM : public GenomicRegion
     \param position_op 		selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime
     \param position_shift	determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center)
   */
-  void ModifyPos(char *position_op, long int position_shift);           
+  void ModifyPos(const char *position_op, long int position_shift);           
 
 
 
@@ -1977,7 +1990,7 @@ class GenomicRegionSet
     \param position_op 		selects fixed position as follows: '1'=start position, 'c'=center position, '5p'=5-prime, '3p'=3-prime
     \param position_shift	determines the shift of the non-fixed position (in the 'c' case, both positions are shifted symmetrically around the center)
   */
-  void RunModifyPos(char *position_op, long int position_shift);           
+  void RunModifyPos(const char *position_op, long int position_shift);           
 
 
 
@@ -2339,6 +2352,62 @@ class GenomicRegionSetOverlaps
 
 
 //---------------------------------------------------------------------------------------------//
+// CLASS: GenomicRegionSetIndex                                                                //
+//---------------------------------------------------------------------------------------------//
+//! Class for creating an index for genomic regions based on the "genome binning" approach by Kent et al.
+//---------------------------------------------------------------------------------------------//
+class GenomicRegionSetIndex 
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param regSet 			pointer to index region set
+    \param bin_bits			number of shift-bits per bin level, e.g. "10,15,18"
+  */
+  GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin_bits=NULL);
+
+
+  //! Class destructor.
+  ~GenomicRegionSetIndex();
+
+  
+  //! Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  GenomicRegion *GetMatch(GenomicInterval *i);
+
+ 
+  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  GenomicRegion *NextMatch();
+
+ 
+  // data
+ public: 
+  GenomicRegionSet *regSet;							//!< pointer to index region set
+  GenomicRegion *current_ireg;						//!< pointer to the current index region 
+  GenomicInterval *current_qint;					//!< pointer to the current query interval
+  typedef pair<long int*,long int**> BinSet;		//!< a two-dimensional grid of bins
+  int n_levels;										//!< number of levels in the two-dimensional grid of bins
+  int *n_bits;										//!< number of bits (per level) by which the start position is right-shifted to compute its bin
+  map<string,BinSet*> index;						//!< the two-dimensional grid of bins per chromosome
+  long int *r_next;									//!< for each region, store a pointer to the "next" one in the same bin
+  BinSet *current_binset;							//!< pointer to the current chromosome set of bins
+  bool new_query; 									//!< 'true', if a new query is about to be processed
+};
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetIndex                                                            //
+//---------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------//
 // CLASS: UnsortedGenomicRegionSetOverlaps                                                     //
 //---------------------------------------------------------------------------------------------//
 //! Class for computing overlaps between unsorted regions.
@@ -2411,12 +2480,12 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
   // data
  public: 
   typedef pair<long int*,long int**> BinSet;		//!< a two-dimensional grid of bins
-  long int *r_next;					//!< for each region store, store a pointer to the "next" one in the same bin
-  int n_levels;						//!< number of levels in the two-dimensional grid of bins
-  int *n_bits;						//!< number of bits (per level) by which the start position is right-shifted to compute its bin
-  map<string,BinSet*> index;				//!< the two-dimensional grid of bins per chromosome
-  BinSet *current_binset;				//!< pointer to the current chromosome set of bins
-  bool new_query; 					//!< 'true', if a new query is about to be processed
+  long int *r_next;									//!< for each region, store a pointer to the "next" one in the same bin
+  int n_levels;										//!< number of levels in the two-dimensional grid of bins
+  int *n_bits;										//!< number of bits (per level) by which the start position is right-shifted to compute its bin
+  map<string,BinSet*> index;						//!< the two-dimensional grid of bins per chromosome
+  BinSet *current_binset;							//!< pointer to the current chromosome set of bins
+  bool new_query; 									//!< 'true', if a new query is about to be processed
 };
 
 //---------------------------------------------------------------------------------------------//

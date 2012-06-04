@@ -228,7 +228,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "Computes distances between pairs of successive intervals.", \
   "* Input formats: REG, BED, SAM\n\
   * Operand: interval pair\n\
-  * Region requirements: chromosome/strand-compatible\n\
+  * Region requirements: none\n\
   * Region-set requirements: none"\
   );
 
@@ -332,7 +332,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "Sorts region intervals by start position.", \
   "* Input formats: REG\n\
   * Operand: region\n\
-  * Region requirements: chromosome/strand-compatible\n\
+  * Region requirements: none\n\
   * Region-set requirements: none"\
   );
 
