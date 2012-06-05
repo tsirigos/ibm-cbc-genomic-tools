@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.3.0c";
+const string VERSION = "genomic_tools 2.3.1";
 
 
 #include <stdio.h>
@@ -746,6 +746,11 @@ class GenomicRegion
 
   //! Replace each interval in the region with the corresponding center interval
   virtual void Center();
+
+
+
+  //! Modify chromosome names
+  virtual void ModifyChromosomeNames(map<string,string> &chromosome_conversion_map);
 
 
 
@@ -1952,6 +1957,10 @@ class GenomicRegionSet
 
   //! Print intervals' center
   void RunCenter();
+
+
+  //! Print modified chromosome names
+  void RunModifyChromosomeNames(char *chromosome_conversion_file);
 
 
   //! Print connected intervals as a single interval from minimum start to maximum stop position

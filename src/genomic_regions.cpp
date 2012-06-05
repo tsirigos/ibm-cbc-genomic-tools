@@ -48,6 +48,7 @@ char *CHROMOSOME_MAP_DIR = NULL;
 char *CHROMOSOME_MAP_NAME = NULL;
 char *GENOME_REG_FILE = NULL;
 char *REF_REG_FILE = NULL;
+char *CHROMOSOME_NAMES = NULL;
 bool REPLACE;
 bool IGNORE;
 bool UNIQ;
@@ -202,6 +203,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   
   cmd_line->AddOperation("center", "[OPTIONS] <REGION-SET>", \
   "Prints center interval.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operand: interval\n\
+  * Region requirements: none\n\
+  * Region-set requirements: none"\
+  );
+
+  cmd_line->AddOperation("chrom", "[OPTIONS] <REGION-SET>", \
+  "Modifies chromosome names.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: none\n\
@@ -463,6 +472,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="center") {
 
   }
+  else if (op=="chrom") {
+    cmd_line->AddOption("-c", &CHROMOSOME_NAMES, "", "chromosome name conversion table");
+  }
   else if (op=="cluster") {
     cmd_line->AddOption("-m", &CLUSTER_MERGE, false, "merge regions in each cluster");
   }
@@ -680,6 +692,7 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="bed") RegSet.RunConvertToBED(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,CONVERT_CHROMOSOME);
   else if (cmd_line->current_cmd_operation=="bounds") RegSet.RunBounds(bounds);
   else if (cmd_line->current_cmd_operation=="center") RegSet.RunCenter();
+  else if (cmd_line->current_cmd_operation=="chrom") RegSet.RunModifyChromosomeNames(CHROMOSOME_NAMES);
   else if (cmd_line->current_cmd_operation=="connect") RegSet.RunConnect();
   else if (cmd_line->current_cmd_operation=="diff") RegSet.RunDiff();
   else if (cmd_line->current_cmd_operation=="dist") RegSet.RunCalcDistances(DIST_OP1,DIST_OP2);
