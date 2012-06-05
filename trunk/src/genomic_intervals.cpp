@@ -1243,6 +1243,18 @@ void GenomicRegion::Center()
 
 
 
+//---------ModifyChromosomeNames-----------
+//
+void GenomicRegion::ModifyChromosomeNames(map<string,string> &chromosome_conversion_map)
+{
+  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) {
+    map<string,string>::iterator x = chromosome_conversion_map.find((*i)->CHROMOSOME);
+	if (x!=chromosome_conversion_map.end()) (*i)->CHROMOSOME = StrCopy(x->second.c_str());
+  }
+}
+
+
+
 //---------Connect-----------
 //
 void GenomicRegion::Connect()
@@ -3905,6 +3917,26 @@ void GenomicRegionSet::RunCenter()
   if (n_regions==0) return;
   Progress PRG("Printing center of intervals...",n_regions);
   for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) { r->Center(); r->Print(); }
+  PRG.Done();
+}
+
+
+
+//---------RunModifyChromosomeNames--------
+//
+void GenomicRegionSet::RunModifyChromosomeNames(char *chromosome_conversion_file)
+{
+  if (n_regions==0) return;
+  Progress PRG("Modifying chromosome names...",n_regions);
+  if (strlen(chromosome_conversion_file)==0) PrintError("chromosome name conversion file is missing!\n"); 
+  FileBufferText buffer(chromosome_conversion_file);
+  map<string,string> chromosome_conversion_map;
+  for (char *inp=buffer.Next(); inp!=NULL; inp=buffer.Next()) {
+    char *x = GetNextToken(&inp," \t"); 
+    char *y = GetNextToken(&inp," \t"); 
+	chromosome_conversion_map[x] = y;
+  }
+  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) { r->ModifyChromosomeNames(chromosome_conversion_map); r->Print(); }
   PRG.Done();
 }
 

@@ -42,7 +42,7 @@ const long int BUFFER_SIZE = 10000;
 
 bool HELP;
 bool VERBOSE;
-char *BIN_BITS;		// NOTE: for future use in case we want to control bin shift-bits
+char *BIN_BITS;
 bool IS_SORTED;
 bool SORTED_BY_STRAND;
 bool IGNORE_STRAND;
@@ -71,7 +71,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 
   // set operations
   cmd_line->AddOperation("bin", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
-  "UNDER DEVELOPMENT: Classifies a pair of intervals into reference regions.", \
+  "Classifies a pair of intervals into reference regions [UNDER DEVELOPMENT].", \
   "* Test region file format: REG (because interchromosomal associations must be allowed)\n\
   * Reference region file format: REG, GFF, BED, SAM\n\
   * Operands: interval, region-set\n\
@@ -106,7 +106,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   );
 
   cmd_line->AddOperation("dist", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
-  "UNDER DEVELOPMENT: Computes the distance between a pair of intervals given breakpoints in reference file (e.g. restriction enzyme sites).", \
+  "Computes the distance between a pair of intervals given breakpoints in reference file (e.g. restriction enzyme sites) [UNDER DEVELOPMENT].", \
   "* Test region file format: REG (because interchromosomal associations must be allowed)\n\
   * Reference region file format: REG, GFF, BED, SAM\n\
   * Operands: interval pair, region-set\n\
