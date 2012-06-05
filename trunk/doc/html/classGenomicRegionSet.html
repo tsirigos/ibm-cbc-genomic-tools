@@ -163,6 +163,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1aa8f41f0978e9b66c6f11c0ccb95a0b"></a><!-- doxytag: member="GenomicRegionSet::RunCenter" ref="a1aa8f41f0978e9b66c6f11c0ccb95a0b" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a1aa8f41f0978e9b66c6f11c0ccb95a0b">RunCenter</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print intervals' center. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0783b62dc4a1031f2354d3779ab5b00b"></a><!-- doxytag: member="GenomicRegionSet::RunModifyChromosomeNames" ref="a0783b62dc4a1031f2354d3779ab5b00b" args="(char *chromosome_conversion_file)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a0783b62dc4a1031f2354d3779ab5b00b">RunModifyChromosomeNames</a> (char *chromosome_conversion_file)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print modified chromosome names. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a752b7d4d2ac3568e7bdb13edbfc00af3"></a><!-- doxytag: member="GenomicRegionSet::RunConnect" ref="a752b7d4d2ac3568e7bdb13edbfc00af3" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a752b7d4d2ac3568e7bdb13edbfc00af3">RunConnect</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print connected intervals as a single interval from minimum start to maximum stop position. <br/></td></tr>
@@ -184,8 +187,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab1e96bd7781dac63a1745a8cf5ac5538"></a><!-- doxytag: member="GenomicRegionSet::RunSize" ref="ab1e96bd7781dac63a1745a8cf5ac5538" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#ab1e96bd7781dac63a1745a8cf5ac5538">RunSize</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints region label and sum of intervals' sizes. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a11f1e58c92e9b0b2e3feb5821cff1a55">RunModifyPos</a> (char *position_op, long int position_shift)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a11f1e58c92e9b0b2e3feb5821cff1a55"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a2eeb4ce0784ac282fdd2d9737be7e0de">RunModifyPos</a> (const char *position_op, long int position_shift)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a2eeb4ce0784ac282fdd2d9737be7e0de"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f71dd5fa48a0878751cd78a3b485daf"></a><!-- doxytag: member="GenomicRegionSet::RunConvertToREG" ref="a8f71dd5fa48a0878751cd78a3b485daf" args="(bool compact=false)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a8f71dd5fa48a0878751cd78a3b485daf">RunConvertToREG</a> (bool compact=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints label and genomic region intervals with a newline character at the end for all regions in the set. <br/></td></tr>
@@ -503,14 +506,14 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a11f1e58c92e9b0b2e3feb5821cff1a55"></a><!-- doxytag: member="GenomicRegionSet::RunModifyPos" ref="a11f1e58c92e9b0b2e3feb5821cff1a55" args="(char *position_op, long int position_shift)" -->
+<a class="anchor" id="a2eeb4ce0784ac282fdd2d9737be7e0de"></a><!-- doxytag: member="GenomicRegionSet::RunModifyPos" ref="a2eeb4ce0784ac282fdd2d9737be7e0de" args="(const char *position_op, long int position_shift)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void GenomicRegionSet::RunModifyPos </td>
           <td>(</td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>position_op</em>, </td>
         </tr>
         <tr>
@@ -601,7 +604,7 @@ Private Member Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

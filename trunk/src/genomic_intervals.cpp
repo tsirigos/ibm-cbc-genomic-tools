@@ -5091,9 +5091,7 @@ GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin
     if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
     long int start = r->I.front()->START;
     long int stop = r->I.back()->STOP;
-    if (start>stop) continue; // r->PrintError("start position cannot be greater than stop position!");
-    if (stop<=0) continue; // r->PrintError("stop position must be positive!");
-    if (start<=0) continue; //r->PrintError("start position must be positive!");
+    if ((start>stop)||(stop<=0)) continue; 	// ignore invalid intervals
     map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
     if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
     else it->second = max(it->second,stop);
@@ -5142,10 +5140,14 @@ GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin
   Progress PRG2("Creating index...",regSet->n_regions);
   for (long int k=0; k<regSet->n_regions; k++) {
     GenomicRegion *r = regSet->R[k];
+    long int start = r->I.front()->START;
+    long int stop = r->I.back()->STOP;
+    if ((start>stop)||(stop<=0)) continue; 	// AddWarning("invalid interval (start>stop or stop<=0)!");
+    if (start<=0) start = 1; 
     long int **chrom_bins = index[r->I.front()->CHROMOSOME]->second;
     for (int l=0; l<n_levels; l++) {
-      long int b_start = r->I.front()->START>>n_bits[l];
-      long int b_stop = r->I.back()->STOP>>n_bits[l];
+      long int b_start = start>>n_bits[l];
+      long int b_stop = stop>>n_bits[l];
       if (b_start==b_stop) {
         long int z = chrom_bins[l][b_start]; 
         if (z!=-1) r_next[k] = z;
@@ -5298,9 +5300,7 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
     if (r->IsCompatibleSortedAndNonoverlapping()==false) r->PrintError("index regions should be compatible, sorted and non-overlapping!");
     long int start = r->I.front()->START;
     long int stop = r->I.back()->STOP;
-    if (start>stop) continue; // r->PrintError("start position cannot be greater than stop position!");
-    if (stop<=0) continue; // r->PrintError("stop position must be positive!");
-    if (start<=0) continue; //r->PrintError("start position must be positive!");
+    if ((start>stop)||(stop<=0)) continue; 
     map<string,long int>::iterator it = chrom_size.find(r->I.front()->CHROMOSOME);
     if (it==chrom_size.end()) chrom_size[r->I.front()->CHROMOSOME] = stop;
     else it->second = max(it->second,stop);
@@ -5345,10 +5345,14 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
   Progress PRG2("Creating index...",IndexSet->n_regions);
   for (long int k=0; k<IndexSet->n_regions; k++) {
     GenomicRegion *r = IndexSet->R[k];
+    long int start = r->I.front()->START;
+    long int stop = r->I.back()->STOP;
+    if ((start>stop)||(stop<=0)) continue; 	// AddWarning("invalid interval (start>stop or stop<=0)!");
+    if (start<=0) start = 1; 
     long int **chrom_bins = index[r->I.front()->CHROMOSOME]->second;
     for (int l=0; l<n_levels; l++) {
-      long int b_start = r->I.front()->START>>n_bits[l];
-      long int b_stop = r->I.back()->STOP>>n_bits[l];
+      long int b_start = start>>n_bits[l];
+      long int b_stop = stop>>n_bits[l];
       if (b_start==b_stop) {
         long int z = chrom_bins[l][b_start]; 
         if (z!=-1) r_next[k] = z;

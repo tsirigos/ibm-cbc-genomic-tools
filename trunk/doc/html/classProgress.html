@@ -63,15 +63,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#afc6164b4ac61db61319559b1b8cc99f2">Progress</a> (const char *<a class="el" href="classProgress.html#a7eeeaec06e0ab3c1fc871ccb225ede3d">msg</a>, long int <a class="el" href="classProgress.html#a9cfb7b6b93778e9c617c38ab26d3d0a0">max_count</a>)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#afc6164b4ac61db61319559b1b8cc99f2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a943e634376047a582c3bbad998f5a8d6">Progress</a> (const char *<a class="el" href="classProgress.html#a7eeeaec06e0ab3c1fc871ccb225ede3d">msg</a>, long int <a class="el" href="classProgress.html#a9cfb7b6b93778e9c617c38ab26d3d0a0">max_count</a>, bool <a class="el" href="classProgress.html#a12246f0efd85ac379b1cda3e06a10aea">print_remaining</a>=false)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#a943e634376047a582c3bbad998f5a8d6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01d83f02dc49939dd5d14057932a8a8d"></a><!-- doxytag: member="Progress::Progress" ref="a01d83f02dc49939dd5d14057932a8a8d" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a01d83f02dc49939dd5d14057932a8a8d">Progress</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a3400f3a809c40b45b63c5196e701db8a">Init</a> (const char *<a class="el" href="classProgress.html#a7eeeaec06e0ab3c1fc871ccb225ede3d">msg</a>, long int <a class="el" href="classProgress.html#a9cfb7b6b93778e9c617c38ab26d3d0a0">max_count</a>)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints message and initializes counter.  <a href="#a3400f3a809c40b45b63c5196e701db8a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a58375cdfa5fc9e27d3db6c216c6c2248">Check</a> ()</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates counter and reports progress every 1sec.  <a href="#a58375cdfa5fc9e27d3db6c216c6c2248"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a72881f2638f28589b4c69adcca77bf95">Check</a> (long int c=1)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates counter and reports progress every 1sec.  <a href="#a72881f2638f28589b4c69adcca77bf95"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#acabb2c4a989f7583dab1c75eb173ebf7">Done</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints final count.  <a href="#acabb2c4a989f7583dab1c75eb173ebf7"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pri-attribs"></a>
@@ -82,9 +82,15 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9cfb7b6b93778e9c617c38ab26d3d0a0"></a><!-- doxytag: member="Progress::max_count" ref="a9cfb7b6b93778e9c617c38ab26d3d0a0" args="" -->
 long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a9cfb7b6b93778e9c617c38ab26d3d0a0">max_count</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum number of iterations in the loop <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12246f0efd85ac379b1cda3e06a10aea"></a><!-- doxytag: member="Progress::print_remaining" ref="a12246f0efd85ac379b1cda3e06a10aea" args="" -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a12246f0efd85ac379b1cda3e06a10aea">print_remaining</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">if true and max_count&gt;1, prints an update of estimated remaining time <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af7e775f01228c66c3ee7617a2ba1ab5c"></a><!-- doxytag: member="Progress::count" ref="af7e775f01228c66c3ee7617a2ba1ab5c" args="" -->
 long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#af7e775f01228c66c3ee7617a2ba1ab5c">count</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">current iteration <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f5dd9bc7cfb9aae4e6fb0f58b40e48c"></a><!-- doxytag: member="Progress::TIME0" ref="a8f5dd9bc7cfb9aae4e6fb0f58b40e48c" args="" -->
+time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#a8f5dd9bc7cfb9aae4e6fb0f58b40e48c">TIME0</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">time stamp for beginning of computation <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aac96c2b090cf1fe16e16c9a4be676888"></a><!-- doxytag: member="Progress::TIME" ref="aac96c2b090cf1fe16e16c9a4be676888" args="" -->
 time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classProgress.html#aac96c2b090cf1fe16e16c9a4be676888">TIME</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">time stamp (updated every second) <br/></td></tr>
@@ -92,7 +98,7 @@ time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This class is used to report progress of loop computations. </p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="afc6164b4ac61db61319559b1b8cc99f2"></a><!-- doxytag: member="Progress::Progress" ref="afc6164b4ac61db61319559b1b8cc99f2" args="(const char *msg, long int max_count)" -->
+<a class="anchor" id="a943e634376047a582c3bbad998f5a8d6"></a><!-- doxytag: member="Progress::Progress" ref="a943e634376047a582c3bbad998f5a8d6" args="(const char *msg, long int max_count, bool print_remaining=false)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -106,7 +112,13 @@ time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">long int&#160;</td>
-          <td class="paramname"><em>max_count</em>&#160;</td>
+          <td class="paramname"><em>max_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>print_remaining</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -129,14 +141,15 @@ time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a58375cdfa5fc9e27d3db6c216c6c2248"></a><!-- doxytag: member="Progress::Check" ref="a58375cdfa5fc9e27d3db6c216c6c2248" args="()" -->
+<a class="anchor" id="a72881f2638f28589b4c69adcca77bf95"></a><!-- doxytag: member="Progress::Check" ref="a72881f2638f28589b4c69adcca77bf95" args="(long int c=1)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Progress::Check </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">long int&#160;</td>
+          <td class="paramname"><em>c</em> = <code>1</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -222,7 +235,7 @@ time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
