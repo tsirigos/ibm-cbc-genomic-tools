@@ -180,6 +180,9 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1e9a85a086afbe2608411450c9a4c5e6"></a><!-- doxytag: member="GenomicRegion::Center" ref="a1e9a85a086afbe2608411450c9a4c5e6" args="()" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a1e9a85a086afbe2608411450c9a4c5e6">Center</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace each interval in the region with the corresponding center interval. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a463b4f14b9a05132441ad91541cd7335"></a><!-- doxytag: member="GenomicRegion::ModifyChromosomeNames" ref="a463b4f14b9a05132441ad91541cd7335" args="(map&lt; string, string &gt; &amp;chromosome_conversion_map)" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a463b4f14b9a05132441ad91541cd7335">ModifyChromosomeNames</a> (map&lt; string, string &gt; &amp;chromosome_conversion_map)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modify chromosome names. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2c426782bd7c0d302b7a77bb1ff047f"></a><!-- doxytag: member="GenomicRegion::Connect" ref="ac2c426782bd7c0d302b7a77bb1ff047f" args="()" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#ac2c426782bd7c0d302b7a77bb1ff047f">Connect</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace region with a single interval from minimum start to maximum stop position. <br/></td></tr>
@@ -204,8 +207,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08db190bc63e6f1d6fc90679dc5e6868"></a><!-- doxytag: member="GenomicRegion::RunSize" ref="a08db190bc63e6f1d6fc90679dc5e6868" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a08db190bc63e6f1d6fc90679dc5e6868">RunSize</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints region label and sum of intervals' sizes. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a0721b07af0850057e4ab9cd416ecac2f">ModifyPos</a> (char *position_op, long int position_shift)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a0721b07af0850057e4ab9cd416ecac2f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a1277874633035d4f6fc9dabfb38998a2">ModifyPos</a> (const char *position_op, long int position_shift)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a1277874633035d4f6fc9dabfb38998a2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a222b3b8f567c306ee5a71ea3a720ef43"></a><!-- doxytag: member="GenomicRegion::Randomize" ref="a222b3b8f567c306ee5a71ea3a720ef43" args="(gsl_rng *random_generator, StringLIntMap *bounds)" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a222b3b8f567c306ee5a71ea3a720ef43">Randomize</a> (gsl_rng *random_generator, StringLIntMap *bounds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes interval position within chromosomal bounds. <br/></td></tr>
@@ -284,14 +287,14 @@ GenomicIntervalSet&#160;</td><td class="memItemRight" valign="bottom"><a class="
     cout &lt;&lt; <span class="stringliteral">&quot;x = \n&quot;</span>; x.Print();
     cout &lt;&lt; <span class="stringliteral">&quot;y = \n&quot;</span>; y.Print(); 
 </pre></div> </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a0721b07af0850057e4ab9cd416ecac2f"></a><!-- doxytag: member="GenomicRegion::ModifyPos" ref="a0721b07af0850057e4ab9cd416ecac2f" args="(char *position_op, long int position_shift)" -->
+<a class="anchor" id="a1277874633035d4f6fc9dabfb38998a2"></a><!-- doxytag: member="GenomicRegion::ModifyPos" ref="a1277874633035d4f6fc9dabfb38998a2" args="(const char *position_op, long int position_shift)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void GenomicRegion::ModifyPos </td>
           <td>(</td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>position_op</em>, </td>
         </tr>
         <tr>
@@ -318,7 +321,7 @@ GenomicIntervalSet&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classGenomicRegionBED.html#ac515c70f443db400f911452ed359433b">GenomicRegionBED</a>, and <a class="el" href="classGenomicRegionSAM.html#a353207352073db00dee0a9b620dca197">GenomicRegionSAM</a>.</p>
+<p>Reimplemented in <a class="el" href="classGenomicRegionBED.html#aa001c77413f551274cd2f4c1b7598d3b">GenomicRegionBED</a>, and <a class="el" href="classGenomicRegionSAM.html#a8a5d2a1d1980dcfc238fca5f63765e1f">GenomicRegionSAM</a>.</p>
 
 </div>
 </div>
@@ -422,7 +425,7 @@ GenomicIntervalSet&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:23 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

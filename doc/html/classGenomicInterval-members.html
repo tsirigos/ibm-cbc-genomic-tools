@@ -53,16 +53,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 This is the complete list of members for <a class="el" href="classGenomicInterval.html">GenomicInterval</a>, including all inherited members.<table>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a3b49ca0f99d27ddadcfd96791cf77b89">ApplyBounds</a>(StringLIntMap *bounds)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a7856012eda653222a1ac5482510bacc7">CalcDirection</a>(GenomicInterval *i, bool sorted_by_strand)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aa801336aa07a0029d97d7914a747abd3">CalcDistanceFrom</a>(GenomicInterval *I, char *op, char *I_op)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a66aedc5b786ff249c9678ce58fd659e6">CalcDistanceFrom</a>(GenomicInterval *I, const char *op, const char *I_op)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aea112f495d21eda675de671d9ff2e5ad">CalcOverlap</a>(GenomicInterval *I, bool ignore_strand)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ab9323c2818c13a25fda953ae18fc97aa">CheckValid</a>(bool quiet=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ac489a1195c43cc93d0e192dc91d5a192">CHROMOSOME</a></td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aab38ee28ece67801f2da5299bf92e703">CreateCenter</a>(bool stop_equals_start=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a09dcaee742ca117a8caaa1c656d0e354">GenomicInterval</a>(char *chromosome, char strand, long int start, long int stop, unsigned long int n_line=0)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ac452f2239b17bc72efe4eef12a261514">GenomicInterval</a>(string chromosome, char strand, long int start, long int stop, unsigned long int n_line=0)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a99f413828468dca1eeb5cc806848d98e">GenomicInterval</a>(char *inp, char delimiter=' ', unsigned long int n_line=0)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a4132f8d27fa5ebe416abe41150974c14">GenomicInterval</a>(GenomicInterval *I)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ae068e54e894fb239b61ec6d29e5f70bf">GetCoordinate</a>(char *op)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aab40ad7dd997948e0c04a13164e955d6">GetOffsetFrom</a>(GenomicInterval *ReferenceI, char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a71215d72c527726583e748e73581abc5">GetCoordinate</a>(const char *op)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a25d5b92af2e6d96ca4f1e1e31706e647">GetOffsetFrom</a>(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aff25b35226220508539b1183d5b9c11d">GetSeq</a>(Chromosomes *C, bool replace=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a39cd65d08a0c64a8bbddec32c8decbd3">GetSeqLength</a>(Chromosomes *C)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a7ceb36d952453db9473c7548c885f40a">GetSize</a>()</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
@@ -70,7 +71,7 @@ This is the complete list of members for <a class="el" href="classGenomicInterva
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ab6febc4c04d4919a9485ce8eeec5129d">IsCompatibleWith</a>(GenomicInterval *I, bool ignore_strand)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a8fc5d344a103f145db968e536b30f9cf">IsPosBefore</a>(GenomicInterval *I)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a79d1e06f62b4c1eddda7b9fc62733c7b">IsValid</a>()</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a96b34b76019001c4751d4c4f868ee24d">ModifyPos</a>(char *position_op, long int position_shift)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a1bc19a7d1334c2579b3f499d263d9bcc">ModifyPos</a>(const char *position_op, long int position_shift)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a0dbe6195570468c386eea923e30c762c">n_line</a></td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aa1c591b6d3cc3c576cec24a3ab67abfb">OverlapsWith</a>(GenomicInterval *I, bool ignore_strand=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a70f300009a0cc29b024853fb794d0e9a">Print</a>(bool point=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
@@ -104,7 +105,7 @@ This is the complete list of members for <a class="el" href="classGenomicInterva
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:23 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

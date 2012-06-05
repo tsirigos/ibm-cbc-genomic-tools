@@ -169,8 +169,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a538b8fc9969f24da6911ec39c8d70a3b"></a><!-- doxytag: member="GenomicRegionSAM::Randomize" ref="a538b8fc9969f24da6911ec39c8d70a3b" args="(gsl_rng *random_generator, StringLIntMap *bounds)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a538b8fc9969f24da6911ec39c8d70a3b">Randomize</a> (gsl_rng *random_generator, StringLIntMap *bounds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes interval position within chromosomal bounds. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a353207352073db00dee0a9b620dca197">ModifyPos</a> (char *position_op, long int position_shift)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a353207352073db00dee0a9b620dca197"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a8a5d2a1d1980dcfc238fca5f63765e1f">ModifyPos</a> (const char *position_op, long int position_shift)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#a8a5d2a1d1980dcfc238fca5f63765e1f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4dce925fdb55dcc7ef3dad890bc25408"></a><!-- doxytag: member="GenomicRegionSAM::Select" ref="a4dce925fdb55dcc7ef3dad890bc25408" args="(bool first, bool last, bool from5p, bool from3p)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a4dce925fdb55dcc7ef3dad890bc25408">Select</a> (bool first, bool last, bool from5p, bool from3p)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a subset of intervals according to their relative positions. <br/></td></tr>
@@ -233,14 +233,14 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This class processes genomic regions in SAM format. </p>
 </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a353207352073db00dee0a9b620dca197"></a><!-- doxytag: member="GenomicRegionSAM::ModifyPos" ref="a353207352073db00dee0a9b620dca197" args="(char *position_op, long int position_shift)" -->
+<a class="anchor" id="a8a5d2a1d1980dcfc238fca5f63765e1f"></a><!-- doxytag: member="GenomicRegionSAM::ModifyPos" ref="a8a5d2a1d1980dcfc238fca5f63765e1f" args="(const char *position_op, long int position_shift)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void GenomicRegionSAM::ModifyPos </td>
           <td>(</td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>position_op</em>, </td>
         </tr>
         <tr>
@@ -267,7 +267,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classGenomicRegion.html#a0721b07af0850057e4ab9cd416ecac2f">GenomicRegion</a>.</p>
+<p>Reimplemented from <a class="el" href="classGenomicRegion.html#a1277874633035d4f6fc9dabfb38998a2">GenomicRegion</a>.</p>
 
 </div>
 </div>
@@ -335,7 +335,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

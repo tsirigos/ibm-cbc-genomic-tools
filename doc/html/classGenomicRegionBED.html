@@ -135,8 +135,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf815a65712e82bf3f8c596c795f55c4"></a><!-- doxytag: member="GenomicRegionBED::Intersect" ref="acf815a65712e82bf3f8c596c795f55c4" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionBED.html#acf815a65712e82bf3f8c596c795f55c4">Intersect</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print intersection among all intervals, i.e. maximum start to minimum stop position. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionBED.html#ac515c70f443db400f911452ed359433b">ModifyPos</a> (char *position_op, long int position_shift)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#ac515c70f443db400f911452ed359433b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionBED.html#aa001c77413f551274cd2f4c1b7598d3b">ModifyPos</a> (const char *position_op, long int position_shift)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies interval start/stop positions. First it chooses which position to keep fixed, and then it shifts the non-fixed position.  <a href="#aa001c77413f551274cd2f4c1b7598d3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a920d47deb095506c311da2b2324e7a14"></a><!-- doxytag: member="GenomicRegionBED::Randomize" ref="a920d47deb095506c311da2b2324e7a14" args="(gsl_rng *random_generator, StringLIntMap *bounds)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionBED.html#a920d47deb095506c311da2b2324e7a14">Randomize</a> (gsl_rng *random_generator, StringLIntMap *bounds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes interval position within chromosomal bounds. <br/></td></tr>
@@ -190,14 +190,14 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="fragment"><pre class="fragment">    <a class="code" href="classGenomicRegionBED.html" title="This class processes genomic regions in BED format.">GenomicRegionBED</a> x(<span class="stringliteral">&quot;chr1 132033 140102 Region#1 1000 + 132033 140102 0 2 3899,4104 0,3965&quot;</span>);
     cout &lt;&lt; <span class="stringliteral">&quot;x = \n&quot;</span>; x.Print();
 </pre></div> </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="ac515c70f443db400f911452ed359433b"></a><!-- doxytag: member="GenomicRegionBED::ModifyPos" ref="ac515c70f443db400f911452ed359433b" args="(char *position_op, long int position_shift)" -->
+<a class="anchor" id="aa001c77413f551274cd2f4c1b7598d3b"></a><!-- doxytag: member="GenomicRegionBED::ModifyPos" ref="aa001c77413f551274cd2f4c1b7598d3b" args="(const char *position_op, long int position_shift)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void GenomicRegionBED::ModifyPos </td>
           <td>(</td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>position_op</em>, </td>
         </tr>
         <tr>
@@ -224,7 +224,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classGenomicRegion.html#a0721b07af0850057e4ab9cd416ecac2f">GenomicRegion</a>.</p>
+<p>Reimplemented from <a class="el" href="classGenomicRegion.html#a1277874633035d4f6fc9dabfb38998a2">GenomicRegion</a>.</p>
 
 </div>
 </div>
@@ -292,7 +292,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

@@ -158,32 +158,31 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
-<p>Chromosome sequences are loaded on the fly from the *.dna files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. If not, use the alternative constructor described below.</p>
+<p>Chromosome sequences are loaded on the fly from the *.fa files. For efficient sequence extraction, genomic intervals must be grouped by chromosome. If not, use the alternative constructor described below.</p>
 <p>Example of map file (stored in <a class="el" href="classChromosomes.html#a71b69dff9fc8c4cae1671df17e11a016">chrom_map_name</a>):</p>
-<p>1 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.1.fa.dna <br/>
- 10 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.10.fa.dna <br/>
- 11 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.11.fa.dna <br/>
- 12 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.12.fa.dna <br/>
- 13 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.13.fa.dna <br/>
- 14 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.14.fa.dna <br/>
- 15 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.15.fa.dna <br/>
- 16 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.16.fa.dna <br/>
- 17 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.17.fa.dna <br/>
- 18 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.18.fa.dna <br/>
- 19 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.19.fa.dna <br/>
- 2 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.2.fa.dna <br/>
- 3 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.3.fa.dna <br/>
- 4 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.4.fa.dna <br/>
- 5 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.5.fa.dna <br/>
- 6 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.6.fa.dna <br/>
- 7 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.7.fa.dna <br/>
- 8 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.8.fa.dna <br/>
- 9 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.9.fa.dna <br/>
- MT <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.MT.fa.dna <br/>
- X <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.X.fa.dna <br/>
- Y <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.Y.fa.dna <br/>
-</p>
-<p>Each *.dna file contains the chromosome sequence in one line. </p>
+<p>1 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.1.fa <br/>
+ 10 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.10.fa <br/>
+ 11 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.11.fa <br/>
+ 12 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.12.fa <br/>
+ 13 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.13.fa <br/>
+ 14 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.14.fa <br/>
+ 15 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.15.fa <br/>
+ 16 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.16.fa <br/>
+ 17 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.17.fa <br/>
+ 18 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.18.fa <br/>
+ 19 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.19.fa <br/>
+ 2 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.2.fa <br/>
+ 3 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.3.fa <br/>
+ 4 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.4.fa <br/>
+ 5 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.5.fa <br/>
+ 6 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.6.fa <br/>
+ 7 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.7.fa <br/>
+ 8 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.8.fa <br/>
+ 9 <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.9.fa <br/>
+ MT <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.MT.fa <br/>
+ X <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.X.fa <br/>
+ Y <em>&lt;TAB&gt;</em> Mus_musculus.NCBIM37.52.dna.chromosome.Y.fa <br/>
+ </p>
 
 </div>
 </div>
@@ -252,7 +251,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Apr 5 2012 09:34:48 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:23 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
