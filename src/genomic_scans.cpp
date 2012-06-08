@@ -47,10 +47,12 @@ gsl_rng *RANDOM_GENERATOR;
 
 bool VERBOSE;
 bool HELP;
+bool SORTED;
+bool REF_SORTED;
 char *GENOME_REG_FILE = NULL;
 char *REF_REG_FILE = NULL;
 long int MIN_READS;
-bool IGNORE_REVERSE_STRAND;
+bool IGNORE_STRAND;
 long int WIN_DIST;
 long int WIN_SIZE;
 char PREPROCESS;
@@ -78,8 +80,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "Determines input read counts in sliding windows of reference regions.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
-  * Region requirements: single-interval\n\
-  * Region-set requirements: sorted by chromosome/strand/start"\
+  * Region requirements: single-interval if -S option is set\n\
+  * Region-set requirements: none"\
   );
 
   cmd_line->AddOperation("peaks", "[OPTIONS] SIGNAL-REG-FILE [CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]]", \
@@ -106,11 +108,13 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   int n_args;
   if (cmd_line->current_cmd_operation=="counts") {
     n_args = 0;
-    cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
+    cmd_line->AddOption("-S", &SORTED, false, "input regions are sorted");
+    cmd_line->AddOption("-Sref", &REF_SORTED, false, "reference regions (option -r) are sorted");
+    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
     cmd_line->AddOption("-r", &REF_REG_FILE, "", "reference region file");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
-    cmd_line->AddOption("-i", &IGNORE_REVERSE_STRAND, false, "ignore reverse strand");
+    cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
     cmd_line->AddOption("-op", &PREPROCESS, 'c', "preprocess operator (1=start, c=center, p=all points)");
     cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
@@ -121,7 +125,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson, binomial2)");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
-    cmd_line->AddOption("-i", &IGNORE_REVERSE_STRAND, false, "ignore reverse strand");
+    cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
     cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-norm", &NORM, false, "equalize background probabilities");
@@ -192,14 +196,14 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
   SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
-  signal_scanner = new GenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,uniq_reg_file==NULL?'c':'1');
+  signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
 
   if (control_reg_file!=NULL) {
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
     n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
     ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
-    control_scanner = new GenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,uniq_reg_file==NULL?'c':'1');
+    control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
   }
   else {
     ControlRegSet = NULL;
@@ -214,7 +218,7 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   fprintf(stderr, "* Signal/Control background probability = %f\n", p_ratio);
 
   UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false,true);
-  uniq_scanner = uniq_reg_file==NULL?NULL:new GenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_REVERSE_STRAND,'p');
+  uniq_scanner = uniq_reg_file==NULL?NULL:new SortedGenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_STRAND,'p');
 }
 
 
@@ -332,20 +336,32 @@ void PeakFinder::Run()
 
 //-----RunCounts----------
 //
-void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file)
+void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file, bool sorted)
 {
   // initialize
   StringLIntMap *bounds = ReadBounds(genome_reg_file);
   GenomicRegionSet InputRegSet(input_reg_file,BUFFER_SIZE,VERBOSE,false,true);
-  GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_REVERSE_STRAND,PREPROCESS);
-  GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,false,true):NULL;
+  GenomicRegionSetScanner *input_scanner;
+  if (sorted) input_scanner = new SortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  else input_scanner = new UnsortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+
+  // setup reference regions
+  GenomicRegionSet *RefRegSet = NULL;
+  GenomicRegionSetIndex *RefIndex = NULL;
+  if (strlen(ref_reg_file)>0) {
+	  if (REF_SORTED) RefRegSet = new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,false,true);
+	  else {
+		  RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,BUFFER_SIZE,VERBOSE,true,true):NULL;
+		  RefIndex = new GenomicRegionSetIndex(RefRegSet,"17,20,23,26");
+	  }
+  }
 
   // run
   Progress PRG("Scanning...",1);
-  for (long int v=input_scanner.Next(RefRegSet); v!=-1; v=input_scanner.Next(RefRegSet)) {
+  for (long int v=REF_SORTED?input_scanner->Next(RefRegSet):input_scanner->Next(RefIndex); v!=-1; v=REF_SORTED?input_scanner->Next(RefRegSet):input_scanner->Next(RefIndex)) {
     if (v>=MIN_READS) {
       cout << v << '\t';
-      input_scanner.PrintInterval();
+      input_scanner->PrintInterval();
       cout << '\n';
     }
     PRG.Check();
@@ -353,8 +369,10 @@ void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file)
   PRG.Done();
   
   // cleanup
+  delete input_scanner;
   if (bounds!=NULL) delete bounds;
   if (RefRegSet!=NULL) delete RefRegSet;
+  if (RefIndex!=NULL) delete RefIndex;
 }
 
 
@@ -380,7 +398,7 @@ int main(int argc, char* argv[])
 
   if (cmd_line->current_cmd_operation=="counts") {
     char *INPUT_REG_FILE = next_arg==argc ? NULL : argv[next_arg];
-    RunCounts(INPUT_REG_FILE,REF_REG_FILE,GENOME_REG_FILE);
+    RunCounts(INPUT_REG_FILE,REF_REG_FILE,GENOME_REG_FILE,SORTED);
   }
   
   else if (cmd_line->current_cmd_operation=="peaks") {

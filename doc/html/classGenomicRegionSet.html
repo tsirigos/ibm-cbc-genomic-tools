@@ -146,8 +146,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14610521cc47631b1459c2e3488b0eec"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalScan" ref="a14610521cc47631b1459c2e3488b0eec" args="(StringLIntMap *bounds, long int win_step, long int win_size)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a14610521cc47631b1459c2e3488b0eec">RunGlobalScan</a> (StringLIntMap *bounds, long int win_step, long int win_size)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans input regions in sliding windows and reports count distribution (input regions must be sorted). <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a45cac26bedec4d983127b93d2096f735">RunGlobalScanCount</a> (StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans input regions in sliding windows (input regions must be sorted). See also class <a class="el" href="classGenomicRegionSetScanner.html" title="This class is used to scan a set of regions by sliding windows. See detailed description below for an...">GenomicRegionSetScanner</a>.  <a href="#a45cac26bedec4d983127b93d2096f735"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a8eecab08da40227d4b3ba70043c54df8">RunGlobalScanCount</a> (StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans input regions in sliding windows (input regions must be sorted). See also class <a class="el" href="classGenomicRegionSetScanner.html" title="Abstract class for scanning a set of genomic regions by sliding windows.">GenomicRegionSetScanner</a>.  <a href="#a8eecab08da40227d4b3ba70043c54df8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6377c10b1e9903ff5ae3b0ff9fe20e4d"></a><!-- doxytag: member="GenomicRegionSet::RunConvertToWIG" ref="a6377c10b1e9903ff5ae3b0ff9fe20e4d" args="(char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a6377c10b1e9903ff5ae3b0ff9fe20e4d">RunConvertToWIG</a> (char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints in Wiggle format. If <b>convert_chromosome</b> is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). <br/></td></tr>
@@ -428,7 +428,7 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a45cac26bedec4d983127b93d2096f735"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalScanCount" ref="a45cac26bedec4d983127b93d2096f735" args="(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads)" -->
+<a class="anchor" id="a8eecab08da40227d4b3ba70043c54df8"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalScanCount" ref="a8eecab08da40227d4b3ba70043c54df8" args="(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -460,7 +460,7 @@ Private Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>ignore_reverse_strand</em>, </td>
+          <td class="paramname"><em>ignore_strand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -489,14 +489,14 @@ Private Member Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Scans input regions in sliding windows (input regions must be sorted). See also class <a class="el" href="classGenomicRegionSetScanner.html" title="This class is used to scan a set of regions by sliding windows. See detailed description below for an...">GenomicRegionSetScanner</a>. </p>
+<p>Scans input regions in sliding windows (input regions must be sorted). See also class <a class="el" href="classGenomicRegionSetScanner.html" title="Abstract class for scanning a set of genomic regions by sliding windows.">GenomicRegionSetScanner</a>. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">bounds</td><td>chromosome sizes </td></tr>
     <tr><td class="paramname">ref_reg_file</td><td>only windows that overlap with regions in this file will be reported </td></tr>
     <tr><td class="paramname">win_step</td><td>sliding window step </td></tr>
     <tr><td class="paramname">win_size</td><td>sliding window size (must be a multiple of window step) </td></tr>
-    <tr><td class="paramname">ignore_reverse_strand</td><td>if true, no sliding windows on the negative strand are reported </td></tr>
+    <tr><td class="paramname">ignore_strand</td><td>if true, strand information is ignored and no sliding windows on the negative strand are reported </td></tr>
     <tr><td class="paramname">preprocess</td><td>if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted </td></tr>
     <tr><td class="paramname">use_labels_as_values</td><td>if true, genomic region labels are assumed to be integers and are included in the counting </td></tr>
     <tr><td class="paramname">min_reads</td><td>report windows only if value is greater that this parameter </td></tr>
@@ -604,7 +604,7 @@ Private Member Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jun 8 2012 14:22:09 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

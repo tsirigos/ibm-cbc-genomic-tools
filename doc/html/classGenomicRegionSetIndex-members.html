@@ -55,13 +55,15 @@ This is the complete list of members for <a class="el" href="classGenomicRegionS
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a55bdee4bb523a127ef744c9fc9eb53f3">current_binset</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#ae9d898b579f6b1b37a466f13ce9b1524">current_ireg</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a563202d9d5ee7e8b70fc510cdf02a35b">current_qint</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a7c00a972e0eb804d6f017c24ac82114f">GenomicRegionSetIndex</a>(GenomicRegionSet *regSet, char *bin_bits=NULL)</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a86ae03b16372dd94aee29aac24aab0de">GenomicRegionSetIndex</a>(GenomicRegionSet *regSet, const char *bin_bits=NULL)</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a1a69b1d5480880fd2929fc2ff8c08ee3">GetMatch</a>(GenomicInterval *i)</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a830f6adf2f1d5d680d0c34beeaaab100">GetOverlap</a>(GenomicInterval *i, bool match_gaps, bool ignore_strand)</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a5876efc8c7ca70685413752a9aabd651">index</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#ab458e36338671d25a4add20f3265473e">n_bits</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a5c147e94bc5208615ceaee6bf65ddd99">n_levels</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#adc1e41cc8005f46f07db2bdbf86b86e9">new_query</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#ae4dc078f79944566958db0d8b4122ae3">NextMatch</a>()</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a17f49f9e98fd86d990590fc362fea8bd">NextOverlap</a>(bool match_gaps, bool ignore_strand)</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a70be632459700206f8d5ea74fe913d87">r_next</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#a69385a469c77555e783aa2801c7608cf">regSet</a></td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSetIndex.html#ade936a5d54565c7382c50f87aa65c235">~GenomicRegionSetIndex</a>()</td><td><a class="el" href="classGenomicRegionSetIndex.html">GenomicRegionSetIndex</a></td><td></td></tr>
@@ -80,7 +82,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionS
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jun 8 2012 14:22:09 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

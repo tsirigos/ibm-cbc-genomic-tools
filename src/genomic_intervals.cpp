@@ -617,6 +617,16 @@ bool GenomicInterval::OverlapsWith(GenomicInterval *I, bool ignore_strand)
 
 
 
+//---------OverlapsWith-----------
+//
+bool GenomicInterval::OverlapsWith(GenomicRegion *r, bool ignore_strand)
+{
+  for (GenomicIntervalSet::iterator p=r->I.begin(); p!=r->I.end(); p++) if (OverlapsWith(*p,ignore_strand)==true) return true;
+  return false;
+}
+
+
+
 //---------GetOffsetFrom-----------
 //
 void GenomicInterval::GetOffsetFrom(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
@@ -797,8 +807,7 @@ void GenomicRegion::Read(char *inp, long int n_line, char del1, char del2)
       I.push_back(new GenomicInterval(chromosome,strand,start,stop,n_line));
     }
   }
-  // NOTE: how do we handle rogue intervals smoothly??
-  //cout << (*i)->CHROMOSOME << ' ' << (*i)->STRAND << ' ' << (*i)->START << ' ' << (*i)->STOP << '\n';
+  // NOTE: need to create a warnings list for invalid intervals
 }
 
 
@@ -4676,9 +4685,9 @@ void GenomicRegionSet::RunGlobalScan(StringLIntMap *bounds, long int win_step, l
 
 //-----RunGlobalScanCount----------
 //
-void GenomicRegionSet::RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads)
+void GenomicRegionSet::RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads)
 {
-  GenomicRegionSetScanner input_scanner(this,bounds,win_step,win_size,use_labels_as_values,ignore_reverse_strand,preprocess);
+  SortedGenomicRegionSetScanner input_scanner(this,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess);
   GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,10000,false,false,true):NULL;
   Progress PRG("Scanning...",1);
   for (long int v=input_scanner.Next(RefRegSet); v!=-1; v=input_scanner.Next(RefRegSet)) {
@@ -4801,7 +4810,7 @@ void GenomicRegionSet::PrintBEDGraphFormat(char *title, char *color, char *posit
 
 //---------Constructor--------
 //
-GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_reverse_strand, char preprocess)
+GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
 {
   if (R->format=="SEQ") { cerr << "Error: this operation does not accept SEQ format!\n"; exit(1); }
   if (R->n_regions==0) return;
@@ -4812,11 +4821,48 @@ GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLInt
   this->win_step = win_step;
   this->win_size = win_size;
   this->use_labels_as_values = use_labels_as_values;
-  this->ignore_reverse_strand = ignore_reverse_strand;
+  this->ignore_strand = ignore_strand;
   this->preprocess = preprocess;
   if (win_size%win_step!=0) { cerr << "Error: window size must be a multiple of window step in 'GenomicRegionSetScanner'!\n"; exit(1); }
   n_win_combine = win_size/win_step;
 
+}
+
+
+//---------Destructor--------
+//
+GenomicRegionSetScanner::~GenomicRegionSetScanner()
+{
+
+}
+
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetScanner                                                          //
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
+
+
+
+
+
+
+
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: SortedGenomicRegionSetScanner                                                        //
+//---------------------------------------------------------------------------------------------//
+
+//---------Constructor--------
+//
+SortedGenomicRegionSetScanner::SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
+  : GenomicRegionSetScanner(R,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess)
+{
   chr = bounds->begin();
   r = R->Get();
   strand = '+';
@@ -4827,7 +4873,7 @@ GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLInt
 
 //---------Destructor--------
 //
-GenomicRegionSetScanner::~GenomicRegionSetScanner()
+SortedGenomicRegionSetScanner::~SortedGenomicRegionSetScanner()
 {
   delete v;
 }
@@ -4835,34 +4881,42 @@ GenomicRegionSetScanner::~GenomicRegionSetScanner()
 
 //---------Test--------
 //
-bool GenomicRegionSetScanner::Test()
+bool SortedGenomicRegionSetScanner::Test()
 {
   int t = strcmp(chr->first.c_str(),r->I.front()->CHROMOSOME);
   return (t>0)||((t==0)&&(strand>r->I.front()->STRAND));
 }
 
 
+//---------PrintInterval--------
+//
+void SortedGenomicRegionSetScanner::PrintInterval(FILE *out_file)
+{
+  fprintf(out_file, "%s %c %ld %ld", chr->first.c_str(), strand, stop-win_size+1, stop);
+}
+
+
 //---------Next--------
 //
-long int GenomicRegionSetScanner::Next()
+long int SortedGenomicRegionSetScanner::Next()
 {
   if (v_sum>=0) goto next;
   for (; chr!=bounds->end(); chr++,strand='+') {
     while (strand!=' ') {
       for (long int j=0; j<n_win_combine; j++) v[j] = 0;
-      while ((r!=NULL)&&Test()) r = R->Next(!ignore_reverse_strand,false);  
+      while ((r!=NULL)&&Test()) r = R->Next(!ignore_strand,false);
       for (k=0,v_sum=0,start=1,stop=start+win_step-1; stop<=chr->second; start+=win_step,stop+=win_step,k=(k+1)%n_win_combine) {
         v_sum -= v[k];
-        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&(r->I.front()->STRAND==strand)&&(GetStart(r,preprocess)<=stop); ) {
+        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&((ignore_strand==true)||(r->I.front()->STRAND==strand))&&(GetStart(r,preprocess)<=stop); ) {
           if (r->I.size()!=1) r->PrintError("single-interval regions expected for this operation!\n"); 
           if (preprocess=='p') {
-            if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(!ignore_reverse_strand,false); }
+            if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(!ignore_strand,false); }
             else { v[k] += stop-r->I.front()->START+1; r->I.front()->START = stop+1; }
           }
           else {
             if (use_labels_as_values) v[k] += max(1L,atol(r->LABEL));
             else v[k]++;
-            r = R->Next(!ignore_reverse_strand,false);
+            r = R->Next(!ignore_strand,false);
           }
         }
         v_sum += v[k];
@@ -4870,7 +4924,7 @@ long int GenomicRegionSetScanner::Next()
 next:
         while (0) {};
       }
-      if ((strand=='+')&&(ignore_reverse_strand==false)) strand = '-';
+      if ((strand=='+')&&(ignore_strand==false)) strand = '-';
       else strand = ' ';
     }
   }
@@ -4880,32 +4934,222 @@ next:
 
 //---------Next--------
 //
-long int GenomicRegionSetScanner::Next(GenomicRegionSet *Ref)
+long int SortedGenomicRegionSetScanner::Next(GenomicRegionSet *Ref)
 {
   if (Ref==NULL) return Next();
   GenomicRegion *q = Ref->Get();
+  bool sorted_by_strand = !ignore_strand;
   while (q!=NULL) {
     long int c = Next();
     if (c==-1) return -1;
     GenomicInterval w(chr->first.c_str(),strand,stop-win_size+1,stop);
-    int d = q->I.front()->CalcDirection(&w,true);
-    if (d<0) q = Ref->Next(!ignore_reverse_strand,false);
-    else if (d==0) return c;
+	while (q!=NULL) {
+	  int d = q->I.front()->CalcDirection(&w,sorted_by_strand);
+	  if (d<0) q = Ref->Next(sorted_by_strand,false);
+	  else if (d==0) return c;
+	  else if (d>0) break;
+	}
   }
   return -1;
 }
 
 
-//---------PrintInterval--------
+//---------Next--------
 //
-void GenomicRegionSetScanner::PrintInterval(FILE *out_file)
+long int SortedGenomicRegionSetScanner::Next(GenomicRegionSetIndex *index)
 {
-  fprintf(out_file, "%s %c %ld %ld", chr->first.c_str(), strand, stop-win_size+1, stop); 
+  if (index==NULL) return Next();
+  while (true) {
+    long int c = Next();
+    if (c==-1) return -1;
+    GenomicInterval w(chr->first.c_str(),strand,stop-win_size+1,stop);
+    if (index->GetOverlap(&w,false,ignore_strand)!=NULL) return c;
+  }
 }
 
 
 //---------------------------------------------------------------------------------------------//
-// END CLASS: GenomicRegionSetScanner                                                          //
+// END CLASS: SortedGenomicRegionSetScanner                                                    //
+//---------------------------------------------------------------------------------------------//
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+
+
+
+
+
+
+
+
+
+
+
+
+//|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
+//---------------------------------------------------------------------------------------------//
+// CLASS: UnsortedGenomicRegionSetScanner                                                      //
+//---------------------------------------------------------------------------------------------//
+
+//---------Constructor--------
+//
+UnsortedGenomicRegionSetScanner::UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
+  : GenomicRegionSetScanner(R,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess)
+{
+	// initialize window counts per chromosome
+	Progress PRG1("Initializing structures...",bounds->size());
+	for (StringLIntMap::iterator p=bounds->begin(); p!=bounds->end(); p++) {
+		unsigned long int n = p->second/win_step;				// number of micro-windows
+		count[p->first] = new unsigned long int*[2];
+		unsigned long int *v_fwd = count[p->first][0] = new unsigned long int[n+1];
+		unsigned long int *v_rev = count[p->first][1] = ignore_strand==true?NULL:new unsigned long int[n+1];
+		v_fwd[0] = n;
+		if (ignore_strand==false) v_rev[0] = n;
+		for (unsigned long int k=1; k<=n; k++) { v_fwd[k] = 0; if (ignore_strand==false) v_rev[k] = 0; }
+		PRG1.Check();
+	}
+	PRG1.Done();
+
+	// scan genomic region set and determine counts
+	Progress PRG2("Determining counts per window...",R->n_regions);
+	for (GenomicRegion *r=R->Get(); r!=NULL; r=R->Next()) {
+	    for (GenomicIntervalSet::iterator i=r->I.begin(); i!=r->I.end(); i++) {
+	    	if (((*i)->START>(*i)->STOP)||((*i)->STOP<=0)) continue;
+			CountMap::iterator p=count.find((*i)->CHROMOSOME);
+			if (p!=count.end()) {
+				long int start;
+				if (preprocess=='1') start = (*i)->START;
+				else if (preprocess=='c') start = (*i)->START+((*i)->STOP-(*i)->START)/2;
+				else { fprintf(stderr, "Error: [UnsortedGenomicRegionSetScanner] preprocess operator '%c' not supported!\n", preprocess); exit(1); }
+				long int w = (start-1)/win_step+1;
+				unsigned long int *v = ((ignore_strand==true)||((*i)->STRAND=='+'))?p->second[0]:p->second[1];
+				if ((start>=1)&&(w<=(long int)v[0])) {
+					if (use_labels_as_values) v[w] += max(1L,atol(r->LABEL));
+					else v[w]++;
+				}
+			}
+	    }
+	    PRG2.Check();
+	}
+	PRG2.Done();
+
+	// sum up counts on sliding windows comprising n_win_combine micro-windows
+	Progress PRG3("Summing counts in sliding windows...",count.size());
+	for (CountMap::iterator p=count.begin(); p!=count.end(); p++) {
+		for (int z=0; z<=(ignore_strand==true?0:1); z++) {
+			unsigned long int *v = p->second[z];
+			if (v[0]<(unsigned long int)n_win_combine) v[0] = 0;
+			else {
+				unsigned long int c, sum = 0;
+				for (int k=1; k<=n_win_combine-1; k++) sum += v[k];
+				v[0] = v[0] - n_win_combine + 1;
+				for (unsigned long int k=1; k<=v[0]; k++) {
+					sum = sum + v[k+n_win_combine-1];
+					c = v[k];
+					v[k] = sum;
+					sum = sum - c;
+				}
+			}
+		}
+		PRG3.Check();
+	}
+	PRG3.Done();
+
+	// initialize current window information
+	Init();
+}
+
+
+//---------Destructor--------
+//
+UnsortedGenomicRegionSetScanner::~UnsortedGenomicRegionSetScanner()
+{
+	for (CountMap::iterator p=count.begin(); p!=count.end(); p++) {
+		if (p->second[0]!=NULL) delete p->second[0];
+		if (p->second[1]!=NULL) delete p->second[1];
+		delete p->second;
+	}
+}
+
+
+//---------SetCurrent--------
+//
+void UnsortedGenomicRegionSetScanner::Init()
+{
+	current_chr = count.begin();
+	current_strand = '+';
+	current_v = current_chr->second[0];
+	current_n = current_chr!=count.end()?current_v[0]:0;
+	current_win = 0;
+}
+
+
+//---------PrintInterval--------
+//
+void UnsortedGenomicRegionSetScanner::PrintInterval(FILE *out_file)
+{
+	fprintf(out_file, "%s %c %ld %ld", current_chr->first.c_str(), current_strand, win_step*(current_win-1)+1, win_step*(current_win-1)+win_size);
+}
+
+
+//---------Next--------
+//
+long int UnsortedGenomicRegionSetScanner::Next()
+{
+	if (current_chr==count.end()) return -1;
+	current_win++;
+	if (current_win>current_n) {
+		if ((ignore_strand==true)||(current_strand=='-')) {
+			current_chr++;
+			if (current_chr==count.end()) return -1;
+			current_strand = '+';
+		}
+		else current_strand = '-';
+		current_v = current_strand=='+'?current_chr->second[0]:current_chr->second[1];
+		current_n = current_chr!=count.end()?current_v[0]:0;
+		current_win = 1;
+	}
+	return current_v[current_win];
+}
+
+
+//---------Next--------
+//
+long int UnsortedGenomicRegionSetScanner::Next(GenomicRegionSet *Ref)
+{
+	if (Ref==NULL) return Next();
+
+	GenomicRegion *q = Ref->Get();
+	bool sorted_by_strand = !ignore_strand;
+	while (q!=NULL) {
+		long int c = Next();
+		if (c==-1) return -1;
+		GenomicInterval w(current_chr->first.c_str(),current_strand,win_step*(current_win-1)+1,win_step*(current_win-1)+win_size);
+		while (q!=NULL) {
+		  int d = q->I.front()->CalcDirection(&w,sorted_by_strand);
+		  if (d<0) q = Ref->Next(sorted_by_strand,false);
+		  else if (d==0) return c;
+		  else if (d>0) break;
+		}
+	}
+	return -1;
+}
+
+
+//---------Next--------
+//
+long int UnsortedGenomicRegionSetScanner::Next(GenomicRegionSetIndex *index)
+{
+  if (index==NULL) return Next();
+  while (true) {
+    long int c = Next();
+    if (c==-1) return -1;
+	GenomicInterval w(current_chr->first.c_str(),current_strand,win_step*(current_win-1)+1,win_step*(current_win-1)+win_size);
+    if (index->GetOverlap(&w,false,ignore_strand)!=NULL) return c;
+  }
+}
+
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: UnsortedGenomicRegionSetScanner                                                  //
 //---------------------------------------------------------------------------------------------//
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||//
 
@@ -5073,7 +5317,7 @@ unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps,
 
 //---------Constructor--------
 //
-GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin_bits)
+GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, const char *bin_bits)
 {
   this->regSet = regSet;
   
@@ -5110,10 +5354,12 @@ GenomicRegionSetIndex::GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin
     n_bits[n_levels-1] = 60;			// the last bin level should only have one bin, i think 60 bits will guarrantee that :-) 
   }
   else {
-    n_levels = CountTokens(bin_bits,',')+1;
+    char *p = StrCopy(bin_bits);
+    n_levels = CountTokens(p,',')+1;
     n_bits = new int[n_levels];
     int l = 0;
-    for (char *s=GetNextToken(&bin_bits,','); s[0]!=0; s=GetNextToken(&bin_bits,',')) n_bits[l++] = atoi(s);
+    char *q = p; for (char *s=GetNextToken(&q,','); s[0]!=0; s=GetNextToken(&q,',')) n_bits[l++] = atoi(s);
+    delete p;
     n_bits[n_levels-1] = 60;
   }
 
@@ -5249,6 +5495,37 @@ GenomicRegion *GenomicRegionSetIndex::NextMatch()
 
 
 
+//---------GetOverlap--------
+//
+GenomicRegion *GenomicRegionSetIndex::GetOverlap(GenomicInterval *i, bool match_gaps, bool ignore_strand)
+{
+  current_qint = i;
+  for (GenomicRegion *r=GetMatch(i); r!=NULL; r = NextMatch()) {
+    if (match_gaps||current_qint->OverlapsWith(r,ignore_strand)) {
+      if (ignore_strand) return r;
+      else if (current_qint->STRAND==r->I.front()->STRAND) return r;
+    }
+  }
+  return NULL;
+}
+
+
+
+//---------NextOverlap--------
+//
+GenomicRegion *GenomicRegionSetIndex::NextOverlap(bool match_gaps, bool ignore_strand)
+{
+  for (GenomicRegion *r=NextMatch(); r!=NULL; r=NextMatch()) {
+    if (match_gaps||current_qint->OverlapsWith(r,ignore_strand)) {
+      if (ignore_strand) return r;
+      else if (current_qint->STRAND==r->I.front()->STRAND) return r;
+    }
+  }
+  return NULL;
+}
+
+
+
 
 //---------------------------------------------------------------------------------------------//
 // END CLASS: GenomicRegionSetIndex                                                            //    
@@ -5283,7 +5560,7 @@ GenomicRegion *GenomicRegionSetIndex::NextMatch()
 
 //---------Constructor--------
 //
-UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, char *bin_bits)
+UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, const char *bin_bits)
  : GenomicRegionSetOverlaps(QuerySet,IndexSet)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "Error: [UnsortedGenomicRegionSetOverlaps] index regions must be loaded in memory!\n"); exit(1); }
@@ -5319,10 +5596,12 @@ UnsortedGenomicRegionSetOverlaps::UnsortedGenomicRegionSetOverlaps(GenomicRegion
     n_bits[n_levels-1] = 60;			// the last bin level should only have one bin, i think 60 bits will guarrantee that :-) 
   }
   else {
-    n_levels = CountTokens(bin_bits,',')+1;
+    char *p = StrCopy(bin_bits);
+    n_levels = CountTokens(p,',')+1;
     n_bits = new int[n_levels];
     int l = 0;
-    for (char *s=GetNextToken(&bin_bits,','); s[0]!=0; s=GetNextToken(&bin_bits,',')) n_bits[l++] = atoi(s);
+    char *q = p; for (char *s=GetNextToken(&q,','); s[0]!=0; s=GetNextToken(&q,',')) n_bits[l++] = atoi(s);
+    delete p;
     n_bits[n_levels-1] = 60;
   }
 

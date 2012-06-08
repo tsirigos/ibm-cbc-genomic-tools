@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.3.2";
+const string VERSION = "genomic_tools 2.4.0";
 
 
 #include <stdio.h>
@@ -33,6 +33,7 @@ typedef list<GenomicInterval *> GenomicIntervalSetAsList;
 class GenomicIntervalSetAsArray;
 class GenomicRegion;
 class GenomicRegionSet;
+class GenomicRegionSetIndex;
 
 // types
 typedef map<string,string> StringMap;
@@ -163,8 +164,12 @@ class GenomicInterval
 
 
 
-  //! Returns 'true' if it overlaps with input interval <b>I</b>.
+  //! Returns 'true' if it overlaps with interval <b>I</b>.
   bool OverlapsWith(GenomicInterval *I, bool ignore_strand=false);
+
+
+  //! Returns 'true' if it overlaps with region <b>r</b>.
+  bool OverlapsWith(GenomicRegion *r, bool ignore_strand=false);
 
 
 
@@ -1925,12 +1930,12 @@ class GenomicRegionSet
     \param ref_reg_file 			only windows that overlap with regions in this file will be reported
     \param win_step					sliding window step
     \param win_size					sliding window size (must be a multiple of window step)
-    \param ignore_reverse_strand	if true, no sliding windows on the negative strand are reported
+    \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
     \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
     \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
     \param min_reads				report windows only if value is greater that this parameter
   */
-  void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_reverse_strand, char preprocess, bool use_labels_as_values, long int min_reads);
+  void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads);
 
 
   //! Prints in Wiggle format. If <b>convert_chromosome</b> is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). 
@@ -2161,14 +2166,67 @@ class GenomicRegionSet
 //---------------------------------------------------------------------------------------------//
 // CLASS: GenomicRegionSetScanner                                                              //
 //---------------------------------------------------------------------------------------------//
-//!  This class is used to scan a set of regions by sliding windows. See detailed description below for an example.  
+//!  Abstract class for scanning a set of genomic regions by sliding windows.
+//---------------------------------------------------------------------------------------------//
+class GenomicRegionSetScanner
+{
+ public:
+  //! Class constructor.
+  /*!
+    \param R 						the GenomicRegionSet which will be scanned by sliding windows
+    \param bounds 					chromosome sizes
+    \param win_step					sliding window step
+    \param win_size					sliding window size (must be a multiple of window step)
+    \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+    \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
+    \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+  */
+  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+  virtual ~GenomicRegionSetScanner();
+
+  // operations
+  virtual void PrintInterval(FILE *out_file=stdout) = 0;	//!< prints current window's interval
+  virtual long int Next() = 0;								//!< computes value in the next window
+  virtual long int Next(GenomicRegionSet *Ref) = 0;			//!< computes value in the next window that overlaps with <b>Ref</b>
+  virtual long int Next(GenomicRegionSetIndex *index) = 0;	//!< computes value in the next window that overlaps with regions in <b>index</b>
+
+  // data
+ public:
+  GenomicRegionSet *R;				//!< pointer to the GenomicRegionSet which will be scanned by sliding windows
+  StringLIntMap *bounds;			//!< chromosome sizes
+  long int win_step;				//!< sliding window step
+  long int win_size;				//!< sliding window size (must be a multiple of window step)
+  bool use_labels_as_values;		//!< if true, genomic region labels are assumed to be integers and are included in the counting
+  bool ignore_strand;				//!< if true, strand information is ignored and no sliding windows on the negative strand are reported
+  char preprocess;					//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+  long int n_win_combine;			//!< win_size divided by win_step (note: each window is comprised of non-overlapping sub-windows of size win_step)
+};
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: GenomicRegionSetScanner                                                          //
+//---------------------------------------------------------------------------------------------//
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// CLASS: SortedGenomicRegionSetScanner                                                        //
+//---------------------------------------------------------------------------------------------//
+//!  This class is used to scan a set of sorted regions by sliding windows. See detailed description below for an example.
 /*!
      Example:
   \code
     // initialize (note: you need to set inputs and parameters, such as genome_reg_file, input_reg_file, WIN_DIST and WIN_SIZE)
     StringLIntMap *bounds = ReadBounds(genome_reg_file);
     GenomicRegionSet InputRegSet(input_reg_file,10000,true,false);
-    GenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,false,'c');
+    SortedGenomicRegionSetScanner input_scanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,false,false,'c');
 
     // run
     Progress PRG("Scanning...",1);
@@ -2187,41 +2245,33 @@ class GenomicRegionSet
   \endcode
 */
 //---------------------------------------------------------------------------------------------//
-class GenomicRegionSetScanner
+class SortedGenomicRegionSetScanner : public GenomicRegionSetScanner
 {
  public:
   //! Class constructor.
   /*!
-    \param R 				the GenomicRegionSet which will be scanned by sliding windows
-    \param bounds 			chromosome sizes
-    \param win_step			sliding window step
-    \param win_size			sliding window size (must be a multiple of window step)
+    \param R 						the GenomicRegionSet which will be scanned by sliding windows
+    \param bounds 					chromosome sizes
+    \param win_step					sliding window step
+    \param win_size					sliding window size (must be a multiple of window step)
     \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
-    \param ignore_reverse_strand	if true, no sliding windows on the negative strand are reported
-    \param preprocess			if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+    \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
+    \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   */
-  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_reverse_strand, char preprocess);
-  ~GenomicRegionSetScanner();
+  SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+  virtual ~SortedGenomicRegionSetScanner();
   
   // operations
-  long int Next();								//!< computes value in the next window
-  long int Next(GenomicRegionSet *Ref);			//!< computes value in the next window that overlaps with <b>Ref</b>
-  void PrintInterval(FILE *out_file=stdout);	//!< prints current window's interval
+  virtual void PrintInterval(FILE *out_file=stdout);		//!< prints current window's interval
+  virtual long int Next();									//!< computes value in the next window
+  virtual long int Next(GenomicRegionSet *Ref);				//!< computes value in the next window that overlaps with <b>Ref</b>
+  virtual long int Next(GenomicRegionSetIndex *index);		//!< computes value in the next window that overlaps with regions in <b>index</b>
   
   // data
  private: 
   bool Test();					//!< tests whether current input region should be skipped because it does not match any chromosome name in the provided bounds
-
-  GenomicRegionSet *R;				//!< pointer to the GenomicRegionSet which will be scanned by sliding windows
-  StringLIntMap *bounds;			//!< chromosome sizes
-  long int win_step;				//!< sliding window step
-  long int win_size;				//!< sliding window size (must be a multiple of window step)
-  bool use_labels_as_values;			//!< if true, genomic region labels are assumed to be integers and are included in the counting
-  bool ignore_reverse_strand;			//!< if true, no sliding windows on the negative strand are reported
-  char preprocess;				//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
-  long int n_win_combine;			//!< win_size divided by win_step (note: each window is comprised of non-overlapping sub-windows of size win_step)
   GenomicRegion *r;				//!< pointer to the most recently scanned region 
-  StringLIntMap::iterator chr;			//!< keeps track of current window's chromosome information
+  StringLIntMap::iterator chr;	//!< keeps track of current window's chromosome information
   char strand;					//!< keeps track of current window's strand information
   long int start;				//!< keeps track of current window's start information
   long int stop;				//!< keeps track of current window's stop information
@@ -2231,10 +2281,67 @@ class GenomicRegionSetScanner
 };
 
 //---------------------------------------------------------------------------------------------//
-// END CLASS: GenomicRegionSetScanner                                                          //
+// END CLASS: SortedGenomicRegionSetScanner                                                    //
 //---------------------------------------------------------------------------------------------//
 
 
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------//
+// CLASS: UnsortedGenomicRegionSetScanner                                                      //
+//---------------------------------------------------------------------------------------------//
+//!  This class is used to scan a set of unsorted regions by sliding windows.
+
+//---------------------------------------------------------------------------------------------//
+class UnsortedGenomicRegionSetScanner : public GenomicRegionSetScanner
+{
+ public:
+	typedef map<string,unsigned long int**> CountMap;
+
+	//! Class constructor.
+	/*!
+		\param R 						the GenomicRegionSet which will be scanned by sliding windows
+		\param bounds 					chromosome sizes
+		\param win_step					sliding window step
+		\param win_size					sliding window size (must be a multiple of window step)
+		\param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+    	\param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
+		\param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+	*/
+	UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+	virtual ~UnsortedGenomicRegionSetScanner();
+
+	// operations
+	virtual void PrintInterval(FILE *out_file=stdout);			//!< prints current window's interval
+	virtual long int Next();									//!< computes value in the next window
+	virtual long int Next(GenomicRegionSet *Ref);				//!< computes value in the next window that overlaps with <b>Ref</b>
+	virtual long int Next(GenomicRegionSetIndex *index);		//!< computes value in the next window that overlaps with regions in <b>index</b>
+
+ private:
+	void Init();							//!< initialize pointers to current window information
+
+	// data
+ public:
+	CountMap count;							//!< keeps track of read counts per chromosome per sliding window (forward & reverse strand)
+ private:
+	CountMap::iterator current_chr;			//!< current window's chromosome information
+	char current_strand;					//!< current window's strand information
+	unsigned long int *current_v;			//!< current chromosome count vector (for forward or reverse strand)
+	unsigned long int current_n;			//!< number of windows in current window's chromosome count vector
+	unsigned long int current_win;			//!< current window's start information
+
+};
+
+//---------------------------------------------------------------------------------------------//
+// END CLASS: UnsortedGenomicRegionSetScanner                                                  //
+//---------------------------------------------------------------------------------------------//
 
 
 
@@ -2373,7 +2480,7 @@ class GenomicRegionSetIndex
     \param regSet 			pointer to index region set
     \param bin_bits			number of shift-bits per bin level, e.g. "10,15,18"
   */
-  GenomicRegionSetIndex(GenomicRegionSet *regSet, char *bin_bits=NULL);
+  GenomicRegionSetIndex(GenomicRegionSet *regSet, const char *bin_bits=NULL);
 
 
   //! Class destructor.
@@ -2381,6 +2488,9 @@ class GenomicRegionSetIndex
 
   
   //! Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  /*!
+    \param i 					pointer to genomic interval to be tested for match
+  */
   GenomicRegion *GetMatch(GenomicInterval *i);
 
  
@@ -2388,6 +2498,23 @@ class GenomicRegionSetIndex
   GenomicRegion *NextMatch();
 
  
+  //! Returns a pointer to the current index region that overlaps the current query region.
+  /*!
+    \param i 					pointer to genomic interval to be tested for overlap
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+  */
+  GenomicRegion *GetOverlap(GenomicInterval *i, bool match_gaps, bool ignore_strand);
+
+
+  //! Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).
+  /*!
+    \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
+    \param ignore_strand		if 'true', overlaps are strand-ignorant
+  */
+  GenomicRegion *NextOverlap(bool match_gaps, bool ignore_strand);
+
+
   // data
  public: 
   GenomicRegionSet *regSet;							//!< pointer to index region set
@@ -2458,7 +2585,7 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
     \param IndexSet 			pointer to index region set
     \param bin_bits			number of shift-bits per bin level, e.g. "10,15,18"
   */
-  UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, char *bin_bits=NULL);
+  UnsortedGenomicRegionSetOverlaps(GenomicRegionSet *QuerySet, GenomicRegionSet *IndexSet, const char *bin_bits=NULL);
 
 
   //! Class destructor.
