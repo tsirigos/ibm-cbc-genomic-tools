@@ -70,17 +70,20 @@ int ** &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">a two-dimensional grid of bins <br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a7c00a972e0eb804d6f017c24ac82114f">GenomicRegionSetIndex</a> (<a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetIndex.html#a69385a469c77555e783aa2801c7608cf">regSet</a>, char *bin_bits=NULL)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#a7c00a972e0eb804d6f017c24ac82114f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a86ae03b16372dd94aee29aac24aab0de">GenomicRegionSetIndex</a> (<a class="el" href="classGenomicRegionSet.html">GenomicRegionSet</a> *<a class="el" href="classGenomicRegionSetIndex.html#a69385a469c77555e783aa2801c7608cf">regSet</a>, const char *bin_bits=NULL)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="#a86ae03b16372dd94aee29aac24aab0de"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade936a5d54565c7382c50f87aa65c235"></a><!-- doxytag: member="GenomicRegionSetIndex::~GenomicRegionSetIndex" ref="ade936a5d54565c7382c50f87aa65c235" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#ade936a5d54565c7382c50f87aa65c235">~GenomicRegionSetIndex</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Class destructor. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a69b1d5480880fd2929fc2ff8c08ee3"></a><!-- doxytag: member="GenomicRegionSetIndex::GetMatch" ref="a1a69b1d5480880fd2929fc2ff8c08ee3" args="(GenomicInterval *i)" -->
-<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a1a69b1d5480880fd2929fc2ff8c08ee3">GetMatch</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *i)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a1a69b1d5480880fd2929fc2ff8c08ee3">GetMatch</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *i)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).  <a href="#a1a69b1d5480880fd2929fc2ff8c08ee3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4dc078f79944566958db0d8b4122ae3"></a><!-- doxytag: member="GenomicRegionSetIndex::NextMatch" ref="ae4dc078f79944566958db0d8b4122ae3" args="()" -->
 <a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#ae4dc078f79944566958db0d8b4122ae3">NextMatch</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a830f6adf2f1d5d680d0c34beeaaab100">GetOverlap</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *i, bool match_gaps, bool ignore_strand)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the current index region that overlaps the current query region.  <a href="#a830f6adf2f1d5d680d0c34beeaaab100"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSetIndex.html#a17f49f9e98fd86d990590fc362fea8bd">NextOverlap</a> (bool match_gaps, bool ignore_strand)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals).  <a href="#a17f49f9e98fd86d990590fc362fea8bd"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69385a469c77555e783aa2801c7608cf"></a><!-- doxytag: member="GenomicRegionSetIndex::regSet" ref="a69385a469c77555e783aa2801c7608cf" args="" -->
@@ -114,7 +117,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Class for creating an index for genomic regions based on the "genome binning" approach by Kent et al. </p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a7c00a972e0eb804d6f017c24ac82114f"></a><!-- doxytag: member="GenomicRegionSetIndex::GenomicRegionSetIndex" ref="a7c00a972e0eb804d6f017c24ac82114f" args="(GenomicRegionSet *regSet, char *bin_bits=NULL)" -->
+<a class="anchor" id="a86ae03b16372dd94aee29aac24aab0de"></a><!-- doxytag: member="GenomicRegionSetIndex::GenomicRegionSetIndex" ref="a86ae03b16372dd94aee29aac24aab0de" args="(GenomicRegionSet *regSet, const char *bin_bits=NULL)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -127,7 +130,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>bin_bits</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
@@ -144,6 +147,111 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <table class="params">
     <tr><td class="paramname">regSet</td><td>pointer to index region set </td></tr>
     <tr><td class="paramname">bin_bits</td><td>number of shift-bits per bin level, e.g. "10,15,18" </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a1a69b1d5480880fd2929fc2ff8c08ee3"></a><!-- doxytag: member="GenomicRegionSetIndex::GetMatch" ref="a1a69b1d5480880fd2929fc2ff8c08ee3" args="(GenomicInterval *i)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> * GenomicRegionSetIndex::GetMatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGenomicInterval.html">GenomicInterval</a> *&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a pointer to the current index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>pointer to genomic interval to be tested for match </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a830f6adf2f1d5d680d0c34beeaaab100"></a><!-- doxytag: member="GenomicRegionSetIndex::GetOverlap" ref="a830f6adf2f1d5d680d0c34beeaaab100" args="(GenomicInterval *i, bool match_gaps, bool ignore_strand)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> * GenomicRegionSetIndex::GetOverlap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGenomicInterval.html">GenomicInterval</a> *&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>match_gaps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ignore_strand</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a pointer to the current index region that overlaps the current query region. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>pointer to genomic interval to be tested for overlap </td></tr>
+    <tr><td class="paramname">match_gaps</td><td>if 'true', overlaps are defined as in <a class="el" href="classGenomicRegionSetIndex.html#a1a69b1d5480880fd2929fc2ff8c08ee3">GetMatch</a>. </td></tr>
+    <tr><td class="paramname">ignore_strand</td><td>if 'true', overlaps are strand-ignorant </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a17f49f9e98fd86d990590fc362fea8bd"></a><!-- doxytag: member="GenomicRegionSetIndex::NextOverlap" ref="a17f49f9e98fd86d990590fc362fea8bd" args="(bool match_gaps, bool ignore_strand)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> * GenomicRegionSetIndex::NextOverlap </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>match_gaps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ignore_strand</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a pointer to the next index region that overlaps the current query region (even if the overlap is only in the gaps between intervals). </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">match_gaps</td><td>if 'true', overlaps are defined as in <a class="el" href="classGenomicRegionSetIndex.html#a1a69b1d5480880fd2929fc2ff8c08ee3">GetMatch</a>. </td></tr>
+    <tr><td class="paramname">ignore_strand</td><td>if 'true', overlaps are strand-ignorant </td></tr>
   </table>
   </dd>
 </dl>
@@ -169,7 +277,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 5 2012 12:08:24 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jun 8 2012 14:22:09 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
