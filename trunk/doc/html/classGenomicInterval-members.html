@@ -63,12 +63,14 @@ This is the complete list of members for <a class="el" href="classGenomicInterva
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a99f413828468dca1eeb5cc806848d98e">GenomicInterval</a>(char *inp, char delimiter=' ', unsigned long int n_line=0)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a4132f8d27fa5ebe416abe41150974c14">GenomicInterval</a>(GenomicInterval *I)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a71215d72c527726583e748e73581abc5">GetCoordinate</a>(const char *op)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a25d5b92af2e6d96ca4f1e1e31706e647">GetOffsetFrom</a>(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aac4c172080cba2c65868c9c5e6e6bea6">GetOffsetFrom</a>(GenomicInterval *ref_int, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a75008fc9060bd164a4b94afd2f1b4da0">GetOffsetFrom</a>(GenomicRegion *ref_reg, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#aff25b35226220508539b1183d5b9c11d">GetSeq</a>(Chromosomes *C, bool replace=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a39cd65d08a0c64a8bbddec32c8decbd3">GetSeqLength</a>(Chromosomes *C)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a7ceb36d952453db9473c7548c885f40a">GetSize</a>()</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a36dc2d4059337cc03a1211b6b8a7471c">IsBefore</a>(GenomicInterval *I, bool sorted_by_strand)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#ab6febc4c04d4919a9485ce8eeec5129d">IsCompatibleWith</a>(GenomicInterval *I, bool ignore_strand)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a0294d9cbc22f9fa9f6c6226cdc392507">IsContained</a>(GenomicInterval *I, bool ignore_strand=false)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a8fc5d344a103f145db968e536b30f9cf">IsPosBefore</a>(GenomicInterval *I)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a79d1e06f62b4c1eddda7b9fc62733c7b">IsValid</a>()</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicInterval.html#a1bc19a7d1334c2579b3f499d263d9bcc">ModifyPos</a>(const char *position_op, long int position_shift)</td><td><a class="el" href="classGenomicInterval.html">GenomicInterval</a></td><td></td></tr>
@@ -106,7 +108,7 @@ This is the complete list of members for <a class="el" href="classGenomicInterva
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jun 8 2012 14:22:08 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 26 2012 15:41:30 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

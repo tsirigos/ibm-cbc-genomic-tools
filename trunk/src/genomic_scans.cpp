@@ -81,15 +81,15 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval if -S option is set\n\
-  * Region-set requirements: none"\
+  * Region-set requirements: sorted by chromosome/strand/start if -S option is set"\
   );
 
   cmd_line->AddOperation("peaks", "[OPTIONS] SIGNAL-REG-FILE [CONTROL-REG-FILE [GENOME-UNIQ-REG-FILE]]", \
   "Scans input reads to identify peaks.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
-  * Region requirements: single-interval\n\
-  * Region-set requirements: sorted by chromosome/strand/start"\
+  * Region requirements: single-interval if -S option is set\n\
+  * Region-set requirements: sorted by chromosome/strand/start if -S option is set"\
   );
 
   if (argc<2) { cmd_line->OperationSummary("OPERATION [OPTIONS] INPUT-FILES","Performs whole-genome scanning operations."); exit(1); }
@@ -115,12 +115,13 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
-    cmd_line->AddOption("-op", &PREPROCESS, 'c', "preprocess operator (1=start, c=center, p=all points)");
+    cmd_line->AddOption("-op", &PREPROCESS, '1', "preprocess operator (1=start, c=center, p=all points)");
     cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
   }
   else if (cmd_line->current_cmd_operation=="peaks") {
     n_args = 1;
+    cmd_line->AddOption("-S", &SORTED, false, "input regions are sorted");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
     cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson, binomial2)");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
@@ -196,14 +197,16 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
   SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
-  signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
+  if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,'1');
+  else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,'1');
 
   if (control_reg_file!=NULL) {
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
     n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
     ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
-    control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
+    if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
+    else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
   }
   else {
     ControlRegSet = NULL;
@@ -219,6 +222,7 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
 
   UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   uniq_scanner = uniq_reg_file==NULL?NULL:new SortedGenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_STRAND,'p');
+  // NOTE: UniqRegSet must be sorted, because preprocess option 'p' is not implemented for unsorted region scanners
 }
 
 

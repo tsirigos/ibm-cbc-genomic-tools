@@ -108,6 +108,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6febc4c04d4919a9485ce8eeec5129d"></a><!-- doxytag: member="GenomicInterval::IsCompatibleWith" ref="ab6febc4c04d4919a9485ce8eeec5129d" args="(GenomicInterval *I, bool ignore_strand)" -->
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#ab6febc4c04d4919a9485ce8eeec5129d">IsCompatibleWith</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *I, bool ignore_strand)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares with input interval <b>I</b> and returns true if intervals are in the same chromosome and strand. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0294d9cbc22f9fa9f6c6226cdc392507"></a><!-- doxytag: member="GenomicInterval::IsContained" ref="a0294d9cbc22f9fa9f6c6226cdc392507" args="(GenomicInterval *I, bool ignore_strand=false)" -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#a0294d9cbc22f9fa9f6c6226cdc392507">IsContained</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *I, bool ignore_strand=false)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns 'true' if it is contained in interval <b>I</b>. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa1c591b6d3cc3c576cec24a3ab67abfb"></a><!-- doxytag: member="GenomicInterval::OverlapsWith" ref="aa1c591b6d3cc3c576cec24a3ab67abfb" args="(GenomicInterval *I, bool ignore_strand=false)" -->
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#aa1c591b6d3cc3c576cec24a3ab67abfb">OverlapsWith</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *I, bool ignore_strand=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns 'true' if it overlaps with interval <b>I</b>. <br/></td></tr>
@@ -160,8 +163,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75aed02c1df83acb5d7ec89e2a9949bd"></a><!-- doxytag: member="GenomicInterval::Randomize" ref="a75aed02c1df83acb5d7ec89e2a9949bd" args="(gsl_rng *random_generator, StringLIntMap *bounds)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#a75aed02c1df83acb5d7ec89e2a9949bd">Randomize</a> (gsl_rng *random_generator, StringLIntMap *bounds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomizes interval position within chromosomal bounds. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#a25d5b92af2e6d96ca4f1e1e31706e647">GetOffsetFrom</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes start/stop offset distances from <b>ReferenceI</b>.  <a href="#a25d5b92af2e6d96ca4f1e1e31706e647"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#aac4c172080cba2c65868c9c5e6e6bea6">GetOffsetFrom</a> (<a class="el" href="classGenomicInterval.html">GenomicInterval</a> *ref_int, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes start/stop offset distances from genomic interval <b>ref_int</b>.  <a href="#aac4c172080cba2c65868c9c5e6e6bea6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#a75008fc9060bd164a4b94afd2f1b4da0">GetOffsetFrom</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *ref_reg, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes start/stop offset distances from genomic region <b>ref_reg</b>.  <a href="#a75008fc9060bd164a4b94afd2f1b4da0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGenomicInterval.html">GenomicInterval</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicInterval.html#aab38ee28ece67801f2da5299bf92e703">CreateCenter</a> (bool stop_equals_start=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new interval which is the center of this instance.  <a href="#aab38ee28ece67801f2da5299bf92e703"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
@@ -219,7 +224,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
-<a class="anchor" id="a25d5b92af2e6d96ca4f1e1e31706e647"></a><!-- doxytag: member="GenomicInterval::GetOffsetFrom" ref="a25d5b92af2e6d96ca4f1e1e31706e647" args="(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)" -->
+<a class="anchor" id="aac4c172080cba2c65868c9c5e6e6bea6"></a><!-- doxytag: member="GenomicInterval::GetOffsetFrom" ref="aac4c172080cba2c65868c9c5e6e6bea6" args="(GenomicInterval *ref_int, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -227,7 +232,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
           <td class="memname">void GenomicInterval::GetOffsetFrom </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classGenomicInterval.html">GenomicInterval</a> *&#160;</td>
-          <td class="paramname"><em>ReferenceI</em>, </td>
+          <td class="paramname"><em>ref_int</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -262,10 +267,67 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </div>
 <div class="memdoc">
 
-<p>Computes start/stop offset distances from <b>ReferenceI</b>. </p>
+<p>Computes start/stop offset distances from genomic interval <b>ref_int</b>. </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
-    <tr><td class="paramname">ReferenceI</td><td>pointer to reference interval </td></tr>
+    <tr><td class="paramname">ref_int</td><td>pointer to reference interval </td></tr>
+    <tr><td class="paramname">op</td><td>selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position </td></tr>
+    <tr><td class="paramname">ignore_strand</td><td>ignore mismatch between test and reference strand </td></tr>
+    <tr><td class="paramname">start_offset</td><td>return value: the start offset </td></tr>
+    <tr><td class="paramname">stop_offset</td><td>return value: the stop offset </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a75008fc9060bd164a4b94afd2f1b4da0"></a><!-- doxytag: member="GenomicInterval::GetOffsetFrom" ref="a75008fc9060bd164a4b94afd2f1b4da0" args="(GenomicRegion *ref_reg, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GenomicInterval::GetOffsetFrom </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td>
+          <td class="paramname"><em>ref_reg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ignore_strand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long int *&#160;</td>
+          <td class="paramname"><em>start_offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long int *&#160;</td>
+          <td class="paramname"><em>stop_offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Computes start/stop offset distances from genomic region <b>ref_reg</b>. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ref_reg</td><td>pointer to reference interval </td></tr>
     <tr><td class="paramname">op</td><td>selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position </td></tr>
     <tr><td class="paramname">ignore_strand</td><td>ignore mismatch between test and reference strand </td></tr>
     <tr><td class="paramname">start_offset</td><td>return value: the start offset </td></tr>
@@ -374,7 +436,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jun 8 2012 14:22:08 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 26 2012 15:41:30 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

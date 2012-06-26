@@ -280,8 +280,9 @@ class Progress
  public:
   //! Class constructor.
   /*!
-    \param msg 		message to be displayed in stderr.
-    \param max_count	if greater than 1, the progress is shown as percentage
+    \param msg 				message to be displayed in stderr.
+    \param max_count		if greater than 1, the progress is shown as percentage
+    \param print_remaining	if true, an estimation of the remaining time is printed
   */
   Progress(const char *msg, long int max_count, bool print_remaining=false);
 
