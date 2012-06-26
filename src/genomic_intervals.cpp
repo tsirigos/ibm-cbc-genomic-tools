@@ -176,10 +176,11 @@ char *Chromosomes::GetSeq(GenomicInterval *I, bool replace)
     char *p = current_chromosome_seq + I->START - 1;
     for (size_t k=0; (p[0]!=0)&&(k<n); k++,p++) q[k] = replace&&(p[0]=='N') ? 'a' : p[0];
   }
-  else {
+  else if (I->STRAND=='-')  {
     char *p = current_chromosome_seq + I->STOP - 1;
     for (size_t k=0; (p[0]!=0)&&(k<n); k++,p--) q[k] = replace&&(p[0]=='N') ? 'a' : complement(p[0]);
   }
+  else q[0] = 0;
   return q;
 }
 
@@ -196,7 +197,7 @@ void Chromosomes::PrintSeq(GenomicInterval *I, bool replace)
     char *p = current_chromosome_seq + I->START - 1;
     for (size_t k=0; (p[0]!=0)&&(k<n); k++,p++) printf("%c", replace&&(p[0]=='N') ? 'a' : p[0]);
   }
-  else {
+  else if (I->STRAND=='-') {
     char *p = current_chromosome_seq + I->STOP - 1;
     for (size_t k=0; (p[0]!=0)&&(k<n); k++,p--) printf("%c", replace&&(p[0]=='N') ? 'a' : complement(p[0]));
   }
@@ -476,7 +477,8 @@ long int GenomicInterval::GetCoordinate(const char *op)
 //
 void GenomicInterval::ReverseStrand()
 {
-  STRAND = STRAND=='+' ? '-' : '+';
+  if (STRAND=='+') STRAND = '-';
+  else if (STRAND=='-') STRAND = '+';
 }
 
 
@@ -605,6 +607,17 @@ void GenomicInterval::ReversePos(StringLIntMap *bounds)
 
 
 
+//---------IsContained-----------
+//
+bool GenomicInterval::IsContained(GenomicInterval *I, bool ignore_strand)
+{
+  if (strcmp(CHROMOSOME,I->CHROMOSOME)!=0) return false;
+  if ((ignore_strand==false)&&(STRAND!=I->STRAND)) return false;
+  return (START>=I->START)&&(STOP<=I->STOP);
+}
+
+
+
 //---------OverlapsWith-----------
 //
 bool GenomicInterval::OverlapsWith(GenomicInterval *I, bool ignore_strand)
@@ -629,14 +642,27 @@ bool GenomicInterval::OverlapsWith(GenomicRegion *r, bool ignore_strand)
 
 //---------GetOffsetFrom-----------
 //
-void GenomicInterval::GetOffsetFrom(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
+void GenomicInterval::GetOffsetFrom(GenomicInterval *ref_int, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
 {
-  if (IsCompatibleWith(ReferenceI,ignore_strand)==false) { cerr << "[GetOffsetFrom] Error: intervals must have the same chromosome/strand for this operation!\n"; exit(1); }
-  long int ref = ReferenceI->GetCoordinate(op);
-  char strand = ignore_strand?ReferenceI->STRAND:STRAND;
+  if (IsCompatibleWith(ref_int,ignore_strand)==false) { cerr << "Error: [GetOffsetFrom] intervals must have the same chromosome/strand for this operation!\n"; exit(1); }
+  long int ref = ref_int->GetCoordinate(op);
+  char strand = ignore_strand?ref_int->STRAND:STRAND;
   bool test = ((strand=='-')&&(strcmp(op,"5p")==0))||((strand=='+')&&(strcmp(op,"3p")==0));
   if (test==true) { *start_offset = ref-STOP; *stop_offset = ref-START; }
   else { *start_offset = START-ref; *stop_offset = STOP-ref; }
+}
+
+
+
+//---------GetOffsetFrom-----------
+//
+void GenomicInterval::GetOffsetFrom(GenomicRegion *ref_reg, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset)
+{
+  if (ref_reg->IsCompatibleSortedAndNonoverlapping()==false) { cerr << "Error: [GetOffsetFrom] reference intervals must be compatible, sorted and non-overlapping!\n"; exit(1); }
+  char strand = ref_reg->I.front()->STRAND;
+  bool is_back = (strcmp(op,"2")==0)||((strand=='-')&&(strcmp(op,"5p")==0))||((strand=='+')&&(strcmp(op,"3p")==0));
+  GenomicInterval *ref_int = is_back==false?ref_reg->I.front():ref_reg->I.back();
+  GetOffsetFrom(ref_int,op,ignore_strand,start_offset,stop_offset);
 }
 
 
@@ -1067,7 +1093,6 @@ bool GenomicRegion::IsCompatible(bool ignore_strand)
   if (I.size()<=1) return true;
   for (GenomicIntervalSet::iterator i0=I.begin(),i=i0+1; i!=I.end(); i++) 
     if ((*i0)->IsCompatibleWith(*i,ignore_strand)==false) return false;
-    //if ((strcmp((*i)->CHROMOSOME,(*j)->CHROMOSOME)!=0)||((ignore_strand==false)&&((*i)->STRAND!=(*j)->STRAND))) return false;
   return true;
 }
 
@@ -1543,7 +1568,9 @@ void GenomicRegion::ModifyStrand(char *strand_op)
 {
   if (IsCompatible(false)==false) PrintError("region intervals must have the same chromosome/strand for this operation!");
   if (strcmp(strand_op,"r")==0) {
-    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->STRAND = (*i)->STRAND=='+'?'-':'+';
+    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++)
+    	if ((*i)->STRAND=='+') (*i)->STRAND = '-';
+    	else if ((*i)->STRAND=='-') (*i)->STRAND = '+';
   }
   else if (strcmp(strand_op,"+")==0) {
     for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->STRAND = '+';
@@ -1555,7 +1582,9 @@ void GenomicRegion::ModifyStrand(char *strand_op)
   
   /* NOTE: this code below is for GenomicRegionSEQ
   if (strcmp(strand_op,"r")==0) {
-    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) (*i)->STRAND = (*i)->STRAND=='+'?'-':'+';
+    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++)
+    	if ((*i)->STRAND=='+') (*i)->STRAND = '-';
+    	else if ((*i)->STRAND=='-') (*i)->STRAND = '+';
     Print();
     if (fasta==true) PrintQ(I.front()->STRAND!='+');
   }
@@ -1687,7 +1716,7 @@ char *GenomicRegion::GetSeq(Chromosomes *C, bool replace)
       delete s;
     }
   }
-  else {
+  else if (I.front()->STRAND=='-') {
     for (GenomicIntervalSet::reverse_iterator i=I.rbegin(); i!=I.rend(); i++) { 
       char *s = (*i)->GetSeq(C,replace);
       size_t n = (*i)->GetSize(); 
@@ -1696,6 +1725,7 @@ char *GenomicRegion::GetSeq(Chromosomes *C, bool replace)
       delete s;
     }
   }
+  else seq[0] = 0;
   return seq;
 }
 
@@ -1711,7 +1741,7 @@ void GenomicRegion::PrintSeq(Chromosomes *C, bool replace)
   if (I.front()->STRAND=='+') {	
     for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) C->PrintSeq((*i),replace);
   }
-  else {
+  else if (I.front()->STRAND=='-') {
     for (GenomicIntervalSet::reverse_iterator i=I.rbegin(); i!=I.rend(); i++) C->PrintSeq((*i),replace);
   }
   printf("\n");
@@ -4531,40 +4561,31 @@ void GenomicRegionSet::RunGlobalCalcDistances(char *op1, char *op2)
 }
 
 
-
 //---------RunGlobalSort--------
 //
-void GenomicRegionSet::RunGlobalSort()
+void GenomicRegionSet::RunGlobalSort(bool sorted_by_strand, int bin_bits)
 {
-  // sort
-  StringLIntMap map;
-  Progress PRG("Sorting regions...",n_regions);
-  long int n_lines = 1;
-  for (GenomicRegion *r=Get(); r!=NULL; r=Next()) {
-    if (r->I.size()!=1) { fprintf(stderr, "Line %ld: not a single-interval region!\n", n_lines); exit(1); }
-    char coord[2000];
-    sprintf(coord, "%s %c %20ld %20ld %s", r->I.front()->CHROMOSOME, r->I.front()->STRAND, r->I.front()->START, r->I.front()->STOP, r->LABEL);
-    map[coord] = n_lines;
-    n_lines++;
-    PRG.Check();
-  }
-  PRG.Done();
+	GenomicRegionSetBins *bins = BinGenomicRegions(this,sorted_by_strand,bin_bits);
 
-  // print
-  Progress PRG1("Printing sorted regions...",n_lines);
-  for (StringLIntMap::iterator x=map.begin(); x!=map.end(); x++) {
-    char *p = StrCopy(x->first.c_str());
-    char *q = p;
-    char *chromosome = GetNextToken(&q,' ');
-    char *strand = GetNextToken(&q,' ');
-    char *start = GetNextToken(&q,' ');
-    char *stop = GetNextToken(&q,' ');
-    char *label = GetNextToken(&q,' ');
-    printf("%s\t%s %s %s %s\n", label, chromosome, strand, start, stop);
-    delete p;
-    PRG1.Check();
-  }
-  PRG1.Done();
+	Progress PRG("Printing sorted regions...",n_regions);
+	for (GenomicRegionSetBins::iterator p=bins->begin(); p!=bins->end(); p++) {
+		ChromosomeBins *chrom_bins = p->second;
+		GenomicRegionList *b = chrom_bins->b_fwd;
+		while (true) {
+			GenomicRegionList *bb = b;
+			for (unsigned long int w=0; w<chrom_bins->n_bins; w++,bb++) {
+				if (bb->size()==0) continue;
+				bb->sort(CompareBinnedGenomicRegions);
+				for (GenomicRegionList::iterator z=bb->begin(); z!=bb->end(); z++) { (*z)->Print(); PRG.Check(); }
+			}
+			if (sorted_by_strand==false) break;
+			else if (b==chrom_bins->b_fwd) b = chrom_bins->b_rev;
+			else break;
+		}
+	}
+	bins->clear();
+	delete bins;
+	PRG.Done();
 }
 
 
@@ -4907,17 +4928,18 @@ long int SortedGenomicRegionSetScanner::Next()
       while ((r!=NULL)&&Test()) r = R->Next(!ignore_strand,false);
       for (k=0,v_sum=0,start=1,stop=start+win_step-1; stop<=chr->second; start+=win_step,stop+=win_step,k=(k+1)%n_win_combine) {
         v_sum -= v[k];
-        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&((ignore_strand==true)||(r->I.front()->STRAND==strand))&&(GetStart(r,preprocess)<=stop); ) {
+        for (v[k]=0; (r!=NULL)&&(strcmp(r->I.front()->CHROMOSOME,chr->first.c_str())==0)&&((ignore_strand==true)||(r->I.front()->STRAND==strand))&&(r->I.front()->START<=stop); ) {
           if (r->I.size()!=1) r->PrintError("single-interval regions expected for this operation!\n"); 
           if (preprocess=='p') {
             if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(!ignore_strand,false); }
             else { v[k] += stop-r->I.front()->START+1; r->I.front()->START = stop+1; }
           }
-          else {
+          else if (preprocess=='1') {
             if (use_labels_as_values) v[k] += max(1L,atol(r->LABEL));
             else v[k]++;
-            r = R->Next(!ignore_strand,false);
           }
+          else { fprintf(stderr, "Error: [SortedGenomicRegionSetScanner] preprocess operator '%c' not supported!\n", preprocess); exit(1); }
+          r = R->Next(!ignore_strand,false);
         }
         v_sum += v[k];
         if (stop>=win_size) return v_sum;
@@ -5193,7 +5215,7 @@ GenomicRegionSetOverlaps::~GenomicRegionSetOverlaps()
 //
 GenomicRegion *GenomicRegionSetOverlaps::GetOverlap(bool match_gaps, bool ignore_strand)
 {
-  for (GenomicRegion *r=GetMatch(); r!=NULL; r = NextMatch()) {
+  for (GenomicRegion *r=GetMatch(); r!=NULL; r=NextMatch()) {
     if (match_gaps||current_qreg->OverlapsWith(r,ignore_strand)) {
       if (ignore_strand) return r;
       else if (current_qreg->I.front()->STRAND==r->I.front()->STRAND) return r;
@@ -5927,6 +5949,7 @@ char ProcessStrand(char *strand)
 {
   if ((strcmp(strand,"1")==0)||(strcmp(strand,"+")==0)) return '+';
   else if ((strcmp(strand,"-1")==0)||(strcmp(strand,"-")==0)) return '-';
+  else if (strcmp(strand,".")==0) return '.';
   else { cerr << "Error: invalid strand '" << strand << "'!\n"; exit(1); }
 }
 
@@ -5958,16 +5981,6 @@ GenomicRegion *RegCenter(GenomicRegion *r)
   return r;
 }
 
-
-
-//---------GetStart--------
-//
-long int GetStart(GenomicRegion *r, char preprocess)
-{
-  if (r==NULL) return -1;
-  if (preprocess=='c') return r->I.front()->START+(r->I.front()->STOP-r->I.front()->START)/2;
-  else return r->I.front()->START;
-}
 
 
 
@@ -6019,6 +6032,15 @@ unsigned long int CalcRegSize(char *reg_file)
 }
 
 
+//---------CompareBinnedGenomicRegions-----------
+//
+bool CompareBinnedGenomicRegions(GenomicRegion *r, GenomicRegion *q)
+{
+  return r->I.front()->START<q->I.front()->START;
+}
+
+
+
 //---------CompareGenomicIntervals-----------
 //
 bool CompareGenomicIntervals(GenomicInterval *I, GenomicInterval *J)
@@ -6057,6 +6079,114 @@ void SortGenomicIntervals(GenomicIntervalSetAsArray *A)
   //sort(V->begin(),V->end(),CompareGenomicIntervals);
 }
 
+
+
+//-------BinGenomicRegions-------------
+//
+GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_strand, int bin_bits)
+{
+	// initialize
+	GenomicRegionSetBins *bins = new GenomicRegionSetBins();
+
+	// determine chromosome limits
+	if (rset->load_in_memory==false) { fprintf(stderr, "Error: [BinGenomicRegions] region set must be loaded in memory!\n"); exit(1); }
+	Progress PRG0("[BinGenomicRegions] Determining chromosome limits...",rset->n_regions);
+	for (GenomicRegion *r=rset->Begin(); r!=NULL; r=rset->Next()) {
+		r->Sort();
+		GenomicInterval *i = r->I.front();
+		GenomicRegionSetBins::iterator p = bins->find(i->CHROMOSOME);
+		if (p==bins->end()) {
+			ChromosomeBins *b = new ChromosomeBins(i->START);
+			bins->insert(pair<string,ChromosomeBins*>(i->CHROMOSOME,b));
+		}
+		else {
+			p->second->min_start = min(p->second->min_start,i->START);
+			p->second->max_start = max(p->second->max_start,i->START);
+		}
+		PRG0.Check();
+	}
+	PRG0.Done();
+
+	// initialize window counts per chromosome
+	Progress PRG1("[BinGenomicRegions] Initializing structures...",bins->size());
+	for (GenomicRegionSetBins::iterator p=bins->begin(); p!=bins->end(); p++) {
+		ChromosomeBins *chrom_bins = p->second;
+		chrom_bins->n_bins = ((chrom_bins->max_start-chrom_bins->min_start)>>bin_bits) + 1;
+		//cerr << p->first << '\t' << chrom_bins->min_start << ' ' << chrom_bins->max_start << ' ' << chrom_bins->n_bins << '\n';
+		chrom_bins->b_fwd = new GenomicRegionList[chrom_bins->n_bins];
+		chrom_bins->b_rev = sorted_by_strand==true?new GenomicRegionList[chrom_bins->n_bins]:NULL;
+		PRG1.Check();
+	}
+	PRG1.Done();
+
+	// assign genomic regions to bins
+	Progress PRG2("[BinGenomicRegions] Assigning genomic regions to bins...",rset->n_regions);
+	for (GenomicRegion *r=rset->Begin(); r!=NULL; r=rset->Next()) {
+		GenomicInterval *i = r->I.front();
+    	GenomicRegionSetBins::iterator p = bins->find(i->CHROMOSOME);
+		if (p!=bins->end()) {
+			ChromosomeBins *chrom_bins = p->second;
+			unsigned long int w = (i->START-chrom_bins->min_start)>>bin_bits;
+			GenomicRegionList *b = ((sorted_by_strand==false)||(i->STRAND=='+'))?chrom_bins->b_fwd:chrom_bins->b_rev;
+			if ((w<0)||(w>=chrom_bins->n_bins)) { fprintf(stderr, "Error: [BinGenomicRegions] this must be a bug, please contact atsirigo@us.ibm.com.\n"); exit(1); }
+			b[w].push_back(r);
+	    }
+	    PRG2.Check();
+	}
+	PRG2.Done();
+
+
+	return bins;
+}
+
+
+
+//---------CalcOffsetsWithoutGaps-----------
+//
+long int *GetGapSizes(GenomicRegion *r, char *offset_op)
+{
+	long int *gap_size = new long int[r->I.size()];
+	char strand = r->I.front()->STRAND;
+	if ((strcmp(offset_op,"1")==0)||((strand=='+')&&(strcmp(offset_op,"5p")==0))||((strand=='-')&&(strcmp(offset_op,"3p")==0))) {
+		gap_size[0] = 0;
+		int k = 1;
+		GenomicIntervalSet::iterator ref_int_prev = r->I.begin();
+		for (GenomicIntervalSet::iterator ref_int=ref_int_prev+1; ref_int!=r->I.end(); ref_int_prev=ref_int,ref_int++,k++)
+			gap_size[k] = gap_size[k-1] + (*ref_int)->START - (*ref_int_prev)->STOP - 1;
+	}
+	else {
+		int k = r->I.size()-1;
+		gap_size[k--] = 0;
+		GenomicIntervalSet::reverse_iterator ref_int_prev = r->I.rbegin();
+		for (GenomicIntervalSet::reverse_iterator ref_int=ref_int_prev+1; ref_int!=r->I.rend(); ref_int_prev++,ref_int++,k--)
+			gap_size[k] = gap_size[k+1] + (*ref_int_prev)->START - (*ref_int)->STOP - 1;
+	}
+	return gap_size;
+}
+
+
+
+//---------CalcOffsetsWithoutGaps-----------
+//
+OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_reg, char *offset_op, bool ignore_strand)
+{
+    if (query_reg->IsCompatibleSortedAndNonoverlapping()==false) { fprintf(stderr, "Warning: [CalcOffsetsWithoutGaps] query regions should be compatible, sorted and non-overlapping!"); return NULL; }
+    if (ref_reg->IsCompatibleSortedAndNonoverlapping()==false) { fprintf(stderr, "Warning: [CalcOffsetsWithoutGaps] reference regions should be compatible, sorted and non-overlapping!"); return NULL; }
+	OffsetList *offsets = new OffsetList();
+	long int *gap_size = GetGapSizes(ref_reg,offset_op);
+	int k = 0;
+	for (GenomicIntervalSet::iterator ref_int=ref_reg->I.begin(); ref_int!=ref_reg->I.end(); ref_int++,k++) {
+		for (GenomicIntervalSet::iterator query_int=query_reg->I.begin(); query_int!=query_reg->I.end(); query_int++) {
+			if ((*query_int)->IsContained(*ref_int,ignore_strand)) {
+				long int start_offset, stop_offset;
+				(*query_int)->GetOffsetFrom(ref_reg,offset_op,ignore_strand,&start_offset,&stop_offset);
+				offsets->push_back(pair<long int,long int>(start_offset-gap_size[k],stop_offset-gap_size[k]));
+			}
+		}
+	}
+	delete gap_size;
+	return offsets;
+}
 
 
 

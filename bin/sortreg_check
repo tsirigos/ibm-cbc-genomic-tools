@@ -12,7 +12,7 @@ endif
 if ($1 == "") then
   sort -c -k2,3 -k4,4n 
 else if ($1 == "-i") then
-  sort -c -k2,3 -k4,4n 
+  sort -c -k2,2 -k4,4n 
 else
   exit
 endif

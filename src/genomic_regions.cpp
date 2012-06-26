@@ -93,6 +93,7 @@ bool SUMMARY;
 bool CONVERT_CHROMOSOME;
 bool SORTED_BY_STRAND;
 long int LINK_MAX_DIFFERENCE;
+int BIN_BITS;
 
 
 
@@ -401,6 +402,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Region-set requirements: sorted by chromosome/strand/start"\
   );
 
+  cmd_line->AddOperation("gsort", "[OPTIONS] <REGION-SET>", \
+  "Global sort: sorts the entire region set.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operand: region-set\n\
+  * Region requirements: none\n\
+  * Region-set requirements: none"\
+  );
+
   cmd_line->AddOperation("inv", "[OPTIONS] <REGION-SET>", \
   "Inverts regions given the genome chromosomal boundaries.", \
   "* Input formats: REG, GFF, BED, SAM\n\
@@ -499,7 +508,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-op2", &DIST_OP2, "1", "reference point of 2nd interval in pair (1=start, 2=stop, 5p=5'-end, 3p=3'-end)");
   }
   else if (op=="gsort") {
-
+    cmd_line->AddOption("-s", &SORTED_BY_STRAND, false, "sort by strand in addition to chromosome and start position");
+    cmd_line->AddOption("-b", &BIN_BITS, 12, "bucket size (in bits) used in bucket sort");
   }
   else if (op=="int") {
 
@@ -720,6 +730,7 @@ int main(int argc, char* argv[])
   //  File-based (vertical) operations            //
   //----------------------------------------------//
   else if (cmd_line->current_cmd_operation=="gdist") RegSet.RunGlobalCalcDistances(DIST_OP1,DIST_OP2);
+  else if (cmd_line->current_cmd_operation=="gsort") RegSet.RunGlobalSort(SORTED_BY_STRAND,BIN_BITS);
   else if (cmd_line->current_cmd_operation=="inv") RegSet.RunGlobalInvert(bounds);
   else if (cmd_line->current_cmd_operation=="link") RegSet.RunGlobalLink(SORTED_BY_STRAND,LINK_MAX_DIFFERENCE);
   else if (cmd_line->current_cmd_operation=="test") RegSet.RunGlobalTest(SORTED_BY_STRAND);
@@ -732,7 +743,6 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="annot") RegSet.RunGlobalAnnotate(bounds);
   else if (cmd_line->current_cmd_operation=="bedgraph") RegSet.PrintBEDGraphFormat(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,CONVERT_CHROMOSOME);
   else if (cmd_line->current_cmd_operation=="cluster") RegSet.RunGlobalCluster(CLUSTER_MERGE);
-  else if (cmd_line->current_cmd_operation=="gsort") RegSet.RunGlobalSort();
   else if (cmd_line->current_cmd_operation=="len") RegSet.PrintSeqLength(C);
   //else if (cmd_line->current_cmd_operation=="nogap") RegSet.PrintNoGaps();
   else if (cmd_line->current_cmd_operation=="noN") { RegSet.PrintRemoveN(C); }

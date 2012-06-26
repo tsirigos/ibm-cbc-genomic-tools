@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.4.0";
+const string VERSION = "genomic_tools 2.5.0 pre-release 6-26-2012";
 
 
 #include <stdio.h>
@@ -35,18 +35,29 @@ class GenomicRegion;
 class GenomicRegionSet;
 class GenomicRegionSetIndex;
 
+
 // types
 typedef map<string,string> StringMap;
 typedef map<string,long int> StringLIntMap;
 typedef map<string,vector<long int> > StringVecLIntMap;
+typedef list< pair<long int,long int> > OffsetList;
 
 // choose container type for interval set (vector, list or array)
 typedef GenomicIntervalSetAsVector GenomicIntervalSet;
 //typedef GenomicIntervalSetAsList GenomicIntervalSet;
 //typedef GenomicIntervalSetAsArray GenomicIntervalSet;
 
-// for buffer in SortedGenomicRegionSetOverlaps
-typedef list<GenomicRegion *> GenomicRegionList;
+typedef list<GenomicRegion*> GenomicRegionList;
+
+struct ChromosomeBins {
+	ChromosomeBins(long int start) : min_start(start),max_start(start),n_bins(0),b_fwd(NULL),b_rev(NULL) { }
+	~ChromosomeBins() { if (b_fwd!=NULL) delete b_fwd; if (b_rev!=NULL) delete b_rev; }
+	long int min_start, max_start;
+	unsigned long int n_bins;
+	GenomicRegionList *b_fwd, *b_rev;
+};
+typedef map<string,ChromosomeBins*> GenomicRegionSetBins;
+
 
 
 // constants
@@ -164,6 +175,10 @@ class GenomicInterval
 
 
 
+  //! Returns 'true' if it is contained in interval <b>I</b>.
+  bool IsContained(GenomicInterval *I, bool ignore_strand=false);
+
+
   //! Returns 'true' if it overlaps with interval <b>I</b>.
   bool OverlapsWith(GenomicInterval *I, bool ignore_strand=false);
 
@@ -272,18 +287,31 @@ class GenomicInterval
 
 
 
-  //! Computes start/stop offset distances from <b>ReferenceI</b>. 
+  //! Computes start/stop offset distances from genomic interval <b>ref_int</b>.
   /*!
-    \param ReferenceI 		pointer to reference interval
-    \param op			selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position
+    \param ref_int	 		pointer to reference interval
+    \param op				selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position
     \param ignore_strand	ignore mismatch between test and reference strand
     \param start_offset 	return value: the start offset
     \param stop_offset 		return value: the stop offset
   */
-  void GetOffsetFrom(GenomicInterval *ReferenceI, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset);
+  void GetOffsetFrom(GenomicInterval *ref_int, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset);
 
 
   
+
+  //! Computes start/stop offset distances from genomic region <b>ref_reg</b>.
+  /*!
+    \param ref_reg	 		pointer to reference interval
+    \param op				selects reference point: '1'=start position, '2'=stop position, '5p'=5-prime position, '3p'=3-prime position
+    \param ignore_strand	ignore mismatch between test and reference strand
+    \param start_offset 	return value: the start offset
+    \param stop_offset 		return value: the stop offset
+  */
+  void GetOffsetFrom(GenomicRegion *ref_reg, const char *op, bool ignore_strand, long int *start_offset, long int *stop_offset);
+
+
+
 
   //------------------------------------------------------//
   //   Create                                             //
@@ -1889,7 +1917,7 @@ class GenomicRegionSet
 
 
   //! Prints sorted region set.
-  void RunGlobalSort();
+  void RunGlobalSort(bool sorted_by_strand, int bin_bits);
 
 
   //! Prints the difference between chromosome intervals and input region set (input region set must be sorted).
@@ -2303,7 +2331,7 @@ class SortedGenomicRegionSetScanner : public GenomicRegionSetScanner
 class UnsortedGenomicRegionSetScanner : public GenomicRegionSetScanner
 {
  public:
-	typedef map<string,unsigned long int**> CountMap;
+	typedef map<string,unsigned long int**> CountMap;		//!< a map from chromosome name to sliding window counts
 
 	//! Class constructor.
 	/*!
@@ -2771,12 +2799,15 @@ long int GetStart(GenomicRegion *r, char preprocess);
 StringLIntMap *ReadBounds(char *genome_reg_file, bool verbose=false);		//!< reads chromosome sizes from REG file <b>genome_reg_file</b>
 unsigned long int CalcBoundSize(StringLIntMap *bounds);
 unsigned long int CalcRegSize(char *reg_file);
+bool CompareBinnedGenomicRegions(GenomicRegion *r, GenomicRegion *q);
 bool CompareGenomicIntervals(GenomicInterval *I, GenomicInterval *J);
 void SortGenomicIntervals(GenomicIntervalSetAsList *L);
 void SortGenomicIntervals(GenomicIntervalSetAsVector *V);
 void SortGenomicIntervals(GenomicIntervalSetAsArray *A);
 
+GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_strand, int bin_bits);
 
-
+long int *GetGapSizes(GenomicRegion *r, char *offset_op);
+OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_reg, char *offset_op, bool ignore_strand);
 
 
