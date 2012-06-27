@@ -2443,7 +2443,7 @@ void CmdLine::Init()
 void CmdLine::Print()
 {
   for (OptionList::iterator x=cmd_option_list.begin(); x!=cmd_option_list.end(); x++) {
-    printf("  %-20s %-80s ", (*x)->opt, (*x)->description);
+    printf("  %-25s %-80s ", (*x)->opt, (*x)->description);
     (*x)->Print();
     printf("\n");
   }
