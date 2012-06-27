@@ -64,7 +64,9 @@ char *TITLE, *XLABEL, *YLABEL;
 char *IMAGE_TYPE; 
 char *IMAGE_SIZE;
 int IMAGE_RESOLUTION;
-bool NORMALIZE;
+bool NORMALIZE_BY_REF_REGIONS;
+bool NORMALIZE_BY_SIGNAL_REGIONS;
+bool NORMALIZE_BY_BIN_SIZE;
 
 char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
@@ -184,9 +186,11 @@ EXAMPLES: \n\
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("--subtract-gaps", &PROFILE_SUBTRACT_GAPS, false, "ignore gaps in reference regions when computing offsets");
-    cmd_line->AddOption("--norm-ref-len", &PROFILE_NORM_REF_LEN, false, "normalize reference region length to 1.0");
     cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
-    cmd_line->AddOption("-norm", &NORMALIZE, false, "normalize against total number of reads and number of reference regions");	
+    cmd_line->AddOption("--norm-ref-length", &PROFILE_NORM_REF_LEN, false, "normalize reference region length to 1.0");
+    cmd_line->AddOption("--norm-by-ref-regions", &NORMALIZE_BY_REF_REGIONS, false, "normalize by the number of reference regions");
+    cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
+    cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-legend", &LEGEND, "", "comma-separated legend labels for line plot");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for line plot");
@@ -489,6 +493,7 @@ int main(int argc, char* argv[])
 	  bool MATCH_GAPS = false;
 	  char *OFFSET_OP = StrCopy("5p");
       long int n_bins = (shift_upstream+shift_downstream)/50;
+      if (n_bins<=0) { fprintf(stderr, "Error: number of bins must be positive, i.e. shift_upstream+shift_downstream must be greater than zero!\n"); exit(1); }
 	  int n_bins_combine = 10; 
       long int bin_min = -shift_upstream;
       long int bin_max = shift_downstream;
@@ -678,6 +683,7 @@ int main(int argc, char* argv[])
     double bin_min = PROFILE_NORM_REF_LEN?0.0:-shift_upstream;
     double bin_max = PROFILE_NORM_REF_LEN?1.0:shift_downstream;
     long int n_bins = PROFILE_NORM_REF_LEN?100:(bin_max-bin_min)/100;
+    long int bin_size = PROFILE_NORM_REF_LEN?(bin_max-bin_min)/100:100;
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
@@ -761,7 +767,10 @@ int main(int argc, char* argv[])
           }
           PRG.Done();
 	      fprintf(data_file, "%s in %s\t", signal_reg_file[n], ref_reg_file[m]);
-          double norm = NORMALIZE?(double)n_signal_reg*RefRegSet.n_regions:1.0;
+          double norm = 1.0;
+          if (NORMALIZE_BY_REF_REGIONS) norm *= RefRegSet.n_regions;
+          if (NORMALIZE_BY_SIGNAL_REGIONS) norm *= n_signal_reg;
+          if (NORMALIZE_BY_BIN_SIZE) norm *= bin_size;
           for (long int b=0; b<n_bins; b++) fprintf(data_file, "%.6e%c", (double)bins[b]/norm, b!=n_bins-1?'\t':'\n');
           delete bins;
 	    }
