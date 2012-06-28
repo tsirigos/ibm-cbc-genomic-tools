@@ -138,7 +138,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <a class="code" href="classProgress.html" title="This class is used to report progress of loop computations.">Progress</a> PRG(<span class="stringliteral">&quot;Printing densities...&quot;</span>,RefRegSet.n_regions);
     <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> k=0; k&lt;RefRegSet.n_regions; k++) {
       <a class="code" href="classGenomicRegion.html" title="This class implements the genomic regions (i.e. ordered sets of genomic intervals).">GenomicRegion</a> *qreg = RefRegSet.R[k];
-      <span class="keywordtype">long</span> <span class="keywordtype">int</span> qreg_size = MATCH_GAPS ? (qreg-&gt;<a class="code" href="classGenomicRegion.html#ab10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.back()-&gt;STOP-qreg-&gt;<a class="code" href="classGenomicRegion.html#ab10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.front()-&gt;START+1) : qreg-&gt;<a class="code" href="classGenomicRegion.html#a5bff7a3e83b0bc9bfb5441270d0ba1ae" title="Returns sum of interval&#39;s sizes.">GetSize</a>();
+      <span class="keywordtype">long</span> <span class="keywordtype">int</span> qreg_size = MATCH_GAPS ? (qreg-&gt;<a class="code" href="classGenomicRegion.html#ab10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.back()-&gt;STOP-qreg-&gt;<a class="code" href="classGenomicRegion.html#ab10b86b03c258958818b00c21e3672a9" title="set of intervals">I</a>.front()-&gt;START+1) : qreg-&gt;<a class="code" href="classGenomicRegion.html#a953613d099a41f0a9e23dcff0bafa85b" title="Returns region size.">GetSize</a>();
       <span class="keywordtype">double</span> density = (double)coverage[k]/qreg_size;
       <span class="keywordflow">if</span> (density&gt;=MIN_DENSITY) printf(<span class="stringliteral">&quot;%s\t%.4e\n&quot;</span>, qreg-&gt;<a class="code" href="classGenomicRegion.html#a7eeba95c1e87e100346688681e30ff24" title="genomic region label">LABEL</a>, density);
       PRG.Check();
@@ -209,7 +209,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Jun 26 2012 15:41:31 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

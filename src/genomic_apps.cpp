@@ -67,6 +67,8 @@ int IMAGE_RESOLUTION;
 bool NORMALIZE_BY_REF_REGIONS;
 bool NORMALIZE_BY_SIGNAL_REGIONS;
 bool NORMALIZE_BY_BIN_SIZE;
+int NBINS;
+double BIN_SIZE;
 
 char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
@@ -76,8 +78,8 @@ float OUTLIER_PROB;
 unsigned long int PSEUDOCOUNT;
 char *LABELS;
 
-bool PROFILE_SUBTRACT_GAPS;
-bool PROFILE_NORM_REF_LEN;
+bool SKIP_REF_GAPS;
+bool NORM_REF_LEN;
 bool USE_LABELS_AS_VALUES;
 
 
@@ -152,6 +154,11 @@ EXAMPLES: \n\
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
+    cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
+    cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
+    cmd_line->AddOption("--norm-ref-length", &NORM_REF_LEN, false, "normalize reference region length to 1.0");
+    cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
+    cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for heatmap pixels");
     cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
@@ -185,12 +192,14 @@ EXAMPLES: \n\
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
-    cmd_line->AddOption("--subtract-gaps", &PROFILE_SUBTRACT_GAPS, false, "ignore gaps in reference regions when computing offsets");
+    cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
     cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
-    cmd_line->AddOption("--norm-ref-length", &PROFILE_NORM_REF_LEN, false, "normalize reference region length to 1.0");
+    cmd_line->AddOption("--norm-ref-length", &NORM_REF_LEN, false, "normalize reference region length to 1.0");
     cmd_line->AddOption("--norm-by-ref-regions", &NORMALIZE_BY_REF_REGIONS, false, "normalize by the number of reference regions");
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
+    cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size (0 = auto)");
+    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins; overrides -nbins (0 = auto)");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-legend", &LEGEND, "", "comma-separated legend labels for line plot");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for line plot");
@@ -492,11 +501,13 @@ int main(int argc, char* argv[])
 	  char *BIN_BITS = StrCopy("17,20,23,26");
 	  bool MATCH_GAPS = false;
 	  char *OFFSET_OP = StrCopy("5p");
-      long int n_bins = (shift_upstream+shift_downstream)/50;
+
+	  double bin_min = NORM_REF_LEN?0.0:-shift_upstream;
+	  double bin_max = NORM_REF_LEN?1.0:shift_downstream;
+	  long int n_bins = NORM_REF_LEN?100:(bin_max-bin_min)/100;
+	  long int bin_size = NORM_REF_LEN?(bin_max-bin_min)/100:100;
+	  int n_bins_combine = 10;
       if (n_bins<=0) { fprintf(stderr, "Error: number of bins must be positive, i.e. shift_upstream+shift_downstream must be greater than zero!\n"); exit(1); }
-	  int n_bins_combine = 10; 
-      long int bin_min = -shift_upstream;
-      long int bin_max = shift_downstream;
 
       // open reference region set and shift 5prime position upstream/downstream
       GenomicRegionSet RefRegSet(ref_reg_file[0],BUFFER_SIZE,VERBOSE,true,true);
@@ -504,38 +515,56 @@ int main(int argc, char* argv[])
       GenomicRegion *r = RefRegSet.Get();
 	  long int n_ref1 = r->n_line;
       while (r!=NULL) { 
-        r->Connect();
-	    r->Center();
-        r->I.front()->ShiftPos(-shift_upstream,shift_downstream,true);
+        size_t ref_len = 1;    // NORM_REF_LEN?r->GetSize(SKIP_REF_GAPS):1;   // NOTE: we may want to re-enable this as an option
+        GenomicInterval *r5p = r->I.front()->STRAND=='+'?r->I.front():r->I.back();
+        GenomicInterval *r3p = r->I.front()->STRAND=='+'?r->I.back():r->I.front();
+        r5p->ShiftPos(-shift_upstream*ref_len,0,true);
+        r3p->ShiftPos(0,shift_downstream*ref_len,true);
 		r = RefRegSet.Next();
 	  }
 
       // initialize bin array	  
-	  int ***bins = new int**[n_signal_files];
+	  double ***bins = new double**[n_signal_files];
 	  for (int s=0; s<n_signal_files; s++) {
-	    bins[s] = new int*[n_ref];
-	    for (int r=0; r<n_ref; r++) { bins[s][r] = new int[n_bins]; for (int q=0; q<n_bins; q++) bins[s][r][q] = 0; }
+	    bins[s] = new double*[n_ref];
+	    for (int r=0; r<n_ref; r++) { bins[s][r] = new double[n_bins]; for (int q=0; q<n_bins; q++) bins[s][r][q] = 0; }
 	  }
 	  
 	  // process signal files
+	  unsigned long int *n_signal_reg = new unsigned long int[n_signal_files];
+	  for (int k=0; k<n_signal_files; k++) n_signal_reg[k] = 0;
 	  for (int n=0; n<n_signal_files; n++) {
 	    if (VERBOSE) fprintf(stderr, "Creating heatmap of '%s' in '%s'...\n", signal_reg_file[n], ref_reg_file[0]); 
         GenomicRegionSet TestRegSet(signal_reg_file[n],BUFFER_SIZE,VERBOSE,false,true);
         UnsortedGenomicRegionSetOverlaps Overlaps(&TestRegSet,&RefRegSet,BIN_BITS);
         Progress PRG("Processing queries...",1);
         for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
+          n_signal_reg[n]++;
           for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
-            long int start_offset, stop_offset;
-            qreg->I.front()->GetOffsetFrom(ireg->I.front(),OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
-            if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
-            long int x = (start_offset+stop_offset)/2-shift_upstream;
-            double z = (double)(x-bin_min)/(bin_max-bin_min);
-            if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)]++;
+          	size_t ref_len = NORM_REF_LEN?ireg->GetSize(SKIP_REF_GAPS):1;
+          	if (SKIP_REF_GAPS) {
+              	OffsetList *offsets = CalcOffsetsWithoutGaps(qreg,ireg,OFFSET_OP,IGNORE_STRAND);
+              	if ((offsets!=NULL)&&(offsets->size()>0)) {
+                  	for (OffsetList::iterator p=offsets->begin(); p!=offsets->end(); p++) {
+                          double x = (double)(p->first+p->second)/2/ref_len+bin_min;
+                          double z = (double)(x-bin_min)/(bin_max-bin_min);
+                          if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+                  	}
+              	}
+              	if (offsets!=NULL) delete offsets;
+          	}
+          	else {
+                  long int start_offset, stop_offset;
+                  qreg->I.front()->GetOffsetFrom(ireg,OFFSET_OP,IGNORE_STRAND,&start_offset,&stop_offset);
+                  if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
+                  double x = (double)(start_offset+stop_offset)/2/ref_len+bin_min;
+                  double z = (double)(x-bin_min)/(bin_max-bin_min);
+                  if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+          	}
           }
           PRG.Check();
         }
         PRG.Done();
-
 	  }
 	  
 	  // store bin data in output file
@@ -544,11 +573,14 @@ int main(int argc, char* argv[])
       for (int r=0; r<n_ref; r++) {
         fprintf(data_file, "%d\t", r);
 	    for (int s=0; s<n_signal_files; s++) {
-		  int val = 0;
+          double norm = 1.0;
+	      if (NORMALIZE_BY_SIGNAL_REGIONS) norm *= n_signal_reg[s];
+	      if (NORMALIZE_BY_BIN_SIZE) norm *= bin_size;
+		  double val = 0;
 		  for (int q=0; q<n_bins_combine-1; q++) val += bins[s][r][q];
 		  for (int q=0,qq=n_bins_combine-1; qq<n_bins; q++,qq++) {
 		    val += bins[s][r][qq];
-		    fprintf(data_file, "%d%s", val, qq!=n_bins-1?"\t":"");
+		    fprintf(data_file, "%.6e%s", val/norm, qq!=n_bins-1?"\t":"");
 		    val -= bins[s][r][q];
 		  }
 		  fprintf(data_file, "%c", s!=n_signal_files-1?'\t':'\n');
@@ -558,6 +590,7 @@ int main(int argc, char* argv[])
 	  
 	  // cleanup
       for (int s=0; s<n_signal_files; s++) delete [] bins[s];
+      delete n_signal_reg;
       delete bins;	  
       delete BIN_BITS;
 	  delete OFFSET_OP;
@@ -670,8 +703,8 @@ int main(int argc, char* argv[])
 	
 	// process input parameters
 	char *shift = SHIFT;
-	long int shift_upstream = atol(GetNextToken(&shift,','));
-	long int shift_downstream = atol(GetNextToken(&shift,','));
+	double shift_upstream = (double)atof(GetNextToken(&shift,','));
+	double shift_downstream = (double)atof(GetNextToken(&shift,','));
 	int n_signal_files;
 	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
 	int n_ref_files;
@@ -680,11 +713,27 @@ int main(int argc, char* argv[])
 	if (n_colors!=n_signal_files*n_ref_files) { fprintf(stderr, "Error: number of colors must match total number of lines in the plot!\n"); exit(1); }
 	int n_legend = CountTokens(LEGEND,',');
 	if (n_legend!=n_signal_files*n_ref_files) { fprintf(stderr, "Error: number of legend labels must match total number of lines in the plot!\n"); exit(1); }
-    double bin_min = PROFILE_NORM_REF_LEN?0.0:-shift_upstream;
-    double bin_max = PROFILE_NORM_REF_LEN?1.0:shift_downstream;
-    long int n_bins = PROFILE_NORM_REF_LEN?100:(bin_max-bin_min)/100;
-    long int bin_size = PROFILE_NORM_REF_LEN?(bin_max-bin_min)/100:100;
+    double bin_min = NORM_REF_LEN?0.0:-shift_upstream;
+    double bin_max = NORM_REF_LEN?1.0:shift_downstream;
+    long int n_bins;
+    double bin_size;
+    if (BIN_SIZE>0) {
+      bin_size = BIN_SIZE;
+      if (NORM_REF_LEN&&(bin_size>1.0)) { fprintf(stderr, "Error: bin size cannot be greater than 1 when --norm-ref-length is set!\n"); exit(1); }
+      n_bins = (bin_max-bin_min)/bin_size;
+    }
+    else {
+      n_bins = NBINS>0?NBINS:(NORM_REF_LEN?100:(bin_max-bin_min)/100);
+      bin_size = NBINS>0?(bin_max-bin_min)/n_bins:(NORM_REF_LEN?(bin_max-bin_min)/100:100);
+    }
 	
+    if (VERBOSE) {
+      fprintf(stderr, "* bin min = %f\n", bin_min);
+      fprintf(stderr, "* bin max = %f\n", bin_max);
+      fprintf(stderr, "* bin size = %f\n", bin_size);
+      fprintf(stderr, "* number of bins = %ld\n", n_bins);
+    }
+
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
 	string param_file_name = (string)OUT_PREFIX + (string)".params";
@@ -724,10 +773,12 @@ int main(int argc, char* argv[])
 	  for (int m=0,k=0; m<n_ref_files; m++) { 
         // open reference region set and shift 5prime position upstream/downstream
         GenomicRegionSet RefRegSet(ref_reg_file[m],BUFFER_SIZE,VERBOSE,true,true);
-        for (GenomicRegion *r=RefRegSet.Get(); r!=NULL; r=RefRegSet.Next()) { 
-	      r->Connect();
-	      r->Center();
-          r->I.front()->ShiftPos(-shift_upstream,shift_downstream,true);
+        for (GenomicRegion *r=RefRegSet.Get(); r!=NULL; r=RefRegSet.Next()) {
+          size_t ref_len = 1;    // NORM_REF_LEN?r->GetSize(SKIP_REF_GAPS):1;   // NOTE: we may want to re-enable this as an option
+          GenomicInterval *r5p = r->I.front()->STRAND=='+'?r->I.front():r->I.back();
+          GenomicInterval *r3p = r->I.front()->STRAND=='+'?r->I.back():r->I.front();
+          r5p->ShiftPos(-shift_upstream*ref_len,0,true);
+          r3p->ShiftPos(0,shift_downstream*ref_len,true);
 	    }
 	  
 	    // process signal files
@@ -742,8 +793,8 @@ int main(int argc, char* argv[])
           for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
 		    n_signal_reg++;
             for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
-            	size_t ref_len = PROFILE_NORM_REF_LEN?ireg->GetSize():1;
-            	if (PROFILE_SUBTRACT_GAPS) {
+            	size_t ref_len = NORM_REF_LEN?ireg->GetSize(SKIP_REF_GAPS):1;
+            	if (SKIP_REF_GAPS) {
                 	OffsetList *offsets = CalcOffsetsWithoutGaps(qreg,ireg,OFFSET_OP,IGNORE_STRAND);
                 	if ((offsets!=NULL)&&(offsets->size()>0)) {
                     	for (OffsetList::iterator p=offsets->begin(); p!=offsets->end(); p++) {
