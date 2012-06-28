@@ -198,8 +198,8 @@ EXAMPLES: \n\
     cmd_line->AddOption("--norm-by-ref-regions", &NORMALIZE_BY_REF_REGIONS, false, "normalize by the number of reference regions");
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
-    cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size (0 = auto)");
-    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins; overrides -nbins (0 = auto)");
+    cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size; overrides -nbins (0 = auto)");
+    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins(0 = auto)");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-legend", &LEGEND, "", "comma-separated legend labels for line plot");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for line plot");
