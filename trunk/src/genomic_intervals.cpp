@@ -1043,11 +1043,14 @@ char *GenomicRegion::GetChromosome()
 
 //---------GetSize-----------
 //
-size_t GenomicRegion::GetSize()
+size_t GenomicRegion::GetSize(bool skip_gaps)
 {
-  size_t size = 0;
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) size += (*i)->GetSize();
-  return size;
+  if (skip_gaps==true) {
+	size_t size = 0;
+    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) size += (*i)->GetSize();
+    return size;
+  }
+  else return I.back()->STOP - I.front()->START + 1;
 }
 
 
@@ -1425,7 +1428,7 @@ void GenomicRegion::Intersect()
 //
 void GenomicRegion::RunSize()
 {
-  printf("%s\t%lu\n", LABEL, (long unsigned int)GetSize());
+  printf("%s\t%lu\n", LABEL, (long unsigned int)GetSize(true));
 }
 
 
@@ -1516,8 +1519,9 @@ void GenomicRegion::RunShuffle(gsl_rng *random_generator, GenomicRegionSet *refR
   if (loc->find(v)!=loc->end()) {
     unsigned long int N = (unsigned long int)((*loc)[v].back()-l);
     long int d = gsl_rng_uniform_int(random_generator,N);
-    vector<long int>::iterator x = lower_bound((*loc)[v].begin(),(*loc)[v].end(),d) - 1;
-    long int rr = (*index)[v] + x - (*loc)[v].begin();
+    vector<long int>::iterator x = lower_bound((*loc)[v].begin()+1,(*loc)[v].end(),d) - 1;
+    long int rr = (*index)[v]+x-(*loc)[v].begin();
+    if ((rr<0)||(rr>=refReg->n_regions)) { fprintf(stderr, "Error [GenomicRegion::RunShuffle]: this must be a bug!\n"); exit(1); }
     long int start = refReg->R[rr]->I.front()->START + d - *x;
     long int stop = start + l - 1;
     long int new_stop = min(stop,refReg->R[rr]->I.front()->STOP);
@@ -1703,7 +1707,7 @@ void GenomicRegion::PrintSeqLength(Chromosomes *C)
 char *GenomicRegion::GetSeq(Chromosomes *C, bool replace)
 {
   if (C->FindChromosome(I.front()->CHROMOSOME)==false) return NULL;
-  size_t size = this->GetSize();
+  size_t size = this->GetSize(true);
   char *seq = new char[size+1];
   seq[size] = 0;
   char *q = seq;
@@ -6026,7 +6030,7 @@ unsigned long int CalcRegSize(char *reg_file)
   GenomicRegionSet RegSet(reg_file,100000,false,false,true);
   unsigned long int N = 0;
   Progress PRG("Calculating region set size...",1);
-  for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),PRG.Check()) N += r->GetSize();
+  for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),PRG.Check()) N += r->GetSize(true);
   PRG.Done();
   return N;
 }

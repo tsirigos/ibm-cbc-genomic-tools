@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.5.0 pre-release 6-26-2012";
+const string VERSION = "genomic_tools 2.5.0 pre-release 6-28-2012";
 
 
 #include <stdio.h>
@@ -687,8 +687,8 @@ class GenomicRegion
 
 
 
-  //! Returns sum of interval's sizes
-  size_t GetSize();
+  //! Returns region size
+  size_t GetSize(bool skip_gaps);
 
 
 

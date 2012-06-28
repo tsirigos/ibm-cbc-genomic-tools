@@ -57,7 +57,7 @@ char *OFFSET_OP;
 bool OFFSET_FRACTION;
 bool CENTER;
 bool SUBSET_NONOVERLAPS;
-bool OFFSET_SUBTRACT_GAPS;
+bool OFFSET_SKIP_REF_GAPS;
 
 
 
@@ -195,7 +195,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   }
   else if (op=="offset") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
-    cmd_line->AddOption("--subtract-gaps", &OFFSET_SUBTRACT_GAPS, false, "ignore gaps in reference regions when computing offsets");
+    cmd_line->AddOption("--skip-ref-gaps", &OFFSET_SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
     cmd_line->AddOption("-label", &PRINT_LABELS, false, "print test region labels");
     cmd_line->AddOption("-op", &OFFSET_OP, "5p", "reference point (1=start, 2=stop, 5p=5'-end, 3p=3'-end)");
     cmd_line->AddOption("-a", &OFFSET_FRACTION, false, "print distances as a fraction of total size");
@@ -427,7 +427,7 @@ int main(int argc, char* argv[])
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       GenomicRegion *qreg = RefRegSet.R[k];
-      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
+      long int qreg_size = qreg->GetSize(!MATCH_GAPS);
       double density = (double)coverage[k]/qreg_size;
       if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
       PRG.Check();
@@ -492,7 +492,7 @@ int main(int argc, char* argv[])
   //---------------------------------------------
   // offset/sorted/no-subtract-gaps
   //---------------------------------------------
-  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==true)&&(OFFSET_SUBTRACT_GAPS==false)) {
+  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==true)&&(OFFSET_SKIP_REF_GAPS==false)) {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
     SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
     Progress PRG("Processing queries...",1);
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
-      size_t Qsize = qreg->GetSize();
+      size_t Qsize = qreg->GetSize(OFFSET_SKIP_REF_GAPS);
       for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
         if (ireg->I.size()>1) ireg->PrintError("multi-interval test regions are not allowed for this operation!"); // NOTE: we may want to remove this restriction in the future
         cout << qreg->LABEL << '\t';
@@ -532,7 +532,7 @@ int main(int argc, char* argv[])
   //---------------------------------------------
   // offset/sorted/subtract-gaps
   //---------------------------------------------
-  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==true)&&(OFFSET_SUBTRACT_GAPS==true)) {
+  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==true)&&(OFFSET_SKIP_REF_GAPS==true)) {
 	  fprintf(stderr, "Error: option --subtract-gaps is not implemented for the -S option. Simply drop the -S and re-run!\n");
 	  exit(1);
   }
@@ -542,7 +542,7 @@ int main(int argc, char* argv[])
   //---------------------------------------------
   // offset/unsorted/no-subtract-gaps
   //---------------------------------------------
-  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==false)&&(OFFSET_SUBTRACT_GAPS==false)) {
+  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==false)&&(OFFSET_SKIP_REF_GAPS==false)) {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
@@ -555,7 +555,7 @@ int main(int argc, char* argv[])
     for (GenomicRegion *qreg=Overlaps.GetQuery(); Overlaps.Done()==false; qreg=Overlaps.NextQuery()) {
       for (GenomicRegion *ireg=Overlaps.GetOverlap(MATCH_GAPS,IGNORE_STRAND); ireg!=NULL; ireg=Overlaps.NextOverlap(MATCH_GAPS,IGNORE_STRAND)) {
         if (qreg->I.size()>1) qreg->PrintError("multi-interval test regions are not allowed for this operation!"); // NOTE: we may want to remove this restriction in the future
-        size_t Isize = ireg->GetSize();
+        size_t Isize = ireg->GetSize(OFFSET_SKIP_REF_GAPS);
         printf("%s\t", ireg->LABEL);
         if (PRINT_LABELS) printf("%s ", qreg->LABEL);
         long int start_offset, stop_offset;
@@ -581,7 +581,7 @@ int main(int argc, char* argv[])
   //---------------------------------------------
   // offset/unsorted/subtract-gaps
   //---------------------------------------------
-  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==false)&&(OFFSET_SUBTRACT_GAPS==true)) {
+  else if ((cmd_line->current_cmd_operation=="offset")&&(IS_SORTED==false)&&(OFFSET_SKIP_REF_GAPS==true)) {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
@@ -597,7 +597,7 @@ int main(int argc, char* argv[])
           if ((offsets!=NULL)&&(offsets->size()>0)) {
               printf("%s\t", ireg->LABEL);
               if (PRINT_LABELS) printf("%s ", qreg->LABEL);
-              size_t Isize = ireg->GetSize();
+              size_t Isize = ireg->GetSize(OFFSET_SKIP_REF_GAPS);
               for (OffsetList::iterator x=offsets->begin(); x!=offsets->end(); x++) {
                   if (CENTER) {
                       if (OFFSET_FRACTION) printf("%f", ((float)x->first/Isize+(float)x->second/Isize)/2);
