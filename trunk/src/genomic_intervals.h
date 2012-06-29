@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.5.0 pre-release 6-28-2012";
+const string VERSION = "genomic_tools 2.5.0";
 
 
 #include <stdio.h>

@@ -116,12 +116,12 @@ REQUIREMENTS: \n\
   * Input formats: REG, GFF, BED, SAM\n\
   * Operand: interval\n\
   * Region requirements: single-interval\n\
-  * Region-set requirements: sorted by chromosome/strand/start\n\
+  * Region-set requirements: none\n\
 \n\
 EXAMPLES: \n\
-  1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.sorted.bed,Notch1.r2.sorted.bed Input.r1.sorted.bed,Input.r2.sorted.bed\n\
-  2. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal -g genome.bed Notch1_cancer.r1.sorted.bed,Notch1_cancer.r2.sorted.bed Notch1_normal.r1.sorted.bed,Notch1_normal.r2.sorted.bed\n\
-  3. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal.with_controls -g genome.bed Notch1_cancer.r1.sorted.bed,Notch1_cancer.r2.sorted.bed Notch1_normal.r1.sorted.bed,Notch1_normal.r2.sorted.bed Input_cancer.r1.sorted.bed,Input_cancer.r2.sorted.bed Input_normal.r1.sorted.bed,Input_normal.r2.sorted.bed" \
+  1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.bed,Notch1.r2.bed Input.r1.bed,Input.r2.bed\n\
+  2. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed\n\
+  3. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal.with_controls -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed Input_cancer.r1.bed,Input_cancer.r2.bed Input_normal.r1.bed,Input_normal.r2.bed" \
   );
 
   cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILES", \
@@ -159,6 +159,8 @@ EXAMPLES: \n\
     cmd_line->AddOption("--norm-ref-length", &NORM_REF_LEN, false, "normalize reference region length to 1.0");
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
+    cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size; overrides -nbins (0 = auto)");
+    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins(0 = auto)");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for heatmap pixels");
     cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
@@ -504,10 +506,26 @@ int main(int argc, char* argv[])
 
 	  double bin_min = NORM_REF_LEN?0.0:-shift_upstream;
 	  double bin_max = NORM_REF_LEN?1.0:shift_downstream;
-	  long int n_bins = NORM_REF_LEN?100:(bin_max-bin_min)/100;
-	  long int bin_size = NORM_REF_LEN?(bin_max-bin_min)/100:100;
+
 	  int n_bins_combine = 10;
-      if (n_bins<=0) { fprintf(stderr, "Error: number of bins must be positive, i.e. shift_upstream+shift_downstream must be greater than zero!\n"); exit(1); }
+	  long int n_bins;
+	  double bin_size;
+	  if (BIN_SIZE>0) {
+	    bin_size = BIN_SIZE;
+	    if (NORM_REF_LEN&&(bin_size>1.0)) { fprintf(stderr, "Error: bin size cannot be greater than 1 when --norm-ref-length is set!\n"); exit(1); }
+	    n_bins = (bin_max-bin_min)/bin_size;
+	  }
+	  else {
+	    n_bins = NBINS>0?NBINS:(NORM_REF_LEN?100:(bin_max-bin_min)/100);
+	    bin_size = NBINS>0?(bin_max-bin_min)/n_bins:(NORM_REF_LEN?(bin_max-bin_min)/100:100);
+	  }
+
+	  if (VERBOSE) {
+	    fprintf(stderr, "* bin min = %f\n", bin_min);
+	    fprintf(stderr, "* bin max = %f\n", bin_max);
+	    fprintf(stderr, "* bin size = %f\n", bin_size);
+	    fprintf(stderr, "* number of bins = %ld\n", n_bins);
+	  }
 
       // open reference region set and shift 5prime position upstream/downstream
       GenomicRegionSet RefRegSet(ref_reg_file[0],BUFFER_SIZE,VERBOSE,true,true);
