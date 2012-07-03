@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.5.0";
+const string VERSION = "genomic_tools 2.6.0a";
 
 
 #include <stdio.h>
@@ -64,7 +64,7 @@ typedef map<string,ChromosomeBins*> GenomicRegionSetBins;
 #define ALIGNMENT_GAP '*'					//! character for alignment gaps 
 const char refCIGARop[] = "MD=X";			//! set of CIGAR operations that map to the reference sequence (SAM format)
 const char fragCIGARop[] = "MIS=X";			//! set of CIGAR operations that map to the fragment sequence (SAM format)
-
+const char BED_SEPARATOR = '\t';
 
 
   

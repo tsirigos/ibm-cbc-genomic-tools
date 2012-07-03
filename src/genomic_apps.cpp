@@ -74,6 +74,7 @@ char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
 double PVALUE_CUTOFF;
 float FDR;
+long int FDR_BINS;
 float OUTLIER_PROB;
 unsigned long int PSEUDOCOUNT;
 char *LABELS;
@@ -152,7 +153,7 @@ EXAMPLES: \n\
     n_args = 2;
     cmd_line->AddOption("-reuse", &REUSE, false, "reuse histogram data; update paramaters only");	
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
-    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
+    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
     cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
@@ -160,7 +161,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
     cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size; overrides -nbins (0 = auto)");
-    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins(0 = auto)");
+    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins (0 = auto)");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for heatmap pixels");
     cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
@@ -174,7 +175,7 @@ EXAMPLES: \n\
     n_args = 2;
     cmd_line->AddOption("-reuse", &REUSE, false, "reuse histogram data; update paramaters only");	
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
-    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
+    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
@@ -183,16 +184,17 @@ EXAMPLES: \n\
     cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "probability cutoff for residuals in outlier detection between replicates");
     cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count for fold-change computations");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
-    cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels");
+    cmd_line->AddOption("-nbins", &FDR_BINS, 1, "number of bins for binned FDR computation");
+    cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels (required)");
     cmd_line->AddOption("-itype", &IMAGE_TYPE, "pdf", "image format type {pdf,tif}");
-    cmd_line->AddOption("-isize", &IMAGE_SIZE, "2000,2000", "comma-separated image dimensions (for tif format only)");
+    cmd_line->AddOption("-isize", &IMAGE_SIZE, "3000,2000", "comma-separated image dimensions (for tif format only)");
     cmd_line->AddOption("-ires", &IMAGE_RESOLUTION, 300, "image resolution in dpi (for tif format only)");
   }
   else if (cmd_line->current_cmd_operation=="profile") {
     n_args = 2;
     cmd_line->AddOption("-reuse", &REUSE, false, "reuse histogram data; update paramaters only");	
     cmd_line->AddOption("-R", &RSCRIPT_INPUT_FILE_NAME, "", "R script file to use (not required)");	
-    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files");
+    cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
     cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
@@ -201,7 +203,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
     cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size; overrides -nbins (0 = auto)");
-    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins(0 = auto)");
+    cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins (0 = auto)");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-legend", &LEGEND, "", "comma-separated legend labels for line plot");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for line plot");
@@ -302,7 +304,7 @@ void PrintLogFile(string log_file_name)
 //
 void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_file, int n_ref_files, \
                    char **signal_control_reg_file, int n_signal_control_files, char **ref_control_reg_file, int n_ref_control_files, \
-				   char *genome_reg_file, const char *out_file_name)
+                   char **labels, char *genome_reg_file, const char *out_file_name)
 {
   bool USE_COUNTS = false;
   char PREPROCESS = 'c';
@@ -367,6 +369,14 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   long int *ref_control_val = n_ref_control_files>0?new long int[n_ref_control_files]:NULL;
   FILE *out_file = fopen(out_file_name,"w");
   if (out_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", out_file_name); exit(1); }
+
+  fprintf(out_file, "locus");
+  for (int s=0; s<n_signal_files; s++) fprintf(out_file, "\t%s count %d", labels[0], s+1);
+  for (int r=0; r<n_ref_files; r++) fprintf(out_file, "\t%s count %d", labels[1], r+1);
+  for (int s=0; s<n_signal_control_files; s++)  fprintf(out_file, "\t%s control count %d", labels[0], s+1);
+  for (int r=0; r<n_ref_control_files; r++)  fprintf(out_file, "\t%s control count %d", labels[1], r+1);
+  fprintf(out_file, "\n");
+
   Progress PRG("Scanning...",1);
   while (true) {
     for (int s=0; s<n_signal_files; s++) signal_val[s] = SignalRegScanner[s]->Next();
@@ -651,12 +661,15 @@ int main(int argc, char* argv[])
 	char **signal_reg_file = Tokenize(SIGNAL_REG_FILES,',',&n_signal_files);
 	int n_ref_files;
 	char **ref_reg_file = Tokenize(REF_REG_FILES,',',&n_ref_files);
-    if ((n_signal_files!=2)||(n_ref_files!=2)) { fprintf(stderr, "Error: this method requires exactly two replicates per sample!\n"); exit(1); }
+    if ((n_signal_files>2)||(n_ref_files>2)) { fprintf(stderr, "Error: this method requires at most two replicates per sample!\n"); exit(1); }
 	int n_signal_control_files;
 	char **signal_control_reg_file = Tokenize(SIGNAL_CONTROL_REG_FILES,',',&n_signal_control_files);
 	int n_ref_control_files;
 	char **ref_control_reg_file = Tokenize(REF_CONTROL_REG_FILES,',',&n_ref_control_files);
     if ((n_signal_control_files>0)&&((n_signal_control_files!=n_signal_files)||(n_ref_control_files!=n_ref_files))) { fprintf(stderr, "Error: number of control files should match the number of signal files for each sample!\n"); exit(1); }
+	int n_labels;
+	char **labels = Tokenize(LABELS,',',&n_labels);
+	if (n_labels!=2) { fprintf(stderr, "Error: please supply labels for each sample using the -labels option!\n"); exit(1); }
 	
     // setup output file names
 	string data_file_name = (string)OUT_PREFIX + (string)".dat";
@@ -675,6 +688,7 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%lu\n", PSEUDOCOUNT);
 	fprintf(param_file, "%.6e\n", OUTLIER_PROB);
 	fprintf(param_file, "%.6e\n", FDR);
+	fprintf(param_file, "%ld\n", FDR_BINS);
 	fprintf(param_file, "%s\n", LABELS);
 	fprintf(param_file, "%s\n", IMAGE_SIZE);
 	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
@@ -684,7 +698,7 @@ int main(int argc, char* argv[])
     fclose(param_file);
 
 	// scan read files for preliminary peak identification
-    if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,signal_control_reg_file,n_signal_control_files,ref_control_reg_file,n_ref_control_files,GENOME_REG_FILE,data_file_name.c_str());
+    if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,signal_control_reg_file,n_signal_control_files,ref_control_reg_file,n_ref_control_files,labels,GENOME_REG_FILE,data_file_name.c_str());
 
 	// execute R script
 	CreateRscript(RSCRIPT_INPUT_FILE_NAME,RSCRIPT_TEMPLATE_PEAKDIFF,rscript_file_name);
@@ -695,11 +709,11 @@ int main(int argc, char* argv[])
 	PrintLogFile(log_file_name);
 	
     // cleanup
+    delete labels;
     delete [] signal_reg_file;	
 	delete [] ref_reg_file;
     if (signal_control_reg_file!=NULL) delete [] signal_control_reg_file;	
     if (ref_control_reg_file!=NULL) delete [] ref_control_reg_file;	
-	
     delete SIGNAL_REG_FILES;
     delete REF_REG_FILES;
 	if (SIGNAL_CONTROL_REG_FILES) delete SIGNAL_CONTROL_REG_FILES;
