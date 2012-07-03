@@ -577,7 +577,8 @@ void GenomicInterval::PrintBEDFormat(char *color, bool convert_chromosome)
 {
   long int SCORE = 1000;
   PrintChromosome(CHROMOSOME,convert_chromosome);
-  printf(" %ld %ld _ %ld %c %ld %ld %s 1 %ld 0\n", START-1, STOP, SCORE, STRAND, START-1, STOP, color, STOP-START+1);
+  printf("%c%ld%c%ld%c_%c%ld%c%c", BED_SEPARATOR, START-1, BED_SEPARATOR, STOP, BED_SEPARATOR, BED_SEPARATOR, SCORE, BED_SEPARATOR, STRAND);
+  printf("%c%ld%c%ld%c%s%c1%c%ld%c0\n", BED_SEPARATOR, START-1, BED_SEPARATOR, STOP, BED_SEPARATOR, color, BED_SEPARATOR, BED_SEPARATOR, STOP-START+1, BED_SEPARATOR);
 }
 
 
@@ -1236,12 +1237,12 @@ void GenomicRegion::PrintBEDFormat(char *color, bool convert_chromosome)
   if (IsCompatibleSortedAndNonoverlapping()==false) PrintError("region intervals must be compatible, sorted and non-overlapping for this operation!");
   long int SCORE = 1000;
   PrintChromosome(I.front()->CHROMOSOME,convert_chromosome);
-  printf(" %ld %ld %s %ld %c", I.front()->START-1, I.back()->STOP, LABEL, SCORE, I.front()->STRAND);
-  if ((strlen(color)>0)||(I.size()>1)) printf(" %ld %ld %s", I.front()->START-1, I.back()->STOP, strlen(color)>0?color:"0");
+  printf("%c%ld%c%ld%c%s%c%ld%c%c", BED_SEPARATOR, I.front()->START-1, BED_SEPARATOR, I.back()->STOP, BED_SEPARATOR, LABEL, BED_SEPARATOR, SCORE, BED_SEPARATOR, I.front()->STRAND);
+  if ((strlen(color)>0)||(I.size()>1)) printf("%c%ld%c%ld%c%s", BED_SEPARATOR, I.front()->START-1, BED_SEPARATOR, I.back()->STOP, BED_SEPARATOR, strlen(color)>0?color:"0");
   if (I.size()>1) {
-    printf(" %lu ", (unsigned long int)I.size());
+    printf("%c%lu%c", BED_SEPARATOR, (unsigned long int)I.size(), BED_SEPARATOR);
     for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) printf("%ld%s", (*i)->STOP-(*i)->START+1, (*i)==I.back()?"":",");
-    printf(" 0");
+    printf("%c0", BED_SEPARATOR);
     GenomicIntervalSet::iterator i=I.begin(), j=I.begin();
     for (i++; i!=I.end(); i++,j++) {
       if ((*i)->START<=(*j)->STOP) { fprintf(stderr, "Line %lu: exons cannot overlap!\n", n_line); exit(1); }
@@ -2154,21 +2155,21 @@ void GenomicRegionBED::Read(char *inp, long int n_line)
 void GenomicRegionBED::Print(FILE *file_ptr)
 {
   if (I.size()==0) return;
-  fprintf(file_ptr, "%s %ld %ld", I.front()->CHROMOSOME, I.front()->START-1, I.back()->STOP);
+  fprintf(file_ptr, "%s%c%ld%c%ld", I.front()->CHROMOSOME, BED_SEPARATOR, I.front()->START-1, BED_SEPARATOR, I.back()->STOP);
   if (n_tokens>=4) {
-    fprintf(file_ptr, " %s", LABEL);
+    fprintf(file_ptr, "%c%s", BED_SEPARATOR, LABEL);
     if (n_tokens>=5) {
-      fprintf(file_ptr, " %ld", score);
+      fprintf(file_ptr, "%c%ld", BED_SEPARATOR, score);
       if (n_tokens>=6) {
-        fprintf(file_ptr, " %c", I.front()->STRAND);
+        fprintf(file_ptr, "%c%c", BED_SEPARATOR, I.front()->STRAND);
         if (n_tokens>=8) {
-          fprintf(file_ptr, " %ld %ld", thickStart, thickEnd);
+          fprintf(file_ptr, "%c%ld%c%ld", BED_SEPARATOR, thickStart, BED_SEPARATOR, thickEnd);
           if (n_tokens>=9) {
-            fprintf(file_ptr, " %s", itemRgb);	  
+            fprintf(file_ptr, "%c%s", BED_SEPARATOR, itemRgb);
             if (n_tokens==12) {
-              fprintf(file_ptr, " %lu ", (unsigned long int)I.size());
+              fprintf(file_ptr, "%c%lu%c", BED_SEPARATOR, (unsigned long int)I.size(), BED_SEPARATOR);
               for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) fprintf(file_ptr, "%ld%s", (*i)->STOP-(*i)->START+1, *i==I.back()?"":",");
-              fprintf(file_ptr, " 0");
+              fprintf(file_ptr, "%c0", BED_SEPARATOR);
               GenomicIntervalSet::iterator i=I.begin(), j=I.begin();
               for (i++; i!=I.end(); i++,j++) {
                 if ((*i)->START<=(*j)->STOP) { fprintf(stderr, "Line %lu: exons cannot overlap!\n", n_line); exit(1); }
@@ -2190,23 +2191,23 @@ void GenomicRegionBED::Print(FILE *file_ptr)
 void GenomicRegionBED::Print(FILE *file_ptr, char *color, bool convert_chromosome)
 {
   if (I.size()==0) return;
-  if (convert_chromosome) fprintf(file_ptr, "chr%s ", strcmp(I.front()->CHROMOSOME,"MT")==0?"M":I.front()->CHROMOSOME);
-  else fprintf(file_ptr, "%s ", I.front()->CHROMOSOME);
-  fprintf(file_ptr, "%ld %ld", I.front()->START-1, I.back()->STOP);
+  if (convert_chromosome) fprintf(file_ptr, "chr%s%c", strcmp(I.front()->CHROMOSOME,"MT")==0?"M":I.front()->CHROMOSOME, BED_SEPARATOR);
+  else fprintf(file_ptr, "%s%c", I.front()->CHROMOSOME, BED_SEPARATOR);
+  fprintf(file_ptr, "%ld%c%ld", I.front()->START-1, BED_SEPARATOR, I.back()->STOP);
   if (n_tokens>=4) {
-    fprintf(file_ptr, " %s", LABEL);
+    fprintf(file_ptr, "%c%s", BED_SEPARATOR, LABEL);
     if (n_tokens>=5) {
-      fprintf(file_ptr, " %ld", score);
+      fprintf(file_ptr, "%c%ld", BED_SEPARATOR, score);
       if (n_tokens>=6) {
-        fprintf(file_ptr, " %c", I.front()->STRAND);
+        fprintf(file_ptr, "%c%c", BED_SEPARATOR, I.front()->STRAND);
         if (n_tokens>=8) {
-          fprintf(file_ptr, " %ld %ld", thickStart, thickEnd);
+          fprintf(file_ptr, "%c%ld%c%ld", BED_SEPARATOR, thickStart, BED_SEPARATOR, thickEnd);
           if (n_tokens>=9) {
-            fprintf(file_ptr, " %s", strcmp(color,"")==0?itemRgb:color);	  
+            fprintf(file_ptr, "%c%s", BED_SEPARATOR, strcmp(color,"")==0?itemRgb:color);
             if (n_tokens==12) {
-              fprintf(file_ptr, " %lu ", (unsigned long int)I.size());
+              fprintf(file_ptr, "%c%lu%c", BED_SEPARATOR, (unsigned long int)I.size(), BED_SEPARATOR);
               for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) fprintf(file_ptr, "%ld%s", (*i)->STOP-(*i)->START+1, *i==I.back()?"":",");
-              fprintf(file_ptr, " 0");
+              fprintf(file_ptr, "%c0", BED_SEPARATOR);
               GenomicIntervalSet::iterator i=I.begin(), j=I.begin();
               for (i++; i!=I.end(); i++,j++) {
                 if ((*i)->START<=(*j)->STOP) { fprintf(stderr, "Line %lu: exons cannot overlap!\n", n_line); exit(1); }
@@ -2237,12 +2238,12 @@ void GenomicRegionBED::PrintIntersection(GenomicRegion *r, bool ignore_strand, b
       long int new_start = max((*it)->START,(*r_it)->START);
       long int new_stop = min((*it)->STOP,(*r_it)->STOP);
       if (first) { 
-        if (merge_labels) printf("%s:%s\t", LABEL, r->LABEL);
-        else printf("%s\t", LABEL); 
+        if (merge_labels) printf("%s:%s%c", LABEL, r->LABEL, BED_SEPARATOR);
+        else printf("%s%c", LABEL, BED_SEPARATOR);
         first = false;
       }
-      else printf(" ");
-      printf("%s %c %ld %ld", (*it)->CHROMOSOME, (*it)->STRAND, new_start, new_stop);
+      else printf("%c", BED_SEPARATOR);
+      printf("%s%c%c%c%ld%c%ld", (*it)->CHROMOSOME, BED_SEPARATOR, (*it)->STRAND, BED_SEPARATOR, new_start, BED_SEPARATOR, new_stop);
       if ((*it)->STOP==(*r_it)->STOP) { it++; r_it++; }
       else if ((*it)->STOP<(*r_it)->STOP) it++;
       else if ((*r_it)->STOP<(*it)->STOP) r_it++;
@@ -2276,7 +2277,7 @@ void GenomicRegionBED::PrintConstrained(GenomicRegion *r, bool merge_labels)
 void GenomicRegionBED::PrintModified(char *label, long int start, long int stop)
 {
   if (IsCompatible(false)==false) PrintError("intervals should have the same chromosome/strand for this operation!");
-  printf("%s %ld %ld %s %ld %c\n", I.front()->CHROMOSOME, start-1, stop, label, score, I.front()->STRAND); 
+  printf("%s%c%ld%c%ld%c%s%c%ld%c%c\n", I.front()->CHROMOSOME, BED_SEPARATOR, start-1, BED_SEPARATOR, stop, BED_SEPARATOR, label, BED_SEPARATOR, score, BED_SEPARATOR, I.front()->STRAND);
 }
 
 
@@ -2487,10 +2488,10 @@ void GenomicRegionBED::PrintWindows(long int win_step, long int win_size)
 {
   if (I.size()!=1) PrintError("this operation requires single-interval regions!\n");
   for (long int z=I.front()->START,k=1; z+win_size-1<=I.front()->STOP; z+=win_step,k++) {
-    printf("%s %ld %ld", I.front()->CHROMOSOME, z-1, z+win_size-1);
+    printf("%s%c%ld%c%ld", I.front()->CHROMOSOME, BED_SEPARATOR, z-1, BED_SEPARATOR, z+win_size-1);
     if (n_tokens>=4) {
-      printf(" %s", LABEL);
-      if (n_tokens>=6) printf(" %ld %c", score, I.front()->STRAND);
+      printf("%c%s", BED_SEPARATOR, LABEL);
+      if (n_tokens>=6) printf("%c%ld%c%c", BED_SEPARATOR, score, BED_SEPARATOR, I.front()->STRAND);
     }
     printf("\n");	
   }
