@@ -379,19 +379,19 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
 
   Progress PRG("Scanning...",1);
   while (true) {
-    for (int s=0; s<n_signal_files; s++) signal_val[s] = SignalRegScanner[s]->Next();
-    for (int s=0; s<n_signal_control_files; s++) signal_control_val[s] = SignalControlRegScanner[s]->Next();
-    for (int r=0; r<n_ref_files; r++) ref_val[r] = RefRegScanner[r]->Next();
-    for (int r=0; r<n_ref_control_files; r++) ref_control_val[r] = RefControlRegScanner[r]->Next();
+    for (int s=0; s<n_signal_files; s++) signal_val[s] = min(SignalRegScanner[s]->Next(),WIN_SIZE);
+    for (int s=0; s<n_signal_control_files; s++) signal_control_val[s] = min(SignalControlRegScanner[s]->Next(),WIN_SIZE);
+    for (int r=0; r<n_ref_files; r++) ref_val[r] = min(RefRegScanner[r]->Next(),WIN_SIZE);
+    for (int r=0; r<n_ref_control_files; r++) ref_control_val[r] = min(RefControlRegScanner[r]->Next(),WIN_SIZE);
 	if (signal_val[0]==-1) break;
 	
 	bool print_interval = false;
     if (n_signal_control_files>0) { 
       for (int s=0; s<n_signal_files; s++) 
-	    if ((double)gsl_cdf_binomial_Q(signal_val[s],max(p_signal[s],(double)signal_control_val[s]/WIN_SIZE),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+	    if ((double)gsl_cdf_binomial_Q(signal_val[s],max(p_signal[s],min((double)signal_control_val[s]/WIN_SIZE,1.0)),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
 	  if (print_interval==false) 
 	    for (int r=0; r<n_ref_files; r++) 
-		  if ((double)gsl_cdf_binomial_Q(ref_val[r],max(p_ref[r],(double)ref_control_val[r]/WIN_SIZE),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
+		  if ((double)gsl_cdf_binomial_Q(ref_val[r],max(p_ref[r],min((double)ref_control_val[r]/WIN_SIZE,1.0)),WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
 	}
 	else {
       for (int s=0; s<n_signal_files; s++) if ((double)gsl_cdf_binomial_Q(signal_val[s],p_signal[s],WIN_SIZE)<=PVALUE_CUTOFF) { print_interval = true; break; }
