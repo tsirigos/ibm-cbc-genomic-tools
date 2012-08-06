@@ -6041,7 +6041,8 @@ unsigned long int CalcRegSize(char *reg_file)
 //
 bool CompareBinnedGenomicRegions(GenomicRegion *r, GenomicRegion *q)
 {
-  return r->I.front()->START<q->I.front()->START;
+  if (r->I.front()->START!=q->I.front()->START) return r->I.front()->START<q->I.front()->START;
+  return r->I.back()->STOP>q->I.back()->STOP;
 }
 
 
