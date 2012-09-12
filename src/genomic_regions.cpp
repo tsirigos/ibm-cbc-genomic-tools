@@ -374,7 +374,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   "Converts to UCSC wiggle format.", \
   "* Input formats: REG, GFF, BED, SAM\n\
   * Operand: region\n\
-  * Region requirements: single-interval, forward-strand\n\
+  * Region requirements: single-interval\n\
   * Region-set requirements: sorted by chromosome and start position"\
   );
   

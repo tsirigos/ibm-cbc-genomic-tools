@@ -4413,21 +4413,20 @@ void GenomicRegionSet::PrintVerifySeq(Chromosomes *C, bool ignore)
 void GenomicRegionSet::RunConvertToWIG(char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)
 {
   if (n_regions==0) return;
+  bool ignore_strand = true;
   Progress PRG("Printing in Wiggle format...",n_regions);
   if (strlen(position)>0) printf("browser position %s\n", position);
   if (strlen(title)>0) printf("track type=wiggle_0 name='%s' color=%s %s\n", title, color, options);
   for (GenomicRegion *r=Get(); r!=NULL; ) {
     if (r->I.size()!=1) r->PrintError("only single-interval regions are accepted for this operation!");
-    if (r->I.front()->STRAND=='-') r->PrintError("only forward strand accepted for this operation!"); 
     char *chromosome = StrCopy(r->I.front()->CHROMOSOME);
     printf("variableStep chrom=");
     PrintChromosome(chromosome,convert_chromosome);
     printf(" span=%ld\n", span);
     while (strcmp(r->I.front()->CHROMOSOME,chromosome)==0) {
       printf("%ld %s\n", r->I.front()->START, r->LABEL);
-      r = Next(true,false);
+      r = Next(!ignore_strand,false);
       if (r==NULL) break;
-      if (r->I.front()->STRAND=='-') r->PrintError("only forward strand accepted for this operation!\n"); 
       PRG.Check();
     }
     delete chromosome;
