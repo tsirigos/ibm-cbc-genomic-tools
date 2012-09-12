@@ -67,7 +67,7 @@ int IMAGE_RESOLUTION;
 bool NORMALIZE_BY_REF_REGIONS;
 bool NORMALIZE_BY_SIGNAL_REGIONS;
 bool NORMALIZE_BY_BIN_SIZE;
-int NBINS;
+int NBINS, NBINS_COMBINE;
 double BIN_SIZE;
 
 char *GENOME_REG_FILE;
@@ -105,7 +105,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   );
 
   cmd_line->AddOperation("peakdiff", "[OPTIONS] SAMPLE1-FILES SAMPLE2-FILES [SAMPLE1-CONTROL-FILES SAMPLE2-CONTROL-FILES]", \
-"Finds differences in peak levels between two samples (two replicates per sample are required).", \
+"Finds differences in peak levels between two samples.", \
 "This operation finds differences in read density levels of genomic windows between two samples. The algorithm used here is an adaptation of the method presented in Ntziachristos et al. (Nature Medicine, Feb 2012) and follows these steps: \n\
   1. identifies enriched genomic windows (i.e. peaks) in the input sample files based on the binomial distribution against random background or supplied control files (see options -i, -w, -d and -pval)\n\
   2. normalizes the genomic windows densities inside the identified peaks across replicates and samples using quantile normalization\n\
@@ -162,6 +162,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
     cmd_line->AddOption("--bin-size", &BIN_SIZE, 0, "bin size; overrides -nbins (0 = auto)");
     cmd_line->AddOption("-nbins", &NBINS, 0, "number of bins (0 = auto)");
+    cmd_line->AddOption("--nbins-smooth", &NBINS_COMBINE, 1, "number of bins to combine for smoothing effect");
     cmd_line->AddOption("-shift", &SHIFT, "5000,5000", "comma-separated upstream/downstream distances from reference center");
     cmd_line->AddOption("-colors", &COLORS, "", "comma-separated colors for heatmap pixels");
     cmd_line->AddOption("-title", &TITLE, "", "heatmap comma-separated titles");
@@ -517,7 +518,6 @@ int main(int argc, char* argv[])
 	  double bin_min = NORM_REF_LEN?0.0:-shift_upstream;
 	  double bin_max = NORM_REF_LEN?1.0:shift_downstream;
 
-	  int n_bins_combine = 10;
 	  long int n_bins;
 	  double bin_size;
 	  if (BIN_SIZE>0) {
@@ -529,12 +529,15 @@ int main(int argc, char* argv[])
 	    n_bins = NBINS>0?NBINS:(NORM_REF_LEN?100:(bin_max-bin_min)/100);
 	    bin_size = NBINS>0?(bin_max-bin_min)/n_bins:(NORM_REF_LEN?(bin_max-bin_min)/100:100);
 	  }
+	  if (NBINS_COMBINE>=n_bins) { fprintf(stderr, "Error: number of bins to combine cannot be greater than total number of bins!\n"); exit(1); }
 
 	  if (VERBOSE) {
+	    fprintf(stderr, "Bin parameters:\n");
 	    fprintf(stderr, "* bin min = %f\n", bin_min);
 	    fprintf(stderr, "* bin max = %f\n", bin_max);
 	    fprintf(stderr, "* bin size = %f\n", bin_size);
 	    fprintf(stderr, "* number of bins = %ld\n", n_bins);
+	    fprintf(stderr, "* number of bins for smoothing = %d\n", NBINS_COMBINE);
 	  }
 
       // open reference region set and shift 5prime position upstream/downstream
@@ -605,8 +608,8 @@ int main(int argc, char* argv[])
 	      if (NORMALIZE_BY_SIGNAL_REGIONS) norm *= n_signal_reg[s];
 	      if (NORMALIZE_BY_BIN_SIZE) norm *= bin_size;
 		  double val = 0;
-		  for (int q=0; q<n_bins_combine-1; q++) val += bins[s][r][q];
-		  for (int q=0,qq=n_bins_combine-1; qq<n_bins; q++,qq++) {
+		  for (int q=0; q<NBINS_COMBINE-1; q++) val += bins[s][r][q];
+		  for (int q=0,qq=NBINS_COMBINE-1; qq<n_bins; q++,qq++) {
 		    val += bins[s][r][qq];
 		    fprintf(data_file, "%.6e%s", val/norm, qq!=n_bins-1?"\t":"");
 		    val -= bins[s][r][q];

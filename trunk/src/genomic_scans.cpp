@@ -189,6 +189,9 @@ class PeakFinder
 //
 PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq_reg_file, char *genome_reg_file)
 {
+  char preprocess = SORTED?'1':'c';
+  if (uniq_reg_file!=NULL) preprocess = '1';
+
   bounds = ReadBounds(genome_reg_file);
   effective_genome_size = uniq_reg_file==NULL?CalcBoundSize(bounds):CalcRegSize(uniq_reg_file);
   fprintf(stderr, "* Effective genome size = %lu\n", effective_genome_size);
@@ -197,16 +200,16 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
   SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
-  if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,'1');
-  else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,'1');
+  if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
+  else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
 
   if (control_reg_file!=NULL) {
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
     n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
     ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
-    if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
-    else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,uniq_reg_file==NULL?'c':'1');
+    if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
+    else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
   }
   else {
     ControlRegSet = NULL;
@@ -220,9 +223,9 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   fprintf(stderr, "* Control input file = %s (reads = %lu; background probability = %.2e)\n", control_reg_file, n_control_reads, p_control);
   fprintf(stderr, "* Signal/Control background probability = %f\n", p_ratio);
 
+  // NOTE: UniqRegSet must be sorted, because preprocess option 'p' is not implemented for unsorted region scanners
   UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   uniq_scanner = uniq_reg_file==NULL?NULL:new SortedGenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_STRAND,'p');
-  // NOTE: UniqRegSet must be sorted, because preprocess option 'p' is not implemented for unsorted region scanners
 }
 
 
