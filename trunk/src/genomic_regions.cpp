@@ -93,7 +93,13 @@ bool SUMMARY;
 bool CONVERT_CHROMOSOME;
 bool SORTED_BY_STRAND;
 long int LINK_MAX_DIFFERENCE;
+char *LINK_LABEL_FUNC;
 int BIN_BITS;
+bool IGNORE_STRAND;
+long int UPSTREAM_MIN_DISTANCE;
+long int UPSTREAM_MAX_DISTANCE;
+bool SPLIT_BY_CHROM_AND_STRAND;
+
 
 
 
@@ -186,6 +192,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Region-set requirements: none"\
   );
   
+  cmd_line->AddOperation("annotator", "[OPTIONS] <REGION-SET>", \
+  "Creates upstream regions given a set of reference regions.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: interval\n\
+  * Region requirements: single-interval regions\n\
+  * Region-set requirements: none"\
+  );
+
   cmd_line->AddOperation("bed", "[OPTIONS] <REGION-SET>", \
   "Converts input regions into BED format.", \
   "* Input formats: REG, GFF, BED, SAM\n\
@@ -460,8 +474,11 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-D", &CHROMOSOME_MAP_DIR, ".", "chromosome DNA file and map directory");
     cmd_line->AddOption("-q", &CHROMOSOME_MAP_NAME, "chromosome.map", "sequence map file");
   }
-  else if (op=="annot") {
-    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region-set file");
+  else if (op=="annotator") {
+	cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region-set file");
+    cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
+    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 1000000, "maximum allowed upstream region size ");
+    cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 10000, "minimum allowed upstream region size (subject to genomic bounds)");
   }
   else if (op=="bed") {
     cmd_line->AddOption("-t", &TRACK_TITLE, "", "title");
@@ -527,6 +544,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="link") {
     cmd_line->AddOption("-s", &SORTED_BY_STRAND, false, "input regions are sorted by strand");
     cmd_line->AddOption("-d", &LINK_MAX_DIFFERENCE, 0, "maximum difference between successive regions");
+    cmd_line->AddOption("--label-func", &LINK_LABEL_FUNC, "", "label function = {min,max,sum,%c}, where %c is used as delimiter");
   }
   else if (op=="n") {
 
@@ -610,7 +628,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-r", &REF_REG_FILE, "", "reference region file");
   }
   else if (op=="split") {
-
+    cmd_line->AddOption("--by-chrstrand", &SPLIT_BY_CHROM_AND_STRAND, false, "sort and split by chromosome and strand (REG format only)");
   }
   else if (op=="strand") {
     cmd_line->AddOption("-op", &STRAND_OP, "+", "strand operation (+=positive, -=negative, r=reverse)");
@@ -719,7 +737,7 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="shiftp") RegSet.RunShiftPos(SHIFT_5PRIME,SHIFT_3PRIME,true);
   else if (cmd_line->current_cmd_operation=="shuffle") RegSet.RunShuffle(RANDOM_GENERATOR,REF_REG_FILE);
   else if (cmd_line->current_cmd_operation=="sort") RegSet.RunSort();
-  else if (cmd_line->current_cmd_operation=="split") RegSet.RunSplit();
+  else if (cmd_line->current_cmd_operation=="split") RegSet.RunSplit(SPLIT_BY_CHROM_AND_STRAND);
   else if (cmd_line->current_cmd_operation=="strand") RegSet.RunModifyStrand(STRAND_OP,STRAND_SORTED);
   else if (cmd_line->current_cmd_operation=="union") RegSet.RunUnion();
   else if (cmd_line->current_cmd_operation=="wig") RegSet.RunConvertToWIG(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,TRACK_OPTIONS,TRACK_SPAN,CONVERT_CHROMOSOME);
@@ -729,18 +747,20 @@ int main(int argc, char* argv[])
   //----------------------------------------------//
   //  File-based (vertical) operations            //
   //----------------------------------------------//
+  else if (cmd_line->current_cmd_operation=="annotator") RegSet.RunGlobalCreateAnnotator(bounds,IGNORE_STRAND,UPSTREAM_MAX_DISTANCE,UPSTREAM_MIN_DISTANCE);
   else if (cmd_line->current_cmd_operation=="gdist") RegSet.RunGlobalCalcDistances(DIST_OP1,DIST_OP2);
   else if (cmd_line->current_cmd_operation=="gsort") RegSet.RunGlobalSort(SORTED_BY_STRAND,BIN_BITS);
   else if (cmd_line->current_cmd_operation=="inv") RegSet.RunGlobalInvert(bounds);
-  else if (cmd_line->current_cmd_operation=="link") RegSet.RunGlobalLink(SORTED_BY_STRAND,LINK_MAX_DIFFERENCE);
+  else if (cmd_line->current_cmd_operation=="link") RegSet.RunGlobalLink(SORTED_BY_STRAND,LINK_MAX_DIFFERENCE,LINK_LABEL_FUNC);
   else if (cmd_line->current_cmd_operation=="test") RegSet.RunGlobalTest(SORTED_BY_STRAND);
+
+
 
 
 #ifdef FULL_VERSION
   //----------------------------------------------//
   //  UNDER DEVELOPMENT/TESTING                   //
   //----------------------------------------------//
-  else if (cmd_line->current_cmd_operation=="annot") RegSet.RunGlobalAnnotate(bounds);
   else if (cmd_line->current_cmd_operation=="bedgraph") RegSet.PrintBEDGraphFormat(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,CONVERT_CHROMOSOME);
   else if (cmd_line->current_cmd_operation=="cluster") RegSet.RunGlobalCluster(CLUSTER_MERGE);
   else if (cmd_line->current_cmd_operation=="len") RegSet.PrintSeqLength(C);

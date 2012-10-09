@@ -55,6 +55,7 @@ bool ZEROES;
 float LOG_BASE;
 float EXP_BASE;
 float POW;
+int HIST_BIN_SIZE;
 int HIST_NBINS;
 int HIST_NBINS_COMBINE;
 double HIST_MIN;
@@ -125,7 +126,7 @@ CmdLine *InitCmdLine(char *method)
 
   // Processing
   cmd_line->AddOption("-v", &VERBOSE, false, "verbose mode");
-  cmd_line->AddOption("-help", &HELP, false, "help");
+  cmd_line->AddOption("--help", &HELP, false, "help");
   cmd_line->AddOption("-h", &HELP, false, "help");
   cmd_line->AddOption("-f", &FMT_STR, "", "format string");
   cmd_line->AddOption("-n", &DECIMALS, 2, "number of decimal points");
@@ -149,6 +150,7 @@ CmdLine *InitCmdLine(char *method)
     cmd_line->AddOption("-max", &HIST_MAX, 1.0, "maximum");
   }
   else if (strcmp(method,"-bins")==0) {
+    cmd_line->AddOption("--bin-size", &HIST_BIN_SIZE, 0, "bin size (if > 0, overrides -b, -min, -max)");
     cmd_line->AddOption("-b", &HIST_NBINS, 10, "number of bins");
     cmd_line->AddOption("-m", &HIST_NBINS_COMBINE, 1, "number of sucessive bins to combine");
     cmd_line->AddOption("-min", &HIST_MIN, 0.0, "minimum");
@@ -967,9 +969,18 @@ int main(int argc, char* argv[])
   else if (strcmp(method,"-bins")==0) { 
     Progress PRG("Computing vector histogram...",n_vectors);
     while (VB->ReadNext()==true) {
-      long int n_bins = HIST_NBINS;
-      double min = HIST_MIN;
-      double max = HIST_MAX;
+      double min, max;
+      long int n_bins;
+      if (HIST_BIN_SIZE>0) {
+      	min = VectorMin(VB->vec,VB->vec_size);
+    	max = VectorMax(VB->vec,VB->vec_size)+HIST_BIN_SIZE;
+    	n_bins = (max-min)/HIST_BIN_SIZE;
+      }
+      else {
+        min = HIST_MIN;
+        max = HIST_MAX;
+        n_bins = HIST_NBINS;
+      }
       double *bins;
       ALLOCATE1D_INIT(bins,n_bins,double,0);
       double *X = VB->vec;
@@ -979,18 +990,22 @@ int main(int argc, char* argv[])
         double val = (X[k]-min) / (max-min);
         if ((val<0)||(val>=1)) continue;
         int b = (int)(n_bins*val);
-        if ((b<0)||(b>=n_bins)) { fprintf(stderr, "Error: overflow!\n"); exit(1); }
+        if (b<0) { fprintf(stderr, "Error (line %ld): underflow (val=%f, min=%f, max=%f, n_bins=%ld)!\n", VB->buffer->n_line, val, min, max, n_bins); exit(1); }
+        if (b>=n_bins) { fprintf(stderr, "Error (line %ld): overflow (val=%f, min=%f, max=%f, n_bins=%ld)!\n", VB->buffer->n_line, val, min, max, n_bins); exit(1); }
         bins[b]++;
         N++;
       }  
       VB->PrintLabel();
       if (HIST_NBINS_COMBINE==1) for (long int b=0; b<n_bins; b++) printf("%.0f%c", bins[b], b==n_bins-1?'\n':' ');
       else {
-        for (long int b=0; b<=n_bins-HIST_NBINS_COMBINE; b++) {
-          long int sum = 0; 
-	  for (int bb=0; bb<HIST_NBINS_COMBINE; bb++) sum += (long int)floor(bins[b+bb]);
-          printf("%ld%c", sum, b==n_bins-HIST_NBINS_COMBINE?'\n':' ');
-	}
+        if (n_bins<HIST_NBINS_COMBINE) printf("\n");
+        else {
+          for (long int b=0; b<=n_bins-HIST_NBINS_COMBINE; b++) {
+            long int sum = 0;
+            for (int bb=0; bb<HIST_NBINS_COMBINE; bb++) sum += (long int)floor(bins[b+bb]);
+            printf("%ld%c", sum, b==n_bins-HIST_NBINS_COMBINE?'\n':' ');
+          }
+        }
       }
       FREE1D(bins);
       PRG.Check();

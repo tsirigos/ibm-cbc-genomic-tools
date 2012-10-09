@@ -74,6 +74,7 @@ char *GENOME_REG_FILE;
 long int WIN_SIZE, WIN_DIST;
 double PVALUE_CUTOFF;
 float FDR;
+float FOLD_CUTOFF;
 long int FDR_BINS;
 float OUTLIER_PROB;
 unsigned long int PSEUDOCOUNT;
@@ -184,8 +185,9 @@ EXAMPLES: \n\
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
     cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "probability cutoff for residuals in outlier detection between replicates");
     cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count for fold-change computations");
-    cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-nbins", &FDR_BINS, 1, "number of bins for binned FDR computation");
+    cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
+    cmd_line->AddOption("-fold", &FOLD_CUTOFF, 1.00, "adjusted fold change cutoff for gain and loss output files");
     cmd_line->AddOption("-labels", &LABELS, "", "comma-separated sample labels (required)");
     cmd_line->AddOption("-itype", &IMAGE_TYPE, "pdf", "image format type {pdf,tif}");
     cmd_line->AddOption("-isize", &IMAGE_SIZE, "3000,2000", "comma-separated image dimensions (for tif format only)");
@@ -319,9 +321,8 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   GenomicRegionSetScanner **SignalRegScanner = new GenomicRegionSetScanner*[n_signal_files];
   double *p_signal = new double[n_signal_files];
   for (int s=0; s<n_signal_files; s++) {
+    p_signal[s] = (double)CountGenomicRegions(signal_reg_file[s],false)/effective_genome_size;
     SignalRegSet[s] = new GenomicRegionSet(signal_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
-    p_signal[s] = (double)CountLines(signal_reg_file[s],BUFFER_SIZE)/effective_genome_size;
-    SignalRegSet[s]->Reset();
     if (VERBOSE) fprintf(stderr, "* Signal input file = %s; background probability = %.2e\n", signal_reg_file[s], p_signal[s]);
     SignalRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
@@ -331,9 +332,8 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   GenomicRegionSetScanner **SignalControlRegScanner = n_signal_control_files>0?new GenomicRegionSetScanner*[n_signal_control_files]:NULL;
   double *p_signal_control = n_signal_control_files>0?new double[n_signal_control_files]:NULL;
   for (int s=0; s<n_signal_control_files; s++) {
+    p_signal_control[s] = (double)CountGenomicRegions(signal_control_reg_file[s],false)/effective_genome_size;
     SignalControlRegSet[s] = new GenomicRegionSet(signal_control_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
-    p_signal_control[s] = (double)CountLines(signal_control_reg_file[s],BUFFER_SIZE)/effective_genome_size;
-    SignalControlRegSet[s]->Reset();
     if (VERBOSE) fprintf(stderr, "* Signal control input file = %s; background probability = %.2e\n", signal_control_reg_file[s], p_signal_control[s]);
     SignalControlRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalControlRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
@@ -343,9 +343,8 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   GenomicRegionSetScanner **RefRegScanner = new GenomicRegionSetScanner*[n_ref_files];
   double *p_ref = new double[n_ref_files];
   for (int r=0; r<n_ref_files; r++) {
+    p_ref[r] = (double)CountGenomicRegions(ref_reg_file[r],false)/effective_genome_size;
     RefRegSet[r] = new GenomicRegionSet(ref_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
-    p_ref[r] = (double)CountLines(ref_reg_file[r],BUFFER_SIZE)/effective_genome_size;
-    RefRegSet[r]->Reset();
     if (VERBOSE) fprintf(stderr, "* Reference input file = %s; background probability = %.2e\n", ref_reg_file[r], p_ref[r]);
     RefRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
@@ -355,9 +354,8 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
   GenomicRegionSetScanner **RefControlRegScanner = n_ref_control_files>0?new GenomicRegionSetScanner*[n_ref_control_files]:NULL;
   double *p_ref_control = n_ref_control_files>0?new double[n_ref_control_files]:NULL;
   for (int r=0; r<n_ref_control_files; r++) {
+    p_ref_control[r] = (double)CountGenomicRegions(ref_control_reg_file[r],false)/effective_genome_size;
     RefControlRegSet[r] = new GenomicRegionSet(ref_control_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
-    p_ref_control[r] = (double)CountLines(ref_control_reg_file[r],BUFFER_SIZE)/effective_genome_size;
-    RefControlRegSet[r]->Reset();
     if (VERBOSE) fprintf(stderr, "* Reference control input file = %s; background probability = %.2e\n", ref_control_reg_file[r], p_ref_control[r]);
     RefControlRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefControlRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
   }
@@ -691,6 +689,7 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%lu\n", PSEUDOCOUNT);
 	fprintf(param_file, "%.6e\n", OUTLIER_PROB);
 	fprintf(param_file, "%.6e\n", FDR);
+	fprintf(param_file, "%.6e\n", FOLD_CUTOFF);
 	fprintf(param_file, "%ld\n", FDR_BINS);
 	fprintf(param_file, "%s\n", LABELS);
 	fprintf(param_file, "%s\n", IMAGE_SIZE);

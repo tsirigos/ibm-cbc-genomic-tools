@@ -97,8 +97,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf8beab78f541121e7b56957afffa4ac"></a><!-- doxytag: member="GenomicRegionSAM::PrintConstrained" ref="adf8beab78f541121e7b56957afffa4ac" args="(GenomicRegion *r, bool merge_labels=false)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#adf8beab78f541121e7b56957afffa4ac">PrintConstrained</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool merge_labels=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classGenomicRegionSAM.html#a4381c6486f767b6e4055cb729beee181" title="Prints label and genomic region intervals with a newline character at the end.">Print()</a>, but the interval is constrained between <b>start</b> and <b>stop</b> <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aecf1d74c572e85bbe9bca0b30c6a6dda"></a><!-- doxytag: member="GenomicRegionSAM::PrintModified" ref="aecf1d74c572e85bbe9bca0b30c6a6dda" args="(char *label, long int start, long int stop)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#aecf1d74c572e85bbe9bca0b30c6a6dda">PrintModified</a> (char *label, long int start, long int stop)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f30589e831c311974aaa5be772e972a"></a><!-- doxytag: member="GenomicRegionSAM::PrintModified" ref="a1f30589e831c311974aaa5be772e972a" args="(const char *label, long int start, long int stop)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a1f30589e831c311974aaa5be772e972a">PrintModified</a> (const char *label, long int start, long int stop)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classGenomicRegionSAM.html#a4381c6486f767b6e4055cb729beee181" title="Prints label and genomic region intervals with a newline character at the end.">Print()</a>, but the label and interval's coordinates are modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d0949a836520073de57e0f968a6b819"></a><!-- doxytag: member="GenomicRegionSAM::CalcStrandFromFlag" ref="a6d0949a836520073de57e0f968a6b819" args="(unsigned long int flag)" -->
 char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a6d0949a836520073de57e0f968a6b819">CalcStrandFromFlag</a> (unsigned long int flag)</td></tr>
@@ -182,8 +182,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a27afdcdf11895d7b3f32bd8eed68ae"></a><!-- doxytag: member="GenomicRegionSAM::Sort" ref="a8a27afdcdf11895d7b3f32bd8eed68ae" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#a8a27afdcdf11895d7b3f32bd8eed68ae">Sort</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort intervals according to start position (only for compatible intervals) <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae195a95ba837bfd9673093f1d451b39c"></a><!-- doxytag: member="GenomicRegionSAM::RunSplit" ref="ae195a95ba837bfd9673093f1d451b39c" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#ae195a95ba837bfd9673093f1d451b39c">RunSplit</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae499e532c831fdfe299d1f7ef877c730"></a><!-- doxytag: member="GenomicRegionSAM::RunSplit" ref="ae499e532c831fdfe299d1f7ef877c730" args="(bool by_chrom_and_strand)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#ae499e532c831fdfe299d1f7ef877c730">RunSplit</a> (bool by_chrom_and_strand)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print region intervals on separate lines. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abeb76df49bb89ecf0f3074805d9fe7b2"></a><!-- doxytag: member="GenomicRegionSAM::ModifyStrand" ref="abeb76df49bb89ecf0f3074805d9fe7b2" args="(char *strand_op)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSAM.html#abeb76df49bb89ecf0f3074805d9fe7b2">ModifyStrand</a> (char *strand_op)</td></tr>
@@ -335,7 +335,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

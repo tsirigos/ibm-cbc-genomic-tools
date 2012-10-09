@@ -58,6 +58,9 @@ bool OFFSET_FRACTION;
 bool CENTER;
 bool SUBSET_NONOVERLAPS;
 bool OFFSET_SKIP_REF_GAPS;
+long int UPSTREAM_MAX_DISTANCE;
+long int UPSTREAM_MIN_DISTANCE;
+bool DISTANCE_FLAG;
 
 
 
@@ -70,15 +73,24 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->SetProgramName(PROGRAM,VERSION);
 
   // set operations
+  cmd_line->AddOperation("annotate", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Annotates test regions according to reference regions.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Test region requirements: single-interval\n\
+  * Reference region requirements: single-interval\n\
+  * Region-set requirements: sorted if -S option is used"\
+  );
+
   cmd_line->AddOperation("bin", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
-  "Classifies a pair of intervals into reference regions [UNDER DEVELOPMENT].", \
-  "* Test region file format: REG (because interchromosomal associations must be allowed)\n\
+  "Finds overlaps of interval pairs with reference regions.", \
+  "* Test region file format: REG, GFF, BED, SAM (but only REG allows interchromosomal associations)\n\
   * Reference region file format: REG, GFF, BED, SAM\n\
-  * Operands: interval, region-set\n\
-  * Test region requirements: none\n\
+  * Operands: interval-pairs, region-set\n\
+  * Test region requirements: interval-pairs\n\
   * Reference region requirements: chromosome/strand-compatible, sorted and non-overlapping\n\
   * Test region-set requirements: none\n\
-  * Reference region-set requirements: non-overlapping"\
+  * Reference region-set requirements: none"\
   );
 
   cmd_line->AddOperation("count", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
@@ -167,7 +179,12 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
    
   // Main options
-  if (op=="bin") {
+  if (op=="annotate") {
+    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 0, "maximum allowed upstream region size ");
+    cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 0, "minimum allowed upstream region size (subject to genomic bounds)");
+    cmd_line->AddOption("--distance-flag", &DISTANCE_FLAG, false, "add proximal-distal indication");
+  }
+  else if (op=="bin") {
     cmd_line->AddOption("--print-labels", &PRINT_LABELS, false, "print test region labels");
     cmd_line->AddOption("--print-regions", &PRINT_REGIONS, false, "print test regions");
   }
@@ -225,6 +242,32 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 
 
 
+//-------PrintAnnotations-----------
+//
+void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_strand, bool skip_ref_gaps, const char *offset_op, bool flag)
+{
+    long int start_offset, stop_offset;
+    qreg->I[0]->GetOffsetFrom(ireg,offset_op,ignore_strand,&start_offset,&stop_offset);
+    double center_offset = (double)(start_offset+stop_offset)/2;
+	if (center_offset<0) return;
+	printf("%s\t", qreg->LABEL);
+	qreg->I[0]->PrintInterval();
+	printf("\t");
+	printf("%lu\t", (unsigned long int)qreg->I[0]->GetSize());
+    if ((strcmp(offset_op,"3p")==0)&&(flag==true)) printf("%s:", center_offset>5000?"distal":"proximal");
+	else if ((strcmp(offset_op,"5p")==0)&&(flag==true)) printf("%s:downstream:", center_offset>5000?"distal":"proximal");
+	printf("%s\t", ireg->LABEL);
+	ireg->I[0]->PrintInterval();
+	printf("\t");
+	printf("%lu\t", (unsigned long int)ireg->I[0]->GetSize());
+    //if (strcmp(offset_op,"3p")==0) center_offset = -center_offset;
+    printf("%ld\t", (long int)center_offset);
+	//printf("(%ld %ld)\t", start_offset, stop_offset);
+    printf("%f", center_offset/ireg->GetSize(skip_ref_gaps));
+	printf("\n");
+}
+
+
 
 
 //---------------------------------------------------------------------------------//
@@ -240,42 +283,99 @@ int main(int argc, char* argv[])
   if (IS_SORTED&&SORTED_BY_STRAND&&IGNORE_STRAND) { fprintf(stderr, "[Error]: the input is sorted by chromosome/strand/start (i.e. -S and -s are set), therefore the overlap algorithm can only report strand-specific results (i.e. -i cannot be set)!\n"); exit(1); }
 
   //--------------------
+  // annotate/unsorted
+  //--------------------
+  if (cmd_line->current_cmd_operation=="annotate") {
+    // open region sets and index reference regions
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSetIndex RefIndex(&RefRegSet,BIN_BITS);
+    bool skip_ref_gaps = false;
+    bool match_gaps = true;		// NOTE: since we are only allowing single-interval regions, this is irrelevant
+
+    // create upstream genomic annotator
+    StringLIntMap *bounds = NULL;
+    GenomicRegionSet *UpstreamRefRegSet = NULL;
+    GenomicRegionSetIndex *UpstreamRefIndex = NULL;
+    if (UPSTREAM_MAX_DISTANCE>0) {
+    	UpstreamRefRegSet = CreateGenomicRegionSetAnnotator(&RefRegSet,bounds,IGNORE_STRAND,UPSTREAM_MAX_DISTANCE,UPSTREAM_MIN_DISTANCE,BIN_BITS);
+    	UpstreamRefIndex = new GenomicRegionSetIndex(UpstreamRefRegSet,BIN_BITS);
+    }
+
+    // annotate
+    Progress PRG("Annotating test regions...",1);
+    for (GenomicRegion *qreg=TestRegSet.Get(); qreg!=NULL; qreg=TestRegSet.Next()) {
+	  if (qreg->I.size()!=1) qreg->PrintError("single-interval test regions are required for this operation!");
+	  GenomicInterval *qint = qreg->I[0];
+	  for (GenomicRegion *ireg=RefIndex.GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=RefIndex.NextOverlap(match_gaps,IGNORE_STRAND)) {
+        if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
+        PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"5p",DISTANCE_FLAG);
+	  }
+	  if (UpstreamRefIndex) {
+	    for (GenomicRegion *ireg=UpstreamRefIndex->GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=UpstreamRefIndex->NextOverlap(match_gaps,IGNORE_STRAND)) {
+          if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
+          PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"3p",DISTANCE_FLAG);
+	    }
+	  }
+      PRG.Check();
+    }
+    PRG.Done();
+
+    // cleanup
+    if (UpstreamRefRegSet) delete UpstreamRefRegSet;
+    if (UpstreamRefIndex) delete UpstreamRefIndex;
+
+  }
+
+
+
+  //---------------------------------------------
+  // annotate/sorted
+  //---------------------------------------------
+  else if ((cmd_line->current_cmd_operation=="annotate")&&(IS_SORTED==true)) {
+	  fprintf(stderr, "Error: operation annotate is not implemented for the -S option. Simply drop the -S and re-run!\n");
+	  exit(1);
+  }
+
+
+
+  //--------------------
   // bin/unsorted
   //--------------------
-  if (cmd_line->current_cmd_operation=="bin") {
+  else if (cmd_line->current_cmd_operation=="bin") {
     // open region sets
     char *REF_REG_FILE = argv[next_arg];
     char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
     GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-    if (TestRegSet.format!="REG") { fprintf(stderr, "Error: test region set should be in REG format for this operation!\n"); exit(1); }
     GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
 
     // classify into bins
     GenomicRegionSetIndex RefIndex(&RefRegSet,BIN_BITS);
     Progress PRG("Classifying interval pairs into reference bins...",1);
-	unsigned long int not_binned = 0;
+	bool match_gaps = false;
     for (GenomicRegion *qreg=TestRegSet.Get(); qreg!=NULL; qreg=TestRegSet.Next()) {
 	  if (qreg->I.size()!=2) qreg->PrintError("interval pairs are required for this operation!");
-	  GenomicInterval *qint1 = qreg->I[0]->CreateCenter(true);
-	  GenomicInterval *qint2 = qreg->I[1]->CreateCenter(true);
-	  GenomicRegion *ireg1 = RefIndex.GetMatch(qint1);
-	  GenomicRegion *ireg2 = RefIndex.GetMatch(qint2);
-	  if (ireg1&&ireg2) {
-        printf("%s\t", qreg->LABEL); 
-	    ireg1->I[0]->PrintInterval(); 
-		printf(" "); 
-		ireg2->I[0]->PrintInterval(); 
-		if (PRINT_LABELS) printf("\t%s\t%s", ireg1->LABEL, ireg2->LABEL); 
-		if (PRINT_REGIONS) { printf("\t"); qreg->I[0]->PrintInterval(); printf(" "); qreg->I[1]->PrintInterval(); }
-		printf("\n");
-	  }
-	  else not_binned++;
-	  delete qint1;
-	  delete qint2;
+	  GenomicInterval *qint1 = qreg->I[0];
+	  GenomicInterval *qint2 = qreg->I[1];
+	  typedef list<GenomicRegion*> GenomicRegionList;
+	  GenomicRegionList regList1, regList2;
+      for (GenomicRegion *ireg1=RefIndex.GetOverlap(qint1,match_gaps,IGNORE_STRAND); ireg1!=NULL; ireg1=RefIndex.NextOverlap(match_gaps,IGNORE_STRAND)) regList1.push_back(ireg1);
+      for (GenomicRegion *ireg2=RefIndex.GetOverlap(qint2,match_gaps,IGNORE_STRAND); ireg2!=NULL; ireg2=RefIndex.NextOverlap(match_gaps,IGNORE_STRAND)) regList2.push_back(ireg2);
+	  for (GenomicRegionList::iterator x=regList1.begin(); x!=regList1.end(); x++)
+	    for (GenomicRegionList::iterator y=regList2.begin(); y!=regList2.end(); y++) {
+          printf("%s\t", qreg->LABEL); 
+	      (*x)->I[0]->PrintInterval(); // NOTE: print entire region
+		  printf(" "); 
+		  (*y)->I[0]->PrintInterval(); // NOTE: print entire region
+		  if (PRINT_LABELS) printf("\t%s\t%s", (*x)->LABEL, (*y)->LABEL); 
+		  if (PRINT_REGIONS) { printf("\t"); qint1->PrintInterval(); printf(" "); qint2->PrintInterval(); }
+		  printf("\n");
+	    }
       PRG.Check();
     }
     PRG.Done();
-	if (VERBOSE&&(not_binned>0)) fprintf(stderr, "Warning: %lu regions were not binned!\n", not_binned); 
   }
 
   

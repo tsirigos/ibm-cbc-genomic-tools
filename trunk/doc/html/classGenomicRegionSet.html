@@ -87,10 +87,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes data structures. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae7295913424148013df6a154c5458aa"></a><!-- doxytag: member="GenomicRegionSet::Reset" ref="aae7295913424148013df6a154c5458aa" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#aae7295913424148013df6a154c5458aa">Reset</a> ()</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets file; note, that this is not possible if the regions are being read from the standard input. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06e2e8f91623c01e6e00500888b9ba3d"></a><!-- doxytag: member="GenomicRegionSet::Begin" ref="a06e2e8f91623c01e6e00500888b9ba3d" args="()" -->
-<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a06e2e8f91623c01e6e00500888b9ba3d">Begin</a> ()</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns pointer to the first region in the set; note, that this is not possible if the regions are being read from the standard input. <br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-opens regions set file; note, that this is not possible if the regions are being read from the standard input. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77031066d2648c8935c291ef227b37be"></a><!-- doxytag: member="GenomicRegionSet::Get" ref="a77031066d2648c8935c291ef227b37be" args="()" -->
 virtual <a class="el" href="classGenomicRegion.html">GenomicRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a77031066d2648c8935c291ef227b37be">Get</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns pointer to current region in the set. <br/></td></tr>
@@ -107,12 +104,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39c746333affb32acffbf0f31b7f6fcf"></a><!-- doxytag: member="GenomicRegionSet::PrintError" ref="a39c746333affb32acffbf0f31b7f6fcf" args="(string error_msg)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a39c746333affb32acffbf0f31b7f6fcf">PrintError</a> (string error_msg)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints error message. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a260acb32612d31325099c9e53366c9d2"></a><!-- doxytag: member="GenomicRegionSet::CountRegions" ref="a260acb32612d31325099c9e53366c9d2" args="(bool use_label_counts)" -->
-long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a260acb32612d31325099c9e53366c9d2">CountRegions</a> (bool use_label_counts)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of regions in the set. If <b>use_label_counts</b>, the region labels are assumed to be numbers, and the sum of these numbers is reported. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78c6f4879ac131e6db2094f21b466a98"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalAnnotate" ref="a78c6f4879ac131e6db2094f21b466a98" args="(StringLIntMap *bounds)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a78c6f4879ac131e6db2094f21b466a98">RunGlobalAnnotate</a> (StringLIntMap *bounds)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Annotate input region neighborhoods as upstream, downstream, etc. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb844a5f7a9c617dfc78ba35d057ec9e"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalCreateAnnotator" ref="afb844a5f7a9c617dfc78ba35d057ec9e" args="(StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#afb844a5f7a9c617dfc78ba35d057ec9e">RunGlobalCreateAnnotator</a> (StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create genomic region annotator. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a619b51265f7bf5d6c92144de689ca8a2"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalCluster" ref="a619b51265f7bf5d6c92144de689ca8a2" args="(bool merge=false)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a619b51265f7bf5d6c92144de689ca8a2">RunGlobalCluster</a> (bool merge=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster input regions based on pair-wise overlaps (note that this is computationally intensive). <br/></td></tr>
@@ -125,8 +119,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1056659ccda2e39febb6b87d858a88c4"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalInvert" ref="a1056659ccda2e39febb6b87d858a88c4" args="(StringLIntMap *bounds)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a1056659ccda2e39febb6b87d858a88c4">RunGlobalInvert</a> (StringLIntMap *bounds)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the difference between chromosome intervals and input region set (input region set must be sorted). <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab9783fb4fead289c7fe107f9bec1865b"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalLink" ref="ab9783fb4fead289c7fe107f9bec1865b" args="(bool sorted_by_strand, long int max_difference)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#ab9783fb4fead289c7fe107f9bec1865b">RunGlobalLink</a> (bool sorted_by_strand, long int max_difference)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b01327ec203802906976ab05bd1b6e2"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalLink" ref="a9b01327ec203802906976ab05bd1b6e2" args="(bool sorted_by_strand, long int max_difference, char *label_func)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a9b01327ec203802906976ab05bd1b6e2">RunGlobalLink</a> (bool sorted_by_strand, long int max_difference, char *label_func)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Links successive regions if they overlap (input region set must be sorted). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40dd79548f9d0333f1169bd17a6e9465"></a><!-- doxytag: member="GenomicRegionSet::RunGlobalPartition" ref="a40dd79548f9d0333f1169bd17a6e9465" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a40dd79548f9d0333f1169bd17a6e9465">RunGlobalPartition</a> ()</td></tr>
@@ -203,8 +197,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a53143cb3271c65fb289faece622cd8bd"></a><!-- doxytag: member="GenomicRegionSet::RunSort" ref="a53143cb3271c65fb289faece622cd8bd" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a53143cb3271c65fb289faece622cd8bd">RunSort</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print sorted intervals according to start position (only for compatible intervals) <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a570e56362af1b30e7f5cb149ea42e54e"></a><!-- doxytag: member="GenomicRegionSet::RunSplit" ref="a570e56362af1b30e7f5cb149ea42e54e" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a570e56362af1b30e7f5cb149ea42e54e">RunSplit</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9581ae5976fd26dae6a4b4cc970ce72"></a><!-- doxytag: member="GenomicRegionSet::RunSplit" ref="af9581ae5976fd26dae6a4b4cc970ce72" args="(bool by_chrom_and_strand)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#af9581ae5976fd26dae6a4b4cc970ce72">RunSplit</a> (bool by_chrom_and_strand)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Split regions into intervals which are printed on separate lines. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1146729843b82d7637e0adc1b07e51a"></a><!-- doxytag: member="GenomicRegionSet::RunModifyStrand" ref="af1146729843b82d7637e0adc1b07e51a" args="(char *strand_op, bool sorted)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#af1146729843b82d7637e0adc1b07e51a">RunModifyStrand</a> (char *strand_op, bool sorted)</td></tr>
@@ -311,31 +305,6 @@ Private Member Functions</h2></td></tr>
     }
     PRG.Done();
 </pre></div> </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a43326ec3c27a0c5c2c8b617509078ff7"></a><!-- doxytag: member="GenomicRegionSet::Next" ref="a43326ec3c27a0c5c2c8b617509078ff7" args="(bool retain_current=false)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> * GenomicRegionSet::Next </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>retain_current</em> = <code>false</code></td><td>)</td>
-          <td><code> [virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Moves pointer to next region in the set; if <a class="el" href="classGenomicRegionSet.html#ade43c6cd72b95da75395129b00a52687">GenomicRegionSet::load_in_memory</a> is 'false', it deletes the current region. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">retain_current</td><td>if 'true', the current region is not deleted from memory; this must be done 'manually' using the <a class="el" href="classGenomicRegionSet.html#a8993c741ef2513ba5c5b88eb390f1f99">Release()</a> method (do not use 'delete'). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a class="anchor" id="a84c1a9021f1eed8516945abd071e982d"></a><!-- doxytag: member="GenomicRegionSet::Next" ref="a84c1a9021f1eed8516945abd071e982d" args="(bool sorted_by_strand, bool retain_current)" -->
 <div class="memitem">
 <div class="memproto">
@@ -365,6 +334,31 @@ Private Member Functions</h2></td></tr>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">sorted_by_strand</td><td>if 'true', it takes into account strand information while checking the sort order </td></tr>
+    <tr><td class="paramname">retain_current</td><td>if 'true', the current region is not deleted from memory; this must be done 'manually' using the <a class="el" href="classGenomicRegionSet.html#a8993c741ef2513ba5c5b88eb390f1f99">Release()</a> method (do not use 'delete'). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a43326ec3c27a0c5c2c8b617509078ff7"></a><!-- doxytag: member="GenomicRegionSet::Next" ref="a43326ec3c27a0c5c2c8b617509078ff7" args="(bool retain_current=false)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGenomicRegion.html">GenomicRegion</a> * GenomicRegionSet::Next </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>retain_current</em> = <code>false</code></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Moves pointer to next region in the set; if <a class="el" href="classGenomicRegionSet.html#ade43c6cd72b95da75395129b00a52687">GenomicRegionSet::load_in_memory</a> is 'false', it deletes the current region. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
     <tr><td class="paramname">retain_current</td><td>if 'true', the current region is not deleted from memory; this must be done 'manually' using the <a class="el" href="classGenomicRegionSet.html#a8993c741ef2513ba5c5b88eb390f1f99">Release()</a> method (do not use 'delete'). </td></tr>
   </table>
   </dd>
@@ -604,7 +598,7 @@ Private Member Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
