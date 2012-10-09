@@ -90,8 +90,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96539f4372048c9f0d87826f5856a8ef"></a><!-- doxytag: member="GenomicRegionGFF::PrintConstrained" ref="a96539f4372048c9f0d87826f5856a8ef" args="(GenomicRegion *r, bool merge_labels=false)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#a96539f4372048c9f0d87826f5856a8ef">PrintConstrained</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool merge_labels=false)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classGenomicRegionGFF.html#a3ffa71d729e4ff060a15a6bab1e924c8" title="Prints label and genomic region intervals with a newline character at the end.">Print()</a>, but the interval is constrained between <b>start</b> and <b>stop</b> <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b331cd12506aa4793a2cf6ea7620936"></a><!-- doxytag: member="GenomicRegionGFF::PrintModified" ref="a4b331cd12506aa4793a2cf6ea7620936" args="(char *label, long int start, long int stop)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#a4b331cd12506aa4793a2cf6ea7620936">PrintModified</a> (char *label, long int start, long int stop)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ca28a6279c710493b1ae2e333091bc9"></a><!-- doxytag: member="GenomicRegionGFF::PrintModified" ref="a5ca28a6279c710493b1ae2e333091bc9" args="(const char *label, long int start, long int stop)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#a5ca28a6279c710493b1ae2e333091bc9">PrintModified</a> (const char *label, long int start, long int stop)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classGenomicRegionGFF.html#a3ffa71d729e4ff060a15a6bab1e924c8" title="Prints label and genomic region intervals with a newline character at the end.">Print()</a>, but the label and interval's coordinates are modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee70fcc81c9a6629bf0aa1ec37cb1d64"></a><!-- doxytag: member="GenomicRegionGFF::Diff" ref="aee70fcc81c9a6629bf0aa1ec37cb1d64" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#aee70fcc81c9a6629bf0aa1ec37cb1d64">Diff</a> ()</td></tr>
@@ -111,8 +111,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa9b1271561e2d62ef1be6464e589cf4"></a><!-- doxytag: member="GenomicRegionGFF::Select" ref="aaa9b1271561e2d62ef1be6464e589cf4" args="(bool first, bool last, bool from5p, bool from3p)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#aaa9b1271561e2d62ef1be6464e589cf4">Select</a> (bool first, bool last, bool from5p, bool from3p)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a subset of intervals according to their relative positions. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc08552b0ad4ca512f79064b8cd64e54"></a><!-- doxytag: member="GenomicRegionGFF::RunSplit" ref="abc08552b0ad4ca512f79064b8cd64e54" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#abc08552b0ad4ca512f79064b8cd64e54">RunSplit</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a494ad397422cbeb4b0911187e0c61a6c"></a><!-- doxytag: member="GenomicRegionGFF::RunSplit" ref="a494ad397422cbeb4b0911187e0c61a6c" args="(bool by_chrom_and_strand)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#a494ad397422cbeb4b0911187e0c61a6c">RunSplit</a> (bool by_chrom_and_strand)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print region intervals on separate lines. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3815f1b27aef231a674c527e11f25880"></a><!-- doxytag: member="GenomicRegionGFF::PrintWindows" ref="a3815f1b27aef231a674c527e11f25880" args="(long int win_step, long int win_size)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionGFF.html#a3815f1b27aef231a674c527e11f25880">PrintWindows</a> (long int win_step, long int win_size)</td></tr>
@@ -159,7 +159,7 @@ char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

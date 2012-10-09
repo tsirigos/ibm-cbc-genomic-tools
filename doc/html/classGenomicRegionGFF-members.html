@@ -96,7 +96,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionG
   <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#a96539f4372048c9f0d87826f5856a8ef">PrintConstrained</a>(GenomicRegion *r, bool merge_labels=false)</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a68ecc1c8c76e9204f6e27801f0ba3d5f">PrintError</a>(string error_msg)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#aba987d40590874eebd1dd8bb0c02bdc8">PrintIntersection</a>(GenomicRegion *r, bool ignore_strand, bool merge_labels)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#a4b331cd12506aa4793a2cf6ea7620936">PrintModified</a>(char *label, long int start, long int stop)</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#a5ca28a6279c710493b1ae2e333091bc9">PrintModified</a>(const char *label, long int start, long int stop)</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a33d1e5544b3fb81e8c19468b91920b1d">PrintOffsetFormat</a>(char *op, bool fraction)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a9a00b031d4a119181b8b76ffa34a6f47">PrintQ</a>(bool reverse=false)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a9c687565a8ed25da5a5ccf08e5e8461e">PrintREG</a>(bool compact=false)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
@@ -116,7 +116,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionG
   <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#ad4acc1231677efd876084ef36db82de1">RunDivide</a>()</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#ab2c52ae40b34f3607f4558add94c25fd">RunShuffle</a>(gsl_rng *random_generator, GenomicRegionSet *refReg, StringLIntMap *index, StringVecLIntMap *loc)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a08db190bc63e6f1d6fc90679dc5e6868">RunSize</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#abc08552b0ad4ca512f79064b8cd64e54">RunSplit</a>()</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#a494ad397422cbeb4b0911187e0c61a6c">RunSplit</a>(bool by_chrom_and_strand)</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a3d90c15accabfd5c0279f27f3513ba7c">RunUnion</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#a0e92da1f0fd153504e0630f27229ba4d">SCORE</a></td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionGFF.html#aaa9b1271561e2d62ef1be6464e589cf4">Select</a>(bool first, bool last, bool from5p, bool from3p)</td><td><a class="el" href="classGenomicRegionGFF.html">GenomicRegionGFF</a></td><td><code> [virtual]</code></td></tr>
@@ -143,7 +143,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionG
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

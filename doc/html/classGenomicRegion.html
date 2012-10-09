@@ -99,8 +99,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40397d1fab7b00e5f04b9f7e52f0114e"></a><!-- doxytag: member="GenomicRegion::Print" ref="a40397d1fab7b00e5f04b9f7e52f0114e" args="(FILE *file_ptr=stdout)" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a40397d1fab7b00e5f04b9f7e52f0114e">Print</a> (FILE *file_ptr=stdout)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints label and genomic region intervals with a newline character at the end. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab9ea31af7fbb32f206efe0e64533a5be"></a><!-- doxytag: member="GenomicRegion::PrintModified" ref="ab9ea31af7fbb32f206efe0e64533a5be" args="(char *label, long int start, long int stop)" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#ab9ea31af7fbb32f206efe0e64533a5be">PrintModified</a> (char *label, long int start, long int stop)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9846e1c0959ba76c1d552974498a396c"></a><!-- doxytag: member="GenomicRegion::PrintModified" ref="a9846e1c0959ba76c1d552974498a396c" args="(const char *label, long int start, long int stop)" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a9846e1c0959ba76c1d552974498a396c">PrintModified</a> (const char *label, long int start, long int stop)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classGenomicRegion.html#a40397d1fab7b00e5f04b9f7e52f0114e" title="Prints label and genomic region intervals with a newline character at the end.">Print()</a>, but the label and interval's coordinates are modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba987d40590874eebd1dd8bb0c02bdc8"></a><!-- doxytag: member="GenomicRegion::PrintIntersection" ref="aba987d40590874eebd1dd8bb0c02bdc8" args="(GenomicRegion *r, bool ignore_strand, bool merge_labels)" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#aba987d40590874eebd1dd8bb0c02bdc8">PrintIntersection</a> (<a class="el" href="classGenomicRegion.html">GenomicRegion</a> *r, bool ignore_strand, bool merge_labels)</td></tr>
@@ -226,8 +226,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03959dc5b5695d817b5a40b47f30a4aa"></a><!-- doxytag: member="GenomicRegion::Sort" ref="a03959dc5b5695d817b5a40b47f30a4aa" args="()" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a03959dc5b5695d817b5a40b47f30a4aa">Sort</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort intervals according to start position (only for compatible intervals) <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1686d4f4d2962b22d506a25a5887c31c"></a><!-- doxytag: member="GenomicRegion::RunSplit" ref="a1686d4f4d2962b22d506a25a5887c31c" args="()" -->
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a1686d4f4d2962b22d506a25a5887c31c">RunSplit</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a408a727103bce7b33c85601a8221a249"></a><!-- doxytag: member="GenomicRegion::RunSplit" ref="a408a727103bce7b33c85601a8221a249" args="(bool by_chrom_and_strand)" -->
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#a408a727103bce7b33c85601a8221a249">RunSplit</a> (bool by_chrom_and_strand)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Print region intervals on separate lines. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae19cd6eaa883e6517ba12567cd756320"></a><!-- doxytag: member="GenomicRegion::ModifyStrand" ref="ae19cd6eaa883e6517ba12567cd756320" args="(char *strand_op)" -->
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegion.html#ae19cd6eaa883e6517ba12567cd756320">ModifyStrand</a> (char *strand_op)</td></tr>
@@ -425,7 +425,7 @@ GenomicIntervalSet&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

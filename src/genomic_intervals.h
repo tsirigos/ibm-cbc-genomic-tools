@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.6.0";
+const string VERSION = "genomic_tools 2.7.0";
 
 
 #include <stdio.h>
@@ -632,7 +632,7 @@ class GenomicRegion
 
   
   //! Same as Print(), but the label and interval's coordinates are modified.
-  virtual void PrintModified(char *label, long int start, long int stop);
+  virtual void PrintModified(const char *label, long int start, long int stop);
 
 
 
@@ -872,7 +872,7 @@ class GenomicRegion
 
   
   //! Print region intervals on separate lines. 
-  virtual void RunSplit(); 
+  virtual void RunSplit(bool by_chrom_and_strand); 
 
 
   
@@ -1158,7 +1158,7 @@ class GenomicRegionBED : public GenomicRegion
 
 
   //! Same as Print(), but the label and interval's coordinates are modified.
-  void PrintModified(char *label, long int start, long int stop);
+  void PrintModified(const char *label, long int start, long int stop);
 
 
 
@@ -1262,7 +1262,7 @@ class GenomicRegionBED : public GenomicRegion
 
   
   //! Print region intervals on separate lines. 
-  void RunSplit(); 
+  void RunSplit(bool by_chrom_and_strand); 
 
 
   
@@ -1418,7 +1418,7 @@ class GenomicRegionSAM : public GenomicRegion
 
 
   //! Same as Print(), but the label and interval's coordinates are modified.
-  void PrintModified(char *label, long int start, long int stop);
+  void PrintModified(const char *label, long int start, long int stop);
 
 
   
@@ -1581,7 +1581,7 @@ class GenomicRegionSAM : public GenomicRegion
 
   
   //! Print region intervals on separate lines. 
-  void RunSplit(); 
+  void RunSplit(bool by_chrom_and_strand); 
 
 
   
@@ -1730,7 +1730,7 @@ class GenomicRegionGFF : public GenomicRegion
 
 
   //! Same as Print(), but the label and interval's coordinates are modified.
-  void PrintModified(char *label, long int start, long int stop);
+  void PrintModified(const char *label, long int start, long int stop);
 
 
 
@@ -1765,7 +1765,7 @@ class GenomicRegionGFF : public GenomicRegion
 
 
   //! Print region intervals on separate lines. 
-  void RunSplit(); 
+  void RunSplit(bool by_chrom_and_strand); 
 
 
   
@@ -1855,12 +1855,8 @@ class GenomicRegionSet
   void Init();
 
 
-  //! Resets file; note, that this is not possible if the regions are being read from the standard input. 
+  //! Re-opens regions set file; note, that this is not possible if the regions are being read from the standard input.
   void Reset();
-
-
-  //! Returns pointer to the first region in the set; note, that this is not possible if the regions are being read from the standard input.
-  GenomicRegion *Begin(); 
 
 
   //! Returns pointer to current region in the set.
@@ -1900,12 +1896,8 @@ class GenomicRegionSet
   //-------------------------------------//
 
 
-  //! Counts the number of regions in the set. If <b>use_label_counts</b>, the region labels are assumed to be numbers, and the sum of these numbers is reported. 
-  long int CountRegions(bool use_label_counts);
-
-
-  //! Annotate input region neighborhoods as upstream, downstream, etc. 
-  void RunGlobalAnnotate(StringLIntMap *bounds);
+  //! Create genomic region annotator
+  void RunGlobalCreateAnnotator(StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance);
 
 
   //! Cluster input regions based on pair-wise overlaps (note that this is computationally intensive).
@@ -1925,7 +1917,7 @@ class GenomicRegionSet
 
 
   //! Links successive regions if they overlap (input region set must be sorted).
-  void RunGlobalLink(bool sorted_by_strand, long int max_difference);
+  void RunGlobalLink(bool sorted_by_strand, long int max_difference, char *label_func);
 
 
   //! Partitions overlapping regions into a non-overlapping region set (input region set must be sorted).
@@ -2065,7 +2057,7 @@ class GenomicRegionSet
 
   
   //! Split regions into intervals which are printed on separate lines. 
-  void RunSplit(); 
+  void RunSplit(bool by_chrom_and_strand); 
 
   
   //! Print region with modified strands: '+'=only forward, '-'=only reverse, 'r'=reverse strands from '+' to '-' and vice versa; if <b>sorted</b> is 'true', it calls \ref GenomicRegionSet::RunModifyStrandSorted instead.
@@ -2495,11 +2487,11 @@ class GenomicRegionSetOverlaps
 
 
 
-//---------------------------------------------------------------------------------------------//
-// CLASS: GenomicRegionSetIndex                                                                //
-//---------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------//
+// CLASS: GenomicRegionSetIndex                                                                               //
+//------------------------------------------------------------------------------------------------------------//
 //! Class for creating an index for genomic regions based on the "genome binning" approach by Kent et al.
-//---------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------//
 class GenomicRegionSetIndex 
 {
  public:
@@ -2810,4 +2802,7 @@ GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_s
 long int *GetGapSizes(GenomicRegion *r, char *offset_op);
 OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_reg, char *offset_op, bool ignore_strand);
 
+long int CountGenomicRegions(char *reg_file, bool use_label_counts);
+
+GenomicRegionSet *CreateGenomicRegionSetAnnotator(GenomicRegionSet *RefRegSet, StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance, char *bin_bits);
 

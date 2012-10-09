@@ -106,7 +106,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionS
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a68ecc1c8c76e9204f6e27801f0ba3d5f">PrintError</a>(string error_msg)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#aea563a4a484784ad231399a3b56c7056">PrintGappedSequence</a>(char *seq, char *gap_token_types, bool lowercase_for_sort_clipping=true)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#aba987d40590874eebd1dd8bb0c02bdc8">PrintIntersection</a>(GenomicRegion *r, bool ignore_strand, bool merge_labels)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#aecf1d74c572e85bbe9bca0b30c6a6dda">PrintModified</a>(char *label, long int start, long int stop)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#a1f30589e831c311974aaa5be772e972a">PrintModified</a>(const char *label, long int start, long int stop)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a33d1e5544b3fb81e8c19468b91920b1d">PrintOffsetFormat</a>(char *op, bool fraction)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a9a00b031d4a119181b8b76ffa34a6f47">PrintQ</a>(bool reverse=false)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a9c687565a8ed25da5a5ccf08e5e8461e">PrintREG</a>(bool compact=false)</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
@@ -128,7 +128,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionS
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#add2ada73e241f593dcdcdfca97df1eb5">RunDivide</a>()</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#ab31fed1760d543fa3a38bb16a064dcf9">RunShuffle</a>(gsl_rng *random_generator, GenomicRegionSet *refReg, StringLIntMap *index, StringVecLIntMap *loc)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a08db190bc63e6f1d6fc90679dc5e6868">RunSize</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#ae195a95ba837bfd9673093f1d451b39c">RunSplit</a>()</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#ae499e532c831fdfe299d1f7ef877c730">RunSplit</a>(bool by_chrom_and_strand)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegion.html#a3d90c15accabfd5c0279f27f3513ba7c">RunUnion</a>()</td><td><a class="el" href="classGenomicRegion.html">GenomicRegion</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#a4dce925fdb55dcc7ef3dad890bc25408">Select</a>(bool first, bool last, bool from5p, bool from3p)</td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classGenomicRegionSAM.html#a6c2887ed1fa3a25d801641ea1b139032">SEQ</a></td><td><a class="el" href="classGenomicRegionSAM.html">GenomicRegionSAM</a></td><td></td></tr>
@@ -161,7 +161,7 @@ This is the complete list of members for <a class="el" href="classGenomicRegionS
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

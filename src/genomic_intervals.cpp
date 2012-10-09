@@ -906,7 +906,7 @@ void GenomicRegion::PrintConstrained(GenomicRegion *r, bool merge_labels)
 
 //---------PrintModified-----------
 //
-void GenomicRegion::PrintModified(char *label, long int start, long int stop)
+void GenomicRegion::PrintModified(const char *label, long int start, long int stop)
 {
   if (IsCompatible(false)==false) PrintError("intervals should have the same chromosome/strand for this operation!");
   printf("%s\t%s %c %ld %ld\n", label, I.front()->CHROMOSOME, I.front()->STRAND, start, stop); 
@@ -1551,9 +1551,23 @@ void GenomicRegion::Sort()
 
 //---------RunSplit-----------
 //
-void GenomicRegion::RunSplit()
+void GenomicRegion::RunSplit(bool by_chrom_and_strand)
 {
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) { printf("%s\t", LABEL); (*i)->PrintInterval(); printf("\n"); }
+  if (by_chrom_and_strand==true) {
+    Sort();
+    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) { 
+	  printf("%s\t", LABEL); 
+	  (*i)->PrintInterval(); 
+	  for (GenomicIntervalSet::iterator j=i+1; (j!=I.end())&&(strcmp((*j)->CHROMOSOME,(*i)->CHROMOSOME)==0)&&((*j)->STRAND==(*i)->STRAND); i++,j++) { 
+	    printf(" "); 
+		(*j)->PrintInterval(); 
+	  }
+	  printf("\n"); 
+	}
+  }
+  else {
+    for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) { printf("%s\t", LABEL); (*i)->PrintInterval(); printf("\n"); }
+  }
 }
 
 
@@ -2274,7 +2288,7 @@ void GenomicRegionBED::PrintConstrained(GenomicRegion *r, bool merge_labels)
 
 //---------PrintModified-----------
 //
-void GenomicRegionBED::PrintModified(char *label, long int start, long int stop)
+void GenomicRegionBED::PrintModified(const char *label, long int start, long int stop)
 {
   if (IsCompatible(false)==false) PrintError("intervals should have the same chromosome/strand for this operation!");
   printf("%s%c%ld%c%ld%c%s%c%ld%c%c\n", I.front()->CHROMOSOME, BED_SEPARATOR, start-1, BED_SEPARATOR, stop, BED_SEPARATOR, label, BED_SEPARATOR, score, BED_SEPARATOR, I.front()->STRAND);
@@ -2466,7 +2480,7 @@ void GenomicRegionBED::Sort()
   
 //---------RunSplit-----------
 //
-void GenomicRegionBED::RunSplit()
+void GenomicRegionBED::RunSplit(bool by_chrom_and_strand)
 {
   for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) PrintModified(LABEL,(*i)->START,(*i)->STOP);
 }
@@ -2817,7 +2831,7 @@ void GenomicRegionSAM::PrintConstrained(GenomicRegion *r, bool merge_labels)
 
 //---------PrintModified-----------
 //
-void GenomicRegionSAM::PrintModified(char *label, long int start, long int stop)
+void GenomicRegionSAM::PrintModified(const char *label, long int start, long int stop)
 {
   if (IsCompatible(false)==false) PrintError("intervals should have the same chromosome/strand for this operation!");
   printf("%s\t%ld\t%s\t%ld\t%d\t%ldM\t%s\t%d\t%d\t%s\t%s", label, FLAG, I.front()->CHROMOSOME, start, 255, stop-start+1, RNEXT, 0, 0, "*", "*"); 
@@ -3271,7 +3285,7 @@ void GenomicRegionSAM::Sort()
   
 //---------RunSplit-----------
 //
-void GenomicRegionSAM::RunSplit()
+void GenomicRegionSAM::RunSplit(bool by_chrom_and_strand)
 {
   CIGARTokens::iterator tok_it = T.begin();
   char *seq = SEQ;
@@ -3518,7 +3532,7 @@ void GenomicRegionGFF::PrintConstrained(GenomicRegion *r, bool merge_labels)
 
 //---------PrintModified-----------
 //
-void GenomicRegionGFF::PrintModified(char *label, long int start, long int stop)
+void GenomicRegionGFF::PrintModified(const char *label, long int start, long int stop)
 {
   if (IsCompatible(false)==false) PrintError("intervals should have the same chromosome/strand for this operation!");
   printf("%s\t%s\t%s\t%ld\t%ld\t%s\t%c\t%c", I.front()->CHROMOSOME, SOURCE, FEATURE, start, stop, SCORE, I.front()->STRAND, FRAME);
@@ -3586,7 +3600,7 @@ void GenomicRegionGFF::Select(bool first, bool last, bool from5p, bool from3p)
 
 //---------RunSplit-----------
 //
-void GenomicRegionGFF::RunSplit()
+void GenomicRegionGFF::RunSplit(bool by_chrom_and_strand)
 {
   Print();
 }
@@ -3655,7 +3669,7 @@ GenomicRegionSet::GenomicRegionSet(FILE *file_ptr, unsigned long int buffer_size
   this->file_ptr = file_ptr;
   this->buffer_size = buffer_size;
   this->verbose = verbose;
-  this->from_stdin = file==NULL;
+  this->from_stdin = file_ptr==stdin;
   this->load_in_memory = from_stdin==true?false:load_in_memory;
   this->buffer = NULL;
   Init();
@@ -3751,8 +3765,8 @@ void GenomicRegionSet::Init()
     ProcessFileHeader(true);
     n_regions = 0;
     for (char *next=buffer->Get(); next!=NULL; next=buffer->Next()) n_regions++;
-    delete buffer; 
-    buffer = file_ptr==NULL?CreateFileBuffer(file,buffer_size):new FileBufferText(file_ptr,buffer_size);
+    if (file_ptr==NULL) { delete buffer; buffer = CreateFileBuffer(file,buffer_size); }
+    else buffer->Reset();
     DetectFileFormat();   
     if (format=="SEQ") n_regions /= 2;
   }
@@ -3791,28 +3805,18 @@ void GenomicRegionSet::Reset()
   if (from_stdin) PrintError("stdin cannot be reset!\n"); 
 
   if (load_in_memory) {
-
+	  r_index = 0;
   }
   else {
-    if (buffer!=NULL) delete buffer;
-    buffer = CreateFileBuffer(file,buffer_size);
-    n_regions = 1;
-    buffer->Next();
-    R[0] = CreateGenomicRegion(buffer);
+	  // first, delete all structures
+	  if ((buffer!=NULL)&&(file_ptr==NULL)) delete buffer;
+	  if (R!=NULL) delete [] R;
+
+	  // re-initialize
+	  Init();
   }
-  
-  r_index = 0;
 }
 
-
-
-//---------Begin--------
-//
-GenomicRegion *GenomicRegionSet::Begin()
-{
-  Reset();
-  return Get();
-}
 
 
 
@@ -3889,22 +3893,6 @@ void GenomicRegionSet::PrintError(string error_msg)
   exit(1);
 }
 
-
-
-//---------CountRegions--------
-//
-long int GenomicRegionSet::CountRegions(bool use_label_counts)
-{
-  if (from_stdin) PrintError("this operation cannot be executed if the file is being read from stdin!");  
-
-  Progress PRG("Counting...",n_regions);
-  long int n_counts = 0;
-  for (GenomicRegion *r=Begin(); r!=NULL; r=Next(),PRG.Check()) n_counts += use_label_counts?max(1L,atol(r->LABEL)):1;
-  PRG.Done();
-  //Reset();
-
-  return n_counts;
-}
 
 
 
@@ -4176,11 +4164,11 @@ void GenomicRegionSet::RunSort()
 
 //---------RunSplit--------
 //
-void GenomicRegionSet::RunSplit()
+void GenomicRegionSet::RunSplit(bool by_chrom_and_strand)
 {
   if (n_regions==0) return;
   Progress PRG("Splitting regions...",n_regions);
-  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) r->RunSplit();
+  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) r->RunSplit(by_chrom_and_strand);
   PRG.Done();
 }
 
@@ -4468,49 +4456,18 @@ void GenomicRegionSet::RunExtractSeq(Chromosomes *C, bool replace)
 //---------------------------------------//
 
 
-//---------RunGlobalAnnotate--------
+//---------RunGlobalCreateAnnotator--------
 //
-void GenomicRegionSet::RunGlobalAnnotate(StringLIntMap *bounds)
+void GenomicRegionSet::RunGlobalCreateAnnotator(StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance)
 {
   if (load_in_memory==false) PrintError("need to load entire region set into memory for this operation!");
   if (n_regions==0) return;
 
-  Progress PRG("Annotating regions...",n_regions);
-  for (long int n=0; n<n_regions; n++,PRG.Check()) {
-    if (R[n]->IsCompatibleSortedAndNonoverlapping()==false) R[n]->PrintError("region intervals must be compatible, sorted and non-overlapping for this operation!");
-    if (R[n]->IsCompatible(false)==false) R[n]->PrintError("region intervals must have the same chromosome and strand for this operation!");
-    if (bounds->find(R[n]->I.front()->CHROMOSOME)==bounds->end()) continue;
-    
-    long int prev_stop = ((n==0)||(strcmp(R[n]->I.front()->CHROMOSOME,R[n-1]->I.front()->CHROMOSOME)!=0)) ? 0 : R[n-1]->I.front()->STOP;
-    long int next_start = ((n==n_regions-1)||(strcmp(R[n]->I.front()->CHROMOSOME,R[n+1]->I.front()->CHROMOSOME)!=0)) ? (*bounds)[R[n]->I.front()->CHROMOSOME]+1 : R[n+1]->I.front()->START;
-
-    if (prev_stop+1<=R[n]->I.front()->START-1) {
-      if (R[n]->I.front()->STRAND=='+') cout << "upstream"; else cout << "downstream";
-      cout << '|' << R[n]->LABEL << '\t' << R[n]->I.front()->CHROMOSOME << ' ' << R[n]->I.front()->STRAND << ' ' << prev_stop+1 << ' ' << R[n]->I.front()->START-1 << '\n';
-    }
-
-    cout << (R[n]->I.front()->STRAND=='+'?"TSS":"TES") << '|' << R[n]->LABEL << '\t';
-    R[n]->I.front()->Print(); 
-    GenomicIntervalSet::iterator i=R[n]->I.begin(), j=R[n]->I.begin();
-    for (i++; i!=R[n]->I.end(); i++,j++) {
-      if ((*i)->START-1>=(*j)->STOP+1) {
-        cout << "intron" << '|' << R[n]->LABEL << '\t' << R[n]->I.front()->CHROMOSOME << ' ' << R[n]->I.front()->STRAND << ' ' << (*j)->STOP+1 << ' ' << (*i)->START-1 << '\n';
-      }
-      if (*i!=R[n]->I.back()) {
-        cout << "exon" << '|' << R[n]->LABEL << '\t';
-        (*i)->Print();
-      }
-    }
-    cout << (R[n]->I.front()->STRAND=='+'?"TES":"TSS") << '|' << R[n]->LABEL << '\t';
-    R[n]->I.back()->Print(); 
-    
-    if (R[n]->I.front()->STOP+1<=next_start-1) {
-      if (R[n]->I.front()->STRAND=='+') cout << "downstream"; else cout << "upstream";
-      cout << '|' << R[n]->LABEL << '\t' << R[n]->I.front()->CHROMOSOME << ' ' << R[n]->I.front()->STRAND << ' ' << R[n]->I.front()->STOP+1 << ' ' << next_start-1 << '\n';
-    }
-  }
-  PRG.Done();
-
+  char *bin_bits = StrCopy("17,20,23,26");
+  GenomicRegionSet *UpstreamRefRegSet = CreateGenomicRegionSetAnnotator(this,bounds,ignore_strand,upstream_max_distance,upstream_min_distance,bin_bits);
+  for (GenomicRegion *r=UpstreamRefRegSet->Get(); r!=NULL; r=UpstreamRefRegSet->Next()) r->Print();
+  delete UpstreamRefRegSet;
+  delete bin_bits;
 }
 
 
@@ -4627,21 +4584,38 @@ void GenomicRegionSet::RunGlobalInvert(StringLIntMap *bounds)
 
 //---------RunGlobalLink--------
 //
-void GenomicRegionSet::RunGlobalLink(bool sorted_by_strand, long int max_difference)
+void GenomicRegionSet::RunGlobalLink(bool sorted_by_strand, long int max_difference, char *label_func)
 {
   if (n_regions==0) return;
+  bool is_func = (strcmp(label_func,"min")==0)||(strcmp(label_func,"max")==0)||(strcmp(label_func,"sum")==0);
   Progress PRG("Linking regions...",n_regions);
   for (GenomicRegion *r=Get(); r!=NULL; ) {
     if (r->I.size()!=1) r->PrintError("not a single-interval region!");
     GenomicRegion *r0 = r; 
     long int new_stop = r0->I.front()->STOP; 
+	string new_label = strlen(label_func)>0?r0->LABEL:"_";
+	double new_val = (double)atof(r0->LABEL);
     while (true) {
       if ((r=Next(sorted_by_strand,r==r0))!=NULL) {
         if (r->I.size()!=1) r->PrintError("not a single-interval region!");
         PRG.Check();
-        if (r0->I.front()->IsCompatibleWith(r->I.front(),!sorted_by_strand)&&(r->I.front()->START-new_stop<=max_difference)) { new_stop = max(r->I.front()->STOP,new_stop); continue; }
+        if (r0->I.front()->IsCompatibleWith(r->I.front(),!sorted_by_strand)&&(r->I.front()->START-new_stop<=max_difference)) { 
+		  new_stop = max(r->I.front()->STOP,new_stop); 
+		  if (strlen(label_func)>0) {
+			if (is_func==false) new_label += (string)label_func + (string)r->LABEL;
+		    else if (strcmp(label_func,"min")==0) new_val = min(new_val,(double)atof(r->LABEL));
+		    else if (strcmp(label_func,"max")==0) new_val = max(new_val,(double)atof(r->LABEL));
+		    else if (strcmp(label_func,"sum")==0) new_val = new_val + (double)atof(r->LABEL);
+		  }
+		  continue; 
+		}
       }
-      r0->PrintModified((char*)"_",r0->I.front()->START,new_stop);
+	  if (is_func) {
+	    stringstream s;
+		s << new_val;
+		new_label = s.str();
+	  }
+      r0->PrintModified(new_label.c_str(),r0->I.front()->START,new_stop);
       break;
     }
     Release(r0);
@@ -5953,7 +5927,7 @@ char ProcessStrand(char *strand)
 {
   if ((strcmp(strand,"1")==0)||(strcmp(strand,"+")==0)) return '+';
   else if ((strcmp(strand,"-1")==0)||(strcmp(strand,"-")==0)) return '-';
-  else if (strcmp(strand,".")==0) return '.';
+  else if (strcmp(strand,".")==0) return '+';
   else { cerr << "Error: invalid strand '" << strand << "'!\n"; exit(1); }
 }
 
@@ -6096,7 +6070,7 @@ GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_s
 	// determine chromosome limits
 	if (rset->load_in_memory==false) { fprintf(stderr, "Error: [BinGenomicRegions] region set must be loaded in memory!\n"); exit(1); }
 	Progress PRG0("[BinGenomicRegions] Determining chromosome limits...",rset->n_regions);
-	for (GenomicRegion *r=rset->Begin(); r!=NULL; r=rset->Next()) {
+	for (GenomicRegion *r=rset->Get(); r!=NULL; r=rset->Next()) {
 		r->Sort();
 		GenomicInterval *i = r->I.front();
 		GenomicRegionSetBins::iterator p = bins->find(i->CHROMOSOME);
@@ -6126,7 +6100,8 @@ GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_s
 
 	// assign genomic regions to bins
 	Progress PRG2("[BinGenomicRegions] Assigning genomic regions to bins...",rset->n_regions);
-	for (GenomicRegion *r=rset->Begin(); r!=NULL; r=rset->Next()) {
+	rset->Reset();
+	for (GenomicRegion *r=rset->Get(); r!=NULL; r=rset->Next()) {
 		GenomicInterval *i = r->I.front();
     	GenomicRegionSetBins::iterator p = bins->find(i->CHROMOSOME);
 		if (p!=bins->end()) {
@@ -6196,6 +6171,98 @@ OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_
 
 
 
+//---------CountGenomicRegions--------
+//
+long int CountGenomicRegions(char *reg_file, bool use_label_counts)
+{
+  GenomicRegionSet rset(reg_file,10000,false,false,true);
+  Progress PRG("Counting genomic regions...",1);
+  long int n_counts = 0;
+  for (GenomicRegion *r=rset.Get(); r!=NULL; r=rset.Next(),PRG.Check()) n_counts += use_label_counts?max(1L,atol(r->LABEL)):1;
+  PRG.Done();
+  return n_counts;
+}
 
 
+
+//---------CreateGenomicRegionSetAnnotator--------
+//
+GenomicRegionSet *CreateGenomicRegionSetAnnotator(GenomicRegionSet *RefRegSet, StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance, char *bin_bits)
+{
+	// constants
+	const unsigned long int buffer_size = 10000;
+	bool verbose = false;
+	bool match_gaps = true;
+
+	// create upstream reference regions
+	FILE *F = tmpfile();
+	if (F==NULL) { cerr << "Error: cannot open temporary file!\n"; exit(1); }
+	Progress PRG("Creating upstream regions...",1);
+    for (GenomicRegion *ireg=RefRegSet->Get(); ireg!=NULL; ireg=RefRegSet->Next()) {
+        if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
+        char strand = ireg->I[0]->STRAND;
+        long int start = ireg->I[0]->START;
+        long int stop = ireg->I[0]->STOP;
+        long int new_start = strand=='+'?max(start-upstream_max_distance,1L):stop+1;
+        long int new_stop = strand=='+'?max(start-1,1L):stop+upstream_max_distance;
+        if (bounds) new_stop = min(new_stop,(*bounds)[ireg->I[0]->CHROMOSOME]);
+    	fprintf(F, "upstream:%s\t%s %c %ld %ld\n", ireg->LABEL, ireg->I[0]->CHROMOSOME, strand, new_start, new_stop);
+    	PRG.Check();
+    }
+	PRG.Done();
+    RefRegSet->Reset();
+    rewind(F);
+
+    // open as region set and create index
+    GenomicRegionSet *UpstreamRefRegSet = new GenomicRegionSet(F,buffer_size,verbose,true,true);
+
+	// create non-overlapping set of upstream regions
+    if (upstream_min_distance<upstream_max_distance) {
+    	GenomicRegionSetIndex UpstreamRefIndex(UpstreamRefRegSet,bin_bits);
+    	FILE *F2 = tmpfile();
+    	Progress PRG1("Creating a non-overlapping set of upstream regions...",1);
+    	for (GenomicRegion *ureg=UpstreamRefRegSet->Get(); ureg!=NULL; ureg=UpstreamRefRegSet->Next()) {
+    		GenomicInterval *uint = ureg->I[0];
+    		long int start = uint->START;
+    		long int stop = uint->STOP;
+        	for (GenomicRegion *r=UpstreamRefIndex.GetOverlap(uint,match_gaps,ignore_strand); r!=NULL; r=UpstreamRefIndex.NextOverlap(match_gaps,ignore_strand)) {
+        		GenomicInterval *iint = r->I[0];
+        		if (iint==uint) continue;
+        		if (uint->STRAND!=iint->STRAND) continue;
+        		if (uint->STRAND=='+') {
+        			if (uint->STOP>iint->STOP) {		// if it overlaps with another upstream region, trim 5-prime
+        				start = max(start,iint->STOP+1);
+        				if ((upstream_min_distance>0)&&(stop-start+1<upstream_min_distance)) start = max(1L,stop-upstream_min_distance+1); 	// but if too short, then correct
+        			}
+        		}
+        		else {
+        			if (iint->START>uint->START) {		// if it overlaps with another upstream region, trim 5-prime
+            			stop = min(stop,iint->START-1);
+        				if ((upstream_min_distance>0)&&(stop-start+1<upstream_min_distance)) {
+        					stop = start+upstream_min_distance-1; 	// but if too short, then correct
+        			        if (bounds) stop = min(stop,(*bounds)[iint->CHROMOSOME]);
+        				}
+        			}
+        		}
+        		/*
+        		cerr << "-----\n";
+        		cerr << "uint = "; uint->PrintInterval(stderr); cerr << '\n';
+        		cerr << "iint = "; iint->PrintInterval(stderr); cerr << '\n';
+        		cerr << "new-uint = " << start << ' ' << stop << '\n';
+        		*/
+        		if (start>stop) break;
+        	}
+        	if (start<=stop) fprintf(F2, "%s\t%s %c %ld %ld\n", ureg->LABEL, uint->CHROMOSOME, uint->STRAND, start, stop);
+        	PRG.Check();
+        }
+    	PRG.Done();
+        rewind(F2);
+
+        // re-open as region set and re-create index
+        delete UpstreamRefRegSet;
+        UpstreamRefRegSet = new GenomicRegionSet(F2,buffer_size,verbose,true,true);
+    }
+
+    return UpstreamRefRegSet;
+}
 

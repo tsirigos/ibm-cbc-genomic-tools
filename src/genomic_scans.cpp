@@ -159,9 +159,6 @@ double Max_(double x, double y)
 
 
 
-
-
-
 //---------------------------------------------------------------------------------------------------------------------------//
 // CLASS: PeakFinder                                                                                                         //
 //---------------------------------------------------------------------------------------------------------------------------//
@@ -196,17 +193,15 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   effective_genome_size = uniq_reg_file==NULL?CalcBoundSize(bounds):CalcRegSize(uniq_reg_file);
   fprintf(stderr, "* Effective genome size = %lu\n", effective_genome_size);
     
+  n_signal_reads = CountGenomicRegions(signal_reg_file,USE_COUNTS);
   SignalRegSet = new GenomicRegionSet(signal_reg_file,BUFFER_SIZE,VERBOSE,false,true);
-  n_signal_reads = USE_COUNTS?SignalRegSet->CountRegions(USE_COUNTS):CountLines(signal_reg_file,BUFFER_SIZE);
-  SignalRegSet->Reset();
   p_signal = (double)n_signal_reads/effective_genome_size;
   if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
   else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
 
   if (control_reg_file!=NULL) {
+    n_control_reads = CountGenomicRegions(control_reg_file,USE_COUNTS);
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
-    n_control_reads = USE_COUNTS?ControlRegSet->CountRegions(USE_COUNTS):CountLines(control_reg_file,BUFFER_SIZE);
-    ControlRegSet->Reset();
     p_control = (double)n_control_reads/effective_genome_size;
     if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
     else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
@@ -422,6 +417,7 @@ int main(int argc, char* argv[])
   
   return 0;
 }
+
 
 
 

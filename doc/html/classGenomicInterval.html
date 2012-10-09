@@ -54,7 +54,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <!-- doxytag: class="GenomicInterval" -->
-<p>set of CIGAR operations that map to the fragment sequence (SAM format)  
+<p>This class implements the genomic interval.  
  <a href="classGenomicInterval.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="genomic__intervals_8h_source.html">genomic_intervals.h</a>&gt;</code></p>
@@ -188,13 +188,12 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">interval stop position in the chromosome (&lt;=chromosome_size) <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>set of CIGAR operations that map to the fragment sequence (SAM format) </p>
-<p>This class implements the genomic interval.</p>
+<div class="textblock"><p>This class implements the genomic interval. </p>
 <p>Genomic intervals can be constructed from strings that follow this format:</p>
 <p>CHROMOSOME <em>&lt;SPACE&gt;</em> STRAND <em>&lt;SPACE&gt;</em> START <em>&lt;SPACE&gt;</em> STOP</p>
 <p>Example: </p>
-<div class="fragment"><pre class="fragment">    <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> x(<span class="stringliteral">&quot;chr1&quot;</span>,<span class="charliteral">&#39;+&#39;</span>,132034,135932);
-    <a class="code" href="classGenomicInterval.html" title="set of CIGAR operations that map to the fragment sequence (SAM format)">GenomicInterval</a> y(<span class="stringliteral">&quot;chr1 + 135832 140102&quot;</span>);
+<div class="fragment"><pre class="fragment">    <a class="code" href="classGenomicInterval.html" title="This class implements the genomic interval.">GenomicInterval</a> x(<span class="stringliteral">&quot;chr1&quot;</span>,<span class="charliteral">&#39;+&#39;</span>,132034,135932);
+    <a class="code" href="classGenomicInterval.html" title="This class implements the genomic interval.">GenomicInterval</a> y(<span class="stringliteral">&quot;chr1 + 135832 140102&quot;</span>);
     cout &lt;&lt; <span class="stringliteral">&quot;size of interval x = &quot;</span> &lt;&lt; x.GetSize() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;
     cout &lt;&lt; <span class="stringliteral">&quot;size of interval y = &quot;</span> &lt;&lt; y.GetSize() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;
     cout &lt;&lt; <span class="stringliteral">&quot;overlap of x and y = &quot;</span> &lt;&lt; x.GetOverlap(&amp;y) &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;    
@@ -436,7 +435,7 @@ long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Jun 28 2012 07:50:44 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
