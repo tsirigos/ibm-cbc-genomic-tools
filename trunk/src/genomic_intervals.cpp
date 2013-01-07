@@ -1899,9 +1899,6 @@ GenomicRegionSEQ::GenomicRegionSEQ(FileBuffer *B)
 //
 GenomicRegionSEQ::~GenomicRegionSEQ()
 {
-  if (LABEL!=NULL) delete LABEL;
-  for (GenomicIntervalSet::iterator i=I.begin(); i!=I.end(); i++) delete *i;
-  I.clear();
   delete SEQ;
 }
 
@@ -1925,7 +1922,7 @@ void GenomicRegionSEQ::PrintSearch(char *pattern, bool header, bool summary)
       plen = strlen(P[k]);
       if (seq_len-pos<plen) continue;
       for (size_t j=0; j<plen; j++) 
-        if (SEQ[pos+j]!=P[k][j]) { match = false; break; }
+        if ((P[k][j]!='N')&&(SEQ[pos+j]!=P[k][j])) { match = false; break; }
         else match = true;
     }
     if (match) {
@@ -4398,7 +4395,7 @@ void GenomicRegionSet::PrintVerifySeq(Chromosomes *C, bool ignore)
 
 //---------RunConvertToWIG--------
 //
-void GenomicRegionSet::RunConvertToWIG(char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)
+void GenomicRegionSet::RunConvertToWIG(char *title, char *color, char *position, char *options, double scale, long int span, bool convert_chromosome)
 {
   if (n_regions==0) return;
   bool ignore_strand = true;
@@ -4412,7 +4409,7 @@ void GenomicRegionSet::RunConvertToWIG(char *title, char *color, char *position,
     PrintChromosome(chromosome,convert_chromosome);
     printf(" span=%ld\n", span);
     while (strcmp(r->I.front()->CHROMOSOME,chromosome)==0) {
-      printf("%ld %s\n", r->I.front()->START, r->LABEL);
+      printf("%ld %.6e\n", r->I.front()->START, atof(r->LABEL)*scale);
       r = Next(!ignore_strand,false);
       if (r==NULL) break;
       PRG.Check();
@@ -4895,6 +4892,14 @@ void SortedGenomicRegionSetScanner::PrintInterval(FILE *out_file)
 }
 
 
+//---------GetInterval--------
+//
+GenomicInterval *SortedGenomicRegionSetScanner::GetInterval()
+{
+  return new GenomicInterval(chr->first.c_str(),strand,stop-win_size+1,stop);
+}
+
+
 //---------Next--------
 //
 long int SortedGenomicRegionSetScanner::Next()
@@ -5087,6 +5092,14 @@ void UnsortedGenomicRegionSetScanner::Init()
 void UnsortedGenomicRegionSetScanner::PrintInterval(FILE *out_file)
 {
 	fprintf(out_file, "%s %c %ld %ld", current_chr->first.c_str(), current_strand, win_step*(current_win-1)+1, win_step*(current_win-1)+win_size);
+}
+
+
+//---------GetInterval--------
+//
+GenomicInterval *UnsortedGenomicRegionSetScanner::GetInterval()
+{
+	return new GenomicInterval(current_chr->first.c_str(),current_strand,win_step*(current_win-1)+1,win_step*(current_win-1)+win_size);
 }
 
 

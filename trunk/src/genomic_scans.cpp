@@ -60,8 +60,9 @@ bool NORM;
 bool COMPARE;
 bool USE_COUNTS;
 char *METHOD;
-double PVALUE;
-bool DETAILS;
+double PVAL_CUTOFF;
+double QVAL_CUTOFF;
+bool PRINT_DETAILS;
 
 
 
@@ -131,8 +132,9 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-norm", &NORM, false, "equalize background probabilities");
     cmd_line->AddOption("-cmp", &COMPARE, false, "compare signal to control window");
-    cmd_line->AddOption("-pval", &PVALUE, 1.0, "pvalue cutoff");
-    cmd_line->AddOption("-D", &DETAILS, false, "print details");
+    cmd_line->AddOption("-pval", &PVAL_CUTOFF, 1.0, "pvalue cutoff");
+    cmd_line->AddOption("-qval", &QVAL_CUTOFF, 0.05, "qvalue cutoff");
+    cmd_line->AddOption("-D", &PRINT_DETAILS, false, "print details");
   }
   else {
     cerr << "Unknown operation '" << op << "'!\n";
@@ -156,6 +158,53 @@ double Max_(double x, double y)
   return x>y?x:y;
 }
 
+
+//-----ComputeQValues----------
+//
+double ComputeQValues(list<double> pval, list<double>pval_rnd, long int n_permutations, double qval_cutoff)
+{
+  // sort p-values
+  list<double> pval_sorted = pval;
+  list<double> pval_rnd_sorted = pval_rnd;
+  pval_sorted.sort();
+  pval_rnd_sorted.sort();
+  
+  // scan random p-values  
+  long int n = pval_sorted.size();
+  unsigned long int *counts = new unsigned long int[n];
+  for (long int k=0; k<n; k++) counts[k] = 0;
+  long int k = 0;
+  for (list<double>::iterator i=pval_sorted.begin(),j=pval_rnd_sorted.begin(); (i!=pval_sorted.end())&&(j!=pval_rnd_sorted.end()); j++) {
+    while ((i!=pval_sorted.end())&&(*j>*i)) { i++; k++; }
+    if (k<n-1) counts[k]++;
+  }
+
+  // compute q-values
+  double *q_sorted = new double[n];
+  for (long int k=0; k<n; k++) {
+    q_sorted[k] = (float)counts[k]/n_permutations/(k+1);
+    if (k+1==n) break;
+    counts[k+1] += counts[k];
+  }
+  //printf("counts = ["); for (long int k=0; k<n; k++) printf(" %ld", counts[k]); printf(" ]\n");
+  //printf("q_sorted = ["); for (long int k=0; k<n; k++) printf(" %.4e", q_sorted[k]); printf(" ]\n");
+
+  // correct q-values
+  float min_q = q_sorted[n-1];
+  list<double>::reverse_iterator p = pval_sorted.rbegin();
+  double pval_cutoff = -1.0;
+  for (long int k=n-2; k>=0; k--,p++) {
+    if (min_q<=qval_cutoff) { pval_cutoff = *p; break; }
+    if (q_sorted[k]>min_q) q_sorted[k] = min_q;
+    else min_q = q_sorted[k];
+  }
+    
+  // cleanup
+  delete counts;
+  delete q_sorted;
+  
+  return pval_cutoff;
+}
 
 
 
@@ -245,6 +294,9 @@ PeakFinder::~PeakFinder()
 //
 void PeakFinder::Run()
 {
+  list<double> pval1_list, pval2_list;
+  list<GenomicInterval*> interval_list;
+  
   long int v1, v2, v0;
   Progress PRG("Scanning...",1);
   while (((v1=signal_scanner->Next())!=-1)) {
@@ -256,7 +308,6 @@ void PeakFinder::Run()
     if (NORM) { if (p_ratio<1.0) v2 = (long int)floor((float)v2*p_ratio); else v1 = (long int)floor((float)v1/p_ratio); }
 
     // statistical test
-    //if ((v1>=MIN_READS)||(v2>=MIN_READS)) {
     if (v1>=MIN_READS) {
       double pval1, pval2;
       if (COMPARE) {
@@ -302,23 +353,30 @@ void PeakFinder::Run()
         else { cerr << "Error: unknown probability distribution!\n"; exit(1); }
       }
 
-      //if ((pval1<=PVALUE)||(pval2<=PVALUE)) {
-      if (pval1<=PVALUE) {
-        if (DETAILS) {
-          signal_scanner->PrintInterval();
-          printf("\t%ld\t%ld\t%ld\t%.2e\t%.2e\t%f\n", v0, v1, v2, pval1, pval2, -(log(pval1)-log(pval2))/log(10.0));
-        }
-        else {
-          printf("%.2e\t", pval1);
-          signal_scanner->PrintInterval();
-          printf("\n");
-        }
+      if (pval1<=PVAL_CUTOFF) {
+	    interval_list.push_back(signal_scanner->GetInterval());
+		pval1_list.push_back(pval1);
+		pval2_list.push_back(pval2);
       }
 
     }
     PRG.Check();
   }
   PRG.Done();
+
+  double pval_cutoff = ComputeQValues(pval1_list,pval2_list,1,QVAL_CUTOFF);
+  long int n = interval_list.size();
+  Progress PRG2("Printing...",n);
+  list<GenomicInterval*>::iterator g = interval_list.begin(); 
+  list<double>::iterator p = pval1_list.begin();
+  list<double>::iterator prnd = pval2_list.begin();
+  for (long int k=0; k<n; k++,g++,p++,prnd++) {
+    //if (PRINT_DETAILS) printf("%.4e|%.4e|%.4e\t", *p, *prnd, qval[k]);
+    if (*p<=pval_cutoff) { printf("%.4e\t", *p); (*g)->Print(); }
+	PRG.Check();
+  }
+  PRG.Done();
+  interval_list.clear();
 }
 
 

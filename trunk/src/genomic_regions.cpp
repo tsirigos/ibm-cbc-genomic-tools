@@ -85,6 +85,7 @@ char *OFFSET_OP;
 bool OFFSET_FRACTION;
 char *TRACK_TITLE;
 char *TRACK_COLOR;
+double TRACK_SCALE;
 long int TRACK_SPAN;
 char *TRACK_POSITION;
 char *TRACK_OPTIONS;
@@ -651,6 +652,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="wig") {
     cmd_line->AddOption("-t", &TRACK_TITLE, "", "title");
     cmd_line->AddOption("-c", &TRACK_COLOR, "200,0,0", "color");
+    cmd_line->AddOption("-scale", &TRACK_SCALE, 1.0, "multiply values by constant factor");
     cmd_line->AddOption("-s", &TRACK_SPAN, 1, "span");
     cmd_line->AddOption("-p", &TRACK_POSITION, "", "browser position");
     cmd_line->AddOption("-o", &TRACK_OPTIONS, "", "track type options");
@@ -711,7 +713,8 @@ int main(int argc, char* argv[])
 
   // open region sets
   bool hide_header = ((cmd_line->current_cmd_operation=="bed")||(cmd_line->current_cmd_operation=="reg"))?true:false;
-  GenomicRegionSet RegSet(REG_FILE,BUFFER_SIZE,VERBOSE,true,hide_header);
+  bool load_in_memory = (cmd_line->current_cmd_operation=="gsort")?true:false;
+  GenomicRegionSet RegSet(REG_FILE,BUFFER_SIZE,VERBOSE,load_in_memory,hide_header);
 
   //----------------------------------------------//
   //  Line-based (horizontal) operations          //
@@ -740,7 +743,7 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="split") RegSet.RunSplit(SPLIT_BY_CHROM_AND_STRAND);
   else if (cmd_line->current_cmd_operation=="strand") RegSet.RunModifyStrand(STRAND_OP,STRAND_SORTED);
   else if (cmd_line->current_cmd_operation=="union") RegSet.RunUnion();
-  else if (cmd_line->current_cmd_operation=="wig") RegSet.RunConvertToWIG(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,TRACK_OPTIONS,TRACK_SPAN,CONVERT_CHROMOSOME);
+  else if (cmd_line->current_cmd_operation=="wig") RegSet.RunConvertToWIG(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,TRACK_OPTIONS,TRACK_SCALE,TRACK_SPAN,CONVERT_CHROMOSOME);
   else if (cmd_line->current_cmd_operation=="win") RegSet.RunSlidingWindows(WIN_STEP,WIN_SIZE);
   else if (cmd_line->current_cmd_operation=="x") RegSet.RunExtractSeq(C,REPLACE);
   

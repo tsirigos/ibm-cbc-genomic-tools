@@ -142,8 +142,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans input regions in sliding windows and reports count distribution (input regions must be sorted). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a8eecab08da40227d4b3ba70043c54df8">RunGlobalScanCount</a> (StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans input regions in sliding windows (input regions must be sorted). See also class <a class="el" href="classGenomicRegionSetScanner.html" title="Abstract class for scanning a set of genomic regions by sliding windows.">GenomicRegionSetScanner</a>.  <a href="#a8eecab08da40227d4b3ba70043c54df8"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6377c10b1e9903ff5ae3b0ff9fe20e4d"></a><!-- doxytag: member="GenomicRegionSet::RunConvertToWIG" ref="a6377c10b1e9903ff5ae3b0ff9fe20e4d" args="(char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a6377c10b1e9903ff5ae3b0ff9fe20e4d">RunConvertToWIG</a> (char *title, char *color, char *position, char *options, long int span, bool convert_chromosome)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5baa7f1d97da31d6e0258fea1780e8ed"></a><!-- doxytag: member="GenomicRegionSet::RunConvertToWIG" ref="a5baa7f1d97da31d6e0258fea1780e8ed" args="(char *title, char *color, char *position, char *options, double scale, long int span, bool convert_chromosome)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#a5baa7f1d97da31d6e0258fea1780e8ed">RunConvertToWIG</a> (char *title, char *color, char *position, char *options, double scale, long int span, bool convert_chromosome)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints in Wiggle format. If <b>convert_chromosome</b> is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada3da7ef918c09867341cda32881d63e"></a><!-- doxytag: member="GenomicRegionSet::RunAlign" ref="ada3da7ef918c09867341cda32881d63e" args="(Chromosomes *C)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGenomicRegionSet.html#ada3da7ef918c09867341cda32881d63e">RunAlign</a> (<a class="el" href="classChromosomes.html">Chromosomes</a> *C)</td></tr>
@@ -598,7 +598,7 @@ Private Member Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Oct 9 2012 by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Mon Jan 7 2013 by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

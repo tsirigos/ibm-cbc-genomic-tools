@@ -60,6 +60,8 @@ int HIST_NBINS;
 int HIST_NBINS_COMBINE;
 double HIST_MIN;
 double HIST_MAX;
+bool HIST_AUTOMIN;
+bool HIST_AUTOMAX;
 char *SEPARATOR;
 
 
@@ -81,38 +83,38 @@ void Usage()
   fprintf(stderr, "  Perform vector operations using double-precision floating-point arithmetic.\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "OPERATIONS: \n");
-  fprintf(stderr, "  * -absmax     absolute maximum\n");
-  fprintf(stderr, "  * -bins       create bins for vector values\n");
-  fprintf(stderr, "  * -cutoff     apply cutoff\n");
-  fprintf(stderr, "  * -div        divide\n");
-  fprintf(stderr, "  * -exp        compute the exponential (inverse of log)\n");
-  fprintf(stderr, "  * -fold       compute fold changes\n");
-  fprintf(stderr, "  * -format     format vectors\n");
-  fprintf(stderr, "  * -hist       histogram (all vectors)\n");
-  fprintf(stderr, "  * -imax       maximum index\n");
-  fprintf(stderr, "  * -imin       minimum index\n");
-  fprintf(stderr, "  * -items      convert to itemset format\n");
-  fprintf(stderr, "  * -log        compute the logarithm\n");
-  fprintf(stderr, "  * -m          mean\n");
-  fprintf(stderr, "  * -max        maximum\n");
-  fprintf(stderr, "  * -med        median\n");
-  fprintf(stderr, "  * -merge      merge consecutive vectors with identical labels\n");
-  fprintf(stderr, "  * -min        minimum\n");
-  fprintf(stderr, "  * -n          size\n");
-  fprintf(stderr, "  * -norm       normalize\n");
-  fprintf(stderr, "  * -pairs      create all vector pairs\n");
-  fprintf(stderr, "  * -permute    permute order of vectors\n");
-  fprintf(stderr, "  * -pow        compute the power\n");
-  fprintf(stderr, "  * -q          quantiles\n");
-  fprintf(stderr, "  * -rev        reverse\n");
-  fprintf(stderr, "  * -sd         standard deviation\n");
-  fprintf(stderr, "  * -shuffle    shuffle vector elements\n");
-  fprintf(stderr, "  * -slide      create subvectors by a sliding window\n");
-  fprintf(stderr, "  * -sort       sort\n");
-  fprintf(stderr, "  * -sparse     convert to sparse format\n");
-  fprintf(stderr, "  * -stat       statistics\n");
-  fprintf(stderr, "  * -sum        sum\n");
-  fprintf(stderr, "  * -test       test if greater than cutoff\n");
+  fprintf(stderr, "  absmax     absolute maximum\n");
+  fprintf(stderr, "  bins       create bins for vector values\n");
+  fprintf(stderr, "  cutoff     apply cutoff\n");
+  fprintf(stderr, "  div        divide\n");
+  fprintf(stderr, "  exp        compute the exponential (inverse of log)\n");
+  fprintf(stderr, "  fold       compute fold changes\n");
+  fprintf(stderr, "  format     format vectors\n");
+  fprintf(stderr, "  hist       histogram (all vectors)\n");
+  fprintf(stderr, "  imax       maximum index\n");
+  fprintf(stderr, "  imin       minimum index\n");
+  fprintf(stderr, "  items      convert to itemset format\n");
+  fprintf(stderr, "  log        compute the logarithm\n");
+  fprintf(stderr, "  m          mean\n");
+  fprintf(stderr, "  max        maximum\n");
+  fprintf(stderr, "  med        median\n");
+  fprintf(stderr, "  merge      merge consecutive vectors with identical labels\n");
+  fprintf(stderr, "  min        minimum\n");
+  fprintf(stderr, "  n          size\n");
+  fprintf(stderr, "  norm       normalize\n");
+  fprintf(stderr, "  pairs      create all vector pairs\n");
+  fprintf(stderr, "  permute    permute order of vectors\n");
+  fprintf(stderr, "  pow        compute the power\n");
+  fprintf(stderr, "  q          quantiles\n");
+  fprintf(stderr, "  rev        reverse\n");
+  fprintf(stderr, "  sd         standard deviation\n");
+  fprintf(stderr, "  shuffle    shuffle vector elements\n");
+  fprintf(stderr, "  slide      create subvectors by a sliding window\n");
+  fprintf(stderr, "  sort       sort\n");
+  fprintf(stderr, "  sparse     convert to sparse format\n");
+  fprintf(stderr, "  stat       statistics\n");
+  fprintf(stderr, "  sum        sum\n");
+  fprintf(stderr, "  test       test if greater than cutoff\n");
   fprintf(stderr, "\n");
 }
 
@@ -133,60 +135,62 @@ CmdLine *InitCmdLine(char *method)
   cmd_line->AddOption("-B", &BUFFER_SIZE, 100000000, "input line buffer size");
   cmd_line->AddOption("-k", &VEC_SIZE, 0, "vector size (0 = auto)");
 
-  if (strcmp(method,"-cutoff")==0) {
+  if (strcmp(method,"cutoff")==0) {
     cmd_line->AddOption("-u", &UPPER, false, "use upper bound for cutoff");
     cmd_line->AddOption("-c", &CUTOFF, 0, "cutoff value");
     cmd_line->AddOption("-r", &CUTOFF_REPLACE, 0, "cutoff replacement value");
   }
-  else if (strcmp(method,"-exp")==0) {
+  else if (strcmp(method,"exp")==0) {
     cmd_line->AddOption("-b", &EXP_BASE, 10.0, "exp base");
   }
-  else if (strcmp(method,"-format")==0) {
+  else if (strcmp(method,"format")==0) {
     cmd_line->AddOption("-d", &DELIMS, "", "vector delimiters");
   }
-  else if (strcmp(method,"-hist")==0) {
+  else if (strcmp(method,"hist")==0) {
     cmd_line->AddOption("-b", &HIST_NBINS, 10, "number of bins");
     cmd_line->AddOption("-min", &HIST_MIN, 0.0, "minimum");
     cmd_line->AddOption("-max", &HIST_MAX, 1.0, "maximum");
   }
-  else if (strcmp(method,"-bins")==0) {
-    cmd_line->AddOption("--bin-size", &HIST_BIN_SIZE, 0, "bin size (if > 0, overrides -b, -min, -max)");
+  else if (strcmp(method,"bins")==0) {
+    cmd_line->AddOption("--bin-size", &HIST_BIN_SIZE, 0, "bin size (if > 0, overrides -b)");
     cmd_line->AddOption("-b", &HIST_NBINS, 10, "number of bins");
     cmd_line->AddOption("-m", &HIST_NBINS_COMBINE, 1, "number of sucessive bins to combine");
     cmd_line->AddOption("-min", &HIST_MIN, 0.0, "minimum");
     cmd_line->AddOption("-max", &HIST_MAX, 1.0, "maximum");
+    cmd_line->AddOption("--auto-min", &HIST_AUTOMIN, false, "determine minimum automatically");
+    cmd_line->AddOption("--auto-max", &HIST_AUTOMAX, false, "determine maximum automatically");
   }
-  else if (strcmp(method,"-items")==0) {
+  else if (strcmp(method,"items")==0) {
     cmd_line->AddOption("-b", &NBINS, 3, "number of bins");
   }
-  else if (strcmp(method,"-log")==0) {
+  else if (strcmp(method,"log")==0) {
     cmd_line->AddOption("-b", &LOG_BASE, 10.0, "log base");
   }
-  else if (strcmp(method,"-m")==0) {
+  else if (strcmp(method,"m")==0) {
     cmd_line->AddOption("-a", &ALPHA, 0.0, "trimmed vector parameter");
   }
-  else if (strcmp(method,"-merge")==0) {
+  else if (strcmp(method,"merge")==0) {
     cmd_line->AddOption("-t", &SEPARATOR, " ", "separator");
   }
-  else if (strcmp(method,"-norm")==0) {
+  else if (strcmp(method,"norm")==0) {
     cmd_line->AddOption("-r", &RANGE, false, "normalize vector range (default is mean/std)");
     cmd_line->AddOption("-a", &ALPHA, 0.0, "trimmed vector parameter");
   }
-  else if (strcmp(method,"-pow")==0) {
+  else if (strcmp(method,"pow")==0) {
     cmd_line->AddOption("-b", &POW, 10.0, "power of");
   }
-  else if (strcmp(method,"-sd")==0) {
+  else if (strcmp(method,"sd")==0) {
     cmd_line->AddOption("-a", &ALPHA, 0.0, "trimmed vector parameter");
   }
-  else if (strcmp(method,"-slide")==0) {
+  else if (strcmp(method,"slide")==0) {
     cmd_line->AddOption("-r", &RADIUS, 1, "radius");
     cmd_line->AddOption("-d", &DISTANCE, 1, "distance");
   }
-  else if (strcmp(method,"-sparse")==0) {
+  else if (strcmp(method,"sparse")==0) {
     cmd_line->AddOption("-d", &OFFSET, 0, "feature offset");
     cmd_line->AddOption("-0", &ZEROES, false, "do not omit zeros, only NaN values");
   }
-  else if (strcmp(method,"-test")==0) {
+  else if (strcmp(method,"test")==0) {
     cmd_line->AddOption("-g", &GREATER, false, "test if greater than");
     cmd_line->AddOption("-e", &EQUAL, false, "test if equal");
     cmd_line->AddOption("-c", &CUTOFF, 0, "cutoff value");
@@ -386,6 +390,7 @@ int main(int argc, char* argv[])
   // process command-line arguments
   if (argc<2) { Usage(); exit(1); }
   char *method = argv[1];
+  if (method[0]=='-') ++method;   // compatibility with previous versions
   CmdLine *cmdLine = InitCmdLine(method);
   cmdLine->Read(argv+1,argc-1);
   if (HELP) { 
@@ -397,7 +402,7 @@ int main(int argc, char* argv[])
   MESSAGES(VERBOSE);
 
   // load vectors
-  bool load_stdin = (strcmp(method,"-pairs")==0)||(strcmp(method,"-permute")==0);
+  bool load_stdin = (strcmp(method,"pairs")==0)||(strcmp(method,"permute")==0);
   VectorBuffer *VB = new VectorBuffer(BUFFER_SIZE,load_stdin);
   long int n_vectors = VB->n_vectors;
 
@@ -411,7 +416,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -norm: normalize vectors                                                      //
   //--------------------------------------------------------------------------------------//
-  if (strcmp(method,"-norm")==0) { 
+  if (strcmp(method,"norm")==0) { 
     Progress PRG("Normalizing rows...",n_vectors);
     while (VB->ReadNext()==true) {
       if (ALPHA>0) {
@@ -439,7 +444,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -exp: compute the exponential (inverse of log)                                //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-exp")==0) { 
+  else if (strcmp(method,"exp")==0) { 
     Progress PRG("Computing powers...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -458,7 +463,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -format: format vectors                                                       //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-format")==0) { 
+  else if (strcmp(method,"format")==0) { 
     Progress PRG("Formatting rows...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -477,7 +482,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -sort: sort vectors                                                           //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-sort")==0) { 
+  else if (strcmp(method,"sort")==0) { 
     Progress PRG("Sorting vectors...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -493,7 +498,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -shuffle: shuffle vectors                                                     //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-shuffle")==0) { 
+  else if (strcmp(method,"shuffle")==0) { 
     gsl_rng *RANDOM_GENERATOR = InitRandomGenerator(getpid()+time(NULL));
     Progress PRG("Shuffling vectors...",n_vectors);
     while (VB->ReadNext()==true) {
@@ -511,7 +516,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -rev: reverse vector order                                                    //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-rev")==0) { 
+  else if (strcmp(method,"rev")==0) { 
     Progress PRG("Reversing...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -530,7 +535,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -log: compute the logarithms                                                  //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-log")==0) { 
+  else if (strcmp(method,"log")==0) { 
     Progress PRG("Computing logarithms...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -549,7 +554,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -pow: compute the powers                                                      //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-pow")==0) { 
+  else if (strcmp(method,"pow")==0) { 
     Progress PRG("Computing powers...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -568,7 +573,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -fold: compute fold changes                                                   //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-fold")==0) { 
+  else if (strcmp(method,"fold")==0) { 
     Progress PRG("Computing fold changes...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -586,7 +591,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -cutoff: apply cutoff filter                                                  //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-cutoff")==0) {
+  else if (strcmp(method,"cutoff")==0) {
     Progress PRG("Applying cutoff...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -607,7 +612,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -test: test greater than                                                      //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-test")==0) {
+  else if (strcmp(method,"test")==0) {
     Progress PRG("Applying test...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -627,7 +632,7 @@ int main(int argc, char* argv[])
   // OPTION -slide: sum over sliding window                                               //
   //--------------------------------------------------------------------------------------//
 
-  else if (strcmp(method,"-slide")==0) {
+  else if (strcmp(method,"slide")==0) {
     Progress PRG("Printing sliding windows...",n_vectors);
     while (VB->ReadNext()==true) {
       for (long int j=RADIUS; j+RADIUS<VB->vec_size; j+=DISTANCE) {
@@ -644,7 +649,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -n: vector size                                                               //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-n")==0) {  
+  else if (strcmp(method,"n")==0) {  
     Progress PRG("Computing sizes...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -658,7 +663,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -stat: vector stat                                                            //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-stat")==0) {  
+  else if (strcmp(method,"stat")==0) {  
     Progress PRG("Computing statistics...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -680,7 +685,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -sum: vector sum                                                              //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-sum")==0) {  
+  else if (strcmp(method,"sum")==0) {  
     Progress PRG("Computing sum...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -695,7 +700,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -div: divide                                                                  //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-div")==0) {  
+  else if (strcmp(method,"div")==0) {  
     Progress PRG("Dividing...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -710,7 +715,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -min: vector min                                                              //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-min")==0) {  
+  else if (strcmp(method,"min")==0) {  
     Progress PRG("Computing min...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -725,7 +730,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -imin: vector min index                                                       //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-imin")==0) {  
+  else if (strcmp(method,"imin")==0) {  
     Progress PRG("Computing min index...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -739,7 +744,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -max: vector max                                                              //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-max")==0) {  
+  else if (strcmp(method,"max")==0) {  
     Progress PRG("Computing max...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -754,7 +759,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -absmax: vector absolute max                                                  //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-absmax")==0) {  
+  else if (strcmp(method,"absmax")==0) {  
     Progress PRG("Computing absmax...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -771,7 +776,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -imax: vector max index                                                       //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-imax")==0) {  
+  else if (strcmp(method,"imax")==0) {  
     Progress PRG("Computing max index...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -785,7 +790,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -med: vector median                                                           //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-med")==0) {  
+  else if (strcmp(method,"med")==0) {  
     Progress PRG("Computing median...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -801,7 +806,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -q: vector quantiles                                                          //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-q")==0) {  
+  else if (strcmp(method,"q")==0) {  
     Progress PRG("Computing quantiles...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -818,7 +823,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -mean: vector mean                                                            //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-m")==0) {  
+  else if (strcmp(method,"m")==0) {  
     Progress PRG("Computing mean...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -838,7 +843,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -sd: vector sd                                                                //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-sd")==0) {  
+  else if (strcmp(method,"sd")==0) {  
     Progress PRG("Computing sd...",n_vectors);
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
@@ -858,7 +863,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -sparse: convert to sparse                                                    //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-sparse")==0) { 
+  else if (strcmp(method,"sparse")==0) { 
   
     Progress PRG("Converting to sparse format...",n_vectors);
     while (VB->ReadNext()==true) {
@@ -876,7 +881,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -items: convert to itemsets                                                   //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-items")==0) { 
+  else if (strcmp(method,"items")==0) { 
     while (VB->ReadNext()==true) {
       VB->PrintLabel();
       for (long int j=0; j<VB->vec_size; j++) 
@@ -889,7 +894,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -pairs: print all vector pairs                                                //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-pairs")==0) { 
+  else if (strcmp(method,"pairs")==0) { 
     Vectors V(VB);
     Progress PRG("Print vectors pairs...",n_vectors);
     for (long int i1=0; i1<n_vectors; i1++) {
@@ -909,7 +914,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -permute: permute vectors' order                                              //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-permute")==0) { 
+  else if (strcmp(method,"permute")==0) { 
     Vectors V(VB);
     gsl_rng *RANDOM_GENERATOR = InitRandomGenerator(getpid()+time(NULL));
     long int *order;
@@ -931,7 +936,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -hist: histogram                                                              //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-hist")==0) { 
+  else if (strcmp(method,"hist")==0) { 
     Progress PRG("Computing histogram...",n_vectors);
     long int n_bins = HIST_NBINS;
     double min = HIST_MIN;
@@ -966,21 +971,14 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -bins: binning vector values                                                  //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-bins")==0) { 
+  else if (strcmp(method,"bins")==0) { 
     Progress PRG("Computing vector histogram...",n_vectors);
     while (VB->ReadNext()==true) {
       double min, max;
       long int n_bins;
-      if (HIST_BIN_SIZE>0) {
-      	min = VectorMin(VB->vec,VB->vec_size);
-    	max = VectorMax(VB->vec,VB->vec_size)+HIST_BIN_SIZE;
-    	n_bins = (max-min)/HIST_BIN_SIZE;
-      }
-      else {
-        min = HIST_MIN;
-        max = HIST_MAX;
-        n_bins = HIST_NBINS;
-      }
+      min = HIST_AUTOMIN?VectorMin(VB->vec,VB->vec_size):HIST_MIN;
+      max = HIST_AUTOMAX?VectorMax(VB->vec,VB->vec_size)+HIST_BIN_SIZE:HIST_MAX;
+      n_bins = (HIST_BIN_SIZE>0)?(max-min)/HIST_BIN_SIZE:HIST_NBINS;
       double *bins;
       ALLOCATE1D_INIT(bins,n_bins,double,0);
       double *X = VB->vec;
@@ -1017,7 +1015,7 @@ int main(int argc, char* argv[])
   //--------------------------------------------------------------------------------------//
   // OPTION -merge: merge consecutive vectors                                             //
   //--------------------------------------------------------------------------------------//
-  else if (strcmp(method,"-merge")==0) {
+  else if (strcmp(method,"merge")==0) {
     Progress PRG("Merging vectors...",n_vectors);
     string label;
     bool first = true;

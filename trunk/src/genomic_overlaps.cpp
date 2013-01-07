@@ -61,6 +61,8 @@ bool OFFSET_SKIP_REF_GAPS;
 long int UPSTREAM_MAX_DISTANCE;
 long int UPSTREAM_MIN_DISTANCE;
 bool DISTANCE_FLAG;
+long int PROXIMAL_DIST;
+bool PRINT_HEADER;
 
 
 
@@ -183,6 +185,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 0, "maximum allowed upstream region size ");
     cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 0, "minimum allowed upstream region size (subject to genomic bounds)");
     cmd_line->AddOption("--distance-flag", &DISTANCE_FLAG, false, "add proximal-distal indication");
+    cmd_line->AddOption("--proximal-dist", &PROXIMAL_DIST, 5000, "define proximal distance (in nucleotides)");
+    cmd_line->AddOption("--print-header", &PRINT_HEADER, false, "print header");
   }
   else if (op=="bin") {
     cmd_line->AddOption("--print-labels", &PRINT_LABELS, false, "print test region labels");
@@ -244,7 +248,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 
 //-------PrintAnnotations-----------
 //
-void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_strand, bool skip_ref_gaps, const char *offset_op, bool flag)
+void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_strand, bool skip_ref_gaps, const char *offset_op, bool flag, long int proximal_dist)
 {
     long int start_offset, stop_offset;
     qreg->I[0]->GetOffsetFrom(ireg,offset_op,ignore_strand,&start_offset,&stop_offset);
@@ -254,8 +258,8 @@ void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_stra
 	qreg->I[0]->PrintInterval();
 	printf("\t");
 	printf("%lu\t", (unsigned long int)qreg->I[0]->GetSize());
-    if ((strcmp(offset_op,"3p")==0)&&(flag==true)) printf("%s:", center_offset>5000?"distal":"proximal");
-	else if ((strcmp(offset_op,"5p")==0)&&(flag==true)) printf("%s:downstream:", center_offset>5000?"distal":"proximal");
+    if ((strcmp(offset_op,"3p")==0)&&(flag==true)) printf("%s:", center_offset>proximal_dist?"distal":"proximal");
+	else if ((strcmp(offset_op,"5p")==0)&&(flag==true)) printf("%s:downstream:", center_offset>proximal_dist?"distal":"proximal");
 	printf("%s\t", ireg->LABEL);
 	ireg->I[0]->PrintInterval();
 	printf("\t");
@@ -306,17 +310,18 @@ int main(int argc, char* argv[])
 
     // annotate
     Progress PRG("Annotating test regions...",1);
+	if (PRINT_HEADER) printf("TEST-LABEL\tTEST-LOCUS\tTEST-LOCUS-SIZE\tREF-LABEL\tREF-LOCUS\tREF-LOCUS-SIZE\tOFFSET\tNORMALIZED-OFFSET\n");
     for (GenomicRegion *qreg=TestRegSet.Get(); qreg!=NULL; qreg=TestRegSet.Next()) {
 	  if (qreg->I.size()!=1) qreg->PrintError("single-interval test regions are required for this operation!");
 	  GenomicInterval *qint = qreg->I[0];
 	  for (GenomicRegion *ireg=RefIndex.GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=RefIndex.NextOverlap(match_gaps,IGNORE_STRAND)) {
         if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
-        PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"5p",DISTANCE_FLAG);
+        PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"5p",DISTANCE_FLAG,PROXIMAL_DIST);
 	  }
 	  if (UpstreamRefIndex) {
 	    for (GenomicRegion *ireg=UpstreamRefIndex->GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=UpstreamRefIndex->NextOverlap(match_gaps,IGNORE_STRAND)) {
           if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
-          PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"3p",DISTANCE_FLAG);
+          PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"3p",DISTANCE_FLAG,PROXIMAL_DIST);
 	    }
 	  }
       PRG.Check();
