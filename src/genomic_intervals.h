@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.7.0";
+const string VERSION = "genomic_tools 2.7.1a";
 
 
 #include <stdio.h>
@@ -1959,7 +1959,7 @@ class GenomicRegionSet
 
 
   //! Prints in Wiggle format. If <b>convert_chromosome</b> is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). 
-  void RunConvertToWIG(char *title, char *color, char *position, char *options, long int span, bool convert_chromosome);
+  void RunConvertToWIG(char *title, char *color, char *position, char *options, double scale, long int span, bool convert_chromosome);
 
 
 
@@ -2206,6 +2206,7 @@ class GenomicRegionSetScanner
 
   // operations
   virtual void PrintInterval(FILE *out_file=stdout) = 0;	//!< prints current window's interval
+  virtual GenomicInterval *GetInterval() = 0;				//!< returns current window's interval
   virtual long int Next() = 0;								//!< computes value in the next window
   virtual long int Next(GenomicRegionSet *Ref) = 0;			//!< computes value in the next window that overlaps with <b>Ref</b>
   virtual long int Next(GenomicRegionSetIndex *index) = 0;	//!< computes value in the next window that overlaps with regions in <b>index</b>
@@ -2283,6 +2284,7 @@ class SortedGenomicRegionSetScanner : public GenomicRegionSetScanner
   
   // operations
   virtual void PrintInterval(FILE *out_file=stdout);		//!< prints current window's interval
+  virtual GenomicInterval *GetInterval();					//!< returns current window's interval
   virtual long int Next();									//!< computes value in the next window
   virtual long int Next(GenomicRegionSet *Ref);				//!< computes value in the next window that overlaps with <b>Ref</b>
   virtual long int Next(GenomicRegionSetIndex *index);		//!< computes value in the next window that overlaps with regions in <b>index</b>
@@ -2340,6 +2342,7 @@ class UnsortedGenomicRegionSetScanner : public GenomicRegionSetScanner
 
 	// operations
 	virtual void PrintInterval(FILE *out_file=stdout);			//!< prints current window's interval
+    virtual GenomicInterval *GetInterval();						//!< returns current window's interval
 	virtual long int Next();									//!< computes value in the next window
 	virtual long int Next(GenomicRegionSet *Ref);				//!< computes value in the next window that overlaps with <b>Ref</b>
 	virtual long int Next(GenomicRegionSetIndex *index);		//!< computes value in the next window that overlaps with regions in <b>index</b>

@@ -77,7 +77,7 @@ float FDR;
 float FOLD_CUTOFF;
 long int FDR_BINS;
 float OUTLIER_PROB;
-unsigned long int PSEUDOCOUNT;
+double PSEUDOCOUNT;
 char *LABELS;
 
 bool SKIP_REF_GAPS;
@@ -184,7 +184,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
     cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "probability cutoff for residuals in outlier detection between replicates");
-    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1, "pseudocount to be added to window count for fold-change computations");
+    cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1.0, "pseudocount to be added to window count for fold-change computations");
     cmd_line->AddOption("-nbins", &FDR_BINS, 1, "number of bins for binned FDR computation");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
     cmd_line->AddOption("-fold", &FOLD_CUTOFF, 1.00, "adjusted fold change cutoff for gain and loss output files");
@@ -599,8 +599,20 @@ int main(int argc, char* argv[])
 	  // store bin data in output file
 	  FILE *data_file = fopen(data_file_name.c_str(),"w");
       if (data_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", data_file_name.c_str()); exit(1); }
+	  
+	  // store header
+	  fprintf(data_file, "reference-label");
+      char *titles = TITLE;
+      while (titles[0]!=0) {
+	    char *t = GetNextToken(&titles,',');
+	    for (int k=0; k<n_bins; k++) fprintf(data_file, "\t%s:bin=%d", t, k+1);
+	  }
+      fprintf(data_file, "\n");
+      
+	  // store data
       for (int r=0; r<n_ref; r++) {
-        fprintf(data_file, "%d\t", r);
+        //fprintf(data_file, "%d\t", r);
+        fprintf(data_file, "%s\t", RefRegSet.R[r]->LABEL);
 	    for (int s=0; s<n_signal_files; s++) {
           double norm = 1.0;
 	      if (NORMALIZE_BY_SIGNAL_REGIONS) norm *= n_signal_reg[s];
@@ -686,7 +698,7 @@ int main(int argc, char* argv[])
 	fprintf(param_file, "%d\n", n_ref_files);
 	fprintf(param_file, "%ld\n", WIN_SIZE);
 	fprintf(param_file, "%.6e\n", PVALUE_CUTOFF);
-	fprintf(param_file, "%lu\n", PSEUDOCOUNT);
+	fprintf(param_file, "%.6e\n", PSEUDOCOUNT);
 	fprintf(param_file, "%.6e\n", OUTLIER_PROB);
 	fprintf(param_file, "%.6e\n", FDR);
 	fprintf(param_file, "%.6e\n", FOLD_CUTOFF);
