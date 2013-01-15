@@ -124,7 +124,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     n_args = 1;
     cmd_line->AddOption("-S", &SORTED, false, "input regions are sorted");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
-    cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson, binomial2)");
+    cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson)");
     cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
     cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
