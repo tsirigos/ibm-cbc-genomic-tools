@@ -182,10 +182,10 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
    
   // Main options
   if (op=="annotate") {
-    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 0, "maximum allowed upstream region size ");
-    cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 0, "minimum allowed upstream region size (subject to genomic bounds)");
+    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 10000, "maximum allowed upstream region size ");
+    cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 10000, "minimum allowed upstream region size (subject to genomic bounds)");
     cmd_line->AddOption("--distance-flag", &DISTANCE_FLAG, false, "add proximal-distal indication");
-    cmd_line->AddOption("--proximal-dist", &PROXIMAL_DIST, 5000, "define proximal distance (in nucleotides)");
+    cmd_line->AddOption("--proximal-dist", &PROXIMAL_DIST, 1000, "define proximal distance (in nucleotides)");
     cmd_line->AddOption("--print-header", &PRINT_HEADER, false, "print header");
   }
   else if (op=="bin") {
