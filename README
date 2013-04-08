@@ -15,7 +15,7 @@ Installation
 Some tools require the GNU Scientific Library (GSL). After downloading the latest release of GenomicTools, follow these steps:
 
 $ tar xvzf genomic-tools-VERSION.tgz 
-$ cd genomic-tools
+$ cd gtools
 $ make
 $ sudo cp bin/* /usr/local/bin
 
