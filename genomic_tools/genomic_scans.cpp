@@ -58,7 +58,7 @@ long int WIN_SIZE;
 char PREPROCESS;
 bool NORM;
 bool COMPARE;
-bool USE_COUNTS;
+long int MAX_LABEL_VALUE;
 char *METHOD;
 double PVAL_CUTOFF;
 double QVAL_CUTOFF;
@@ -113,23 +113,23 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
     cmd_line->AddOption("-Sref", &REF_SORTED, false, "reference regions (option -r) are sorted");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
     cmd_line->AddOption("-r", &REF_REG_FILE, "", "reference region file");
-    cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
-    cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
     cmd_line->AddOption("-op", &PREPROCESS, '1', "preprocess operator (1=start, c=center, p=all points)");
-    cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
+    cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
+    cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
   }
   else if (cmd_line->current_cmd_operation=="peaks") {
     n_args = 1;
     cmd_line->AddOption("-S", &SORTED, false, "input regions are sorted");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "genome.reg+", "genome region file");
-    cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson)");
-    cmd_line->AddOption("-n", &USE_COUNTS, false, "use genomic interval label as count");
-    cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand information");
-    cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
+    cmd_line->AddOption("-d", &WIN_DIST, 25, "window distance");
+    cmd_line->AddOption("-min", &MIN_READS, 10, "minimum reads in window");
+    cmd_line->AddOption("-M", &METHOD, "binomial", "method (binomial, poisson)");
     cmd_line->AddOption("-norm", &NORM, false, "equalize background probabilities");
     cmd_line->AddOption("-cmp", &COMPARE, false, "compare signal to control window");
     cmd_line->AddOption("-pval", &PVAL_CUTOFF, 1.0, "pvalue cutoff");
@@ -242,18 +242,18 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
   effective_genome_size = uniq_reg_file==NULL?CalcBoundSize(bounds):CalcRegSize(uniq_reg_file);
   fprintf(stderr, "* Effective genome size = %lu\n", effective_genome_size);
     
-  n_signal_reads = CountGenomicRegions(signal_reg_file,USE_COUNTS);
+  n_signal_reads = CountGenomicRegions(signal_reg_file,MAX_LABEL_VALUE);
   SignalRegSet = new GenomicRegionSet(signal_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   p_signal = (double)n_signal_reads/effective_genome_size;
-  if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
-  else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
+  if (SORTED) signal_scanner = new SortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,preprocess);
+  else signal_scanner = new UnsortedGenomicRegionSetScanner(SignalRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,preprocess);
 
   if (control_reg_file!=NULL) {
-    n_control_reads = CountGenomicRegions(control_reg_file,USE_COUNTS);
+    n_control_reads = CountGenomicRegions(control_reg_file,MAX_LABEL_VALUE);
     ControlRegSet = new GenomicRegionSet(control_reg_file,BUFFER_SIZE,VERBOSE,false,true);
     p_control = (double)n_control_reads/effective_genome_size;
-    if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
-    else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,preprocess);
+    if (SORTED) control_scanner = new SortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,preprocess);
+    else control_scanner = new UnsortedGenomicRegionSetScanner(ControlRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,preprocess);
   }
   else {
     ControlRegSet = NULL;
@@ -269,7 +269,7 @@ PeakFinder::PeakFinder(char *signal_reg_file, char *control_reg_file, char *uniq
 
   // NOTE: UniqRegSet must be sorted, because preprocess option 'p' is not implemented for unsorted region scanners
   UniqRegSet = uniq_reg_file==NULL?NULL:new GenomicRegionSet(uniq_reg_file,BUFFER_SIZE,VERBOSE,false,true);
-  uniq_scanner = uniq_reg_file==NULL?NULL:new SortedGenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,false,IGNORE_STRAND,'p');
+  uniq_scanner = uniq_reg_file==NULL?NULL:new SortedGenomicRegionSetScanner(UniqRegSet,bounds,WIN_DIST,WIN_SIZE,1,IGNORE_STRAND,'p');
 }
 
 
@@ -402,8 +402,8 @@ void RunCounts(char *input_reg_file, char *ref_reg_file, char *genome_reg_file, 
   StringLIntMap *bounds = ReadBounds(genome_reg_file);
   GenomicRegionSet InputRegSet(input_reg_file,BUFFER_SIZE,VERBOSE,false,true);
   GenomicRegionSetScanner *input_scanner;
-  if (sorted) input_scanner = new SortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
-  else input_scanner = new UnsortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+  if (sorted) input_scanner = new SortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
+  else input_scanner = new UnsortedGenomicRegionSetScanner(&InputRegSet,bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
 
   // setup reference regions
   GenomicRegionSet *RefRegSet = NULL;

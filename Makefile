@@ -1,4 +1,4 @@
 
 all: 
-	cd src; make
+	cd genomic_tools; make
 

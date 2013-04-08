@@ -598,6 +598,7 @@ void VectorSort(double *V, long int n);
 int *VectorRank(float *V, int n);
 int *VectorRank(double *V, int n);
 int *VectorRank(long int *V, int n);
+int *GetVectorRanks(double *V, int n);
 void VectorChop(float *x, int n, float cutoff);
 template <class type> type* VectorCopy(type *x, unsigned long int n);
 template <class type> void VectorNorm(type *x, unsigned long int n);
@@ -1179,7 +1180,7 @@ class Matrix
 template <class T> class MatrixTemplate
 {
  public:
-  MatrixTemplate(char *file, bool verbose=false);
+  MatrixTemplate(char *file, bool verbose=false, char element_separator=' ', bool row_labels=false, bool col_labels=false);
   ~MatrixTemplate();
   
   // functions
@@ -1207,6 +1208,7 @@ template <class T> class MatrixTemplate
 
   // data
   long int n_rows, n_cols;
+  char element_separator;
   bool has_row_labels, has_col_labels;
   std::string *row_labels, *col_labels;
   T **val;
@@ -1215,7 +1217,7 @@ template <class T> class MatrixTemplate
 
 //-------Constructor--------
 //
-template <class T> MatrixTemplate<T>::MatrixTemplate(char *file, bool verbose)
+template <class T> MatrixTemplate<T>::MatrixTemplate(char *file, bool verbose, char element_separator, bool has_row_labels, bool has_col_labels)
 {
   // Load file or standard input
   FileBuffer *buffer;
@@ -1226,43 +1228,36 @@ template <class T> MatrixTemplate<T>::MatrixTemplate(char *file, bool verbose)
 
   // check/read column labels
   char *inp = buffer->Next();
-  if (strchr(inp,'\t')!=NULL) {
-    has_row_labels = true;
-    has_col_labels = inp[0]=='\t';
-    n_rows = n_lines - has_col_labels;
-    row_labels = new std::string[n_rows];
-    if (has_col_labels==true) {
-      GetNextToken(&inp,'\t');
-      n_cols = CountTokens(inp,' ');
-      col_labels = new std::string[n_cols];
-      for (long int c=0; c<n_cols; c++) col_labels[c] = GetNextToken(&inp,' ');
-      inp = buffer->Next();
-    }
-    else {
-      col_labels = NULL;
-      n_cols = CountTokens(inp,' ');
-    }
+  col_labels = row_labels = NULL;
+  this->element_separator = element_separator;
+  this->has_row_labels = (has_row_labels==true)||((element_separator==' ')&&(strchr(inp,'\t')!=NULL));
+  this->has_col_labels = (has_col_labels==true)||(inp[0]=='\t');
+  n_rows = n_lines - this->has_col_labels;
+  if (this->has_row_labels) row_labels = new std::string[n_rows];
+  if (this->has_col_labels==true) {
+    if (this->has_row_labels) GetNextToken(&inp,'\t');
+    n_cols = CountTokens(inp,element_separator);
+    col_labels = new std::string[n_cols];
+    for (long int c=0; c<n_cols; c++) col_labels[c] = GetNextToken(&inp,element_separator);
+    inp = buffer->Next();
   }
-  else {
-    has_row_labels = has_col_labels = false;
-    n_rows = n_lines;
-    n_cols = CountTokens(inp,' ');
-    col_labels = row_labels = NULL;
-  }
+  else n_cols = CountTokens(inp,element_separator);
 
   // allocate matrix memory
-  if (verbose) fprintf(stderr, "* Found %ld lines, %ld rows and %ld columns; row labels = %s; column labels = %s.\n", n_lines, n_rows, n_cols, has_row_labels?"ON":"OFF", has_col_labels?"ON":"OFF");
+  if (verbose) fprintf(stderr, "* Found %ld lines, %ld rows and %ld columns; row labels = %s; column labels = %s.\n", n_lines, n_rows, n_cols, this->has_row_labels?"ON":"OFF", this->has_col_labels?"ON":"OFF");
   ALLOCATE1D(val,n_rows,T *);
 
   // read contents
   Progress PRG("Reading matrix entries...",n_rows);
   for (long int r=0; r<n_rows; r++,inp=buffer->Next()) {
-    bool row_label_found = strchr(inp,'\t')!=NULL;
-    if (row_label_found!=has_row_labels) { fprintf(stderr, "Line %ld: row_label_found = %s, has_row_labels = %s\n", r+1+has_col_labels, row_label_found?"YES":"NO", has_row_labels?"YES":"NO"); exit(1); } 
-    if (has_row_labels) row_labels[r] = GetNextToken(&inp,'\t');
+    if (element_separator==' ') {
+	  bool row_label_found = strchr(inp,'\t')!=NULL;
+      if (row_label_found!=this->has_row_labels) { fprintf(stderr, "Line %ld: row_label_found = %s, has_row_labels = %s\n", r+1+this->has_col_labels, row_label_found?"YES":"NO", this->has_row_labels?"YES":"NO"); exit(1); } 
+	}
+    if (this->has_row_labels) row_labels[r] = GetNextToken(&inp,'\t');
     long int n_elem;
-    ReadVec(inp,&val[r],&n_elem);
-    if (n_elem!=n_cols) { fprintf(stderr, "Line %ld: vector length should be %ld!\n", r+1+has_col_labels, n_cols); exit(1); }
+    ReadVec(inp,&val[r],&n_elem,element_separator);
+    if (n_elem!=n_cols) { fprintf(stderr, "Line %ld: vector length should be %ld!\n", r+1+this->has_col_labels, n_cols); exit(1); }
     PRG.Check();
   }
   PRG.Done();   
@@ -1290,7 +1285,7 @@ template <class T> void MatrixTemplate<T>::Print(char *fmt)
 {
   if (has_col_labels==true) {
     if (has_row_labels) printf("\t");
-    for (long int c=0; c<n_cols; c++) std::cout << col_labels[c] << ' ';
+    for (long int c=0; c<n_cols; c++) { std::cout << col_labels[c]; if (c<n_cols-1) cout << element_separator; }
     printf("\n");
   }
   Progress PRG("Printing matrix...",n_rows);
@@ -1317,7 +1312,7 @@ template <class T> void MatrixTemplate<T>::Shrink(char *fmt)
   }
   if (has_col_labels==true) {
     if (has_row_labels) printf("\t");
-    for (long int c=0; c<n_cols; c++) if (keep[c]==true) std::cout << col_labels[c] << ' ';
+    for (long int c=0; c<n_cols; c++) if (keep[c]==true) { std::cout << col_labels[c]; if (c<n_cols-1) printf("%c", element_separator); }
     printf("\n");
   }
   Progress PRG("Printing matrix...",n_rows);
@@ -1344,7 +1339,7 @@ template <class T> void MatrixTemplate<T>::PrintSparse(char *fmt, long int offse
   for (long int r=0; r<n_rows; r++) {
     if (has_row_labels) std::cout << row_labels[r] << '\t';
     for (long int c=0; c<n_cols; c++) 
-      if ((val[r][c]==val[r][c])&&(val[r][c]!=0)) { printf("%ld:", offset+c); printf(fmt, val[r][c]); printf(" "); } 
+      if ((val[r][c]==val[r][c])&&(val[r][c]!=0)) { printf("%ld:", offset+c); printf(fmt, val[r][c]); if (c<n_cols-1) printf("%c", element_separator); } 
     printf("\n");
     PRG.Check();
   }
@@ -1360,7 +1355,8 @@ template <class T> void MatrixTemplate<T>::PrintEncoded(int n_bins)
   Progress PRG("Printing in encoded format...",n_rows);
   for (long int r=0; r<n_rows; r++) {
     if (has_row_labels) std::cout << row_labels[r] << '\t';
-    for (long int c=0; c<n_cols; c++) if (val[r][c]==val[r][c]) printf("%ld ", (long int)c*n_bins+(long int)val[r][c]);
+    for (long int c=0; c<n_cols; c++) 
+	  if (val[r][c]==val[r][c]) { printf("%ld", (long int)c*n_bins+(long int)val[r][c]); if (c<n_cols-1) printf("%c", element_separator); } 
     printf("\n");
     PRG.Check();
   }
@@ -1375,7 +1371,7 @@ template <class T> void MatrixTemplate<T>::PrintTranspose(char *fmt)
 {
   if (has_row_labels==true) {
     if (has_col_labels) printf("\t");
-    for (long int r=0; r<n_rows; r++) std::cout << row_labels[r] << ' ';
+    for (long int r=0; r<n_rows; r++) { std::cout << row_labels[r]; if (r<n_rows-1) printf("%c", element_separator); }
     printf("\n");
   }
   Progress PRG("Printing matrix...",n_cols);
@@ -1383,7 +1379,7 @@ template <class T> void MatrixTemplate<T>::PrintTranspose(char *fmt)
     if (has_col_labels) std::cout << col_labels[c] << '\t';
     for (long int r=0; r<n_rows; r++) {
       if (val[r][c]==val[r][c]) printf(fmt, val[r][c]); else printf("NaN");
-      printf(" ");
+      if (r<n_rows-1) printf("%c", element_separator); 
     }
     printf("\n");
     PRG.Check();
@@ -1407,14 +1403,14 @@ template <class T> void MatrixTemplate<T>::PrintColStats(char *fmt)
   // print statistics
   if (has_col_labels==true) {
     printf("\t");
-    for (long int c=0; c<n_cols; c++) std::cout << col_labels[c] << ' ';
+    for (long int c=0; c<n_cols; c++) { std::cout << col_labels[c]; if (c<n_cols-1) printf("%c", element_separator); }
     printf("\n");
   }
-  printf("SUM\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, sum[c]); printf(" "); }; printf("\n");
-  printf("MIN\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, min[c]); printf(" "); }; printf("\n");
-  printf("MAX\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, max[c]); printf(" "); }; printf("\n");
-  printf("AVG\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, avg[c]); printf(" "); }; printf("\n");
-  printf("STD\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, std[c]); printf(" "); }; printf("\n");
+  printf("SUM\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, sum[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
+  printf("MIN\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, min[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
+  printf("MAX\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, max[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
+  printf("AVG\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, avg[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
+  printf("STD\t"); for (long int c=0; c<n_cols; c++) { printf(fmt, std[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
 
   // free memory
   FREE1D(sum);
@@ -1439,10 +1435,10 @@ template <class T> void MatrixTemplate<T>::PrintColSums(char *fmt)
   // print statistics
   if (has_col_labels==true) {
     printf("\t");
-    for (long int c=0; c<n_cols; c++) std::cout << col_labels[c] << ' ';
+    for (long int c=0; c<n_cols; c++) { std::cout << col_labels[c]; if (c<n_cols-1) printf("%c", element_separator); }
     printf("\n");
   }
-  for (long int c=0; c<n_cols; c++) { printf(fmt, sum[c]); printf(" "); }; printf("\n");
+  for (long int c=0; c<n_cols; c++) { printf(fmt, sum[c]); if (c<n_cols-1) printf("%c", element_separator); }; printf("\n");
 
   // free memory
   FREE1D(sum);
@@ -1500,7 +1496,7 @@ template <class T> void MatrixTemplate<T>::PrintRow(int r, char *fmt)
 {
   for (long int c=0; c<n_cols; c++) {
     if (val[r][c]==val[r][c]) printf(fmt, val[r][c]); else printf("NaN");
-    printf(" ");
+    if (c<n_cols-1) printf("%c", element_separator);
   }
 }
 
@@ -1511,7 +1507,7 @@ template <class T> void MatrixTemplate<T>::PrintRow(int r, char *fmt)
 template <class T> void MatrixTemplate<T>::PrintColLabels()
 {
   if (has_row_labels==true) std::cout << '\t';
-  for (long int c=0; c<n_cols; c++) std::cout << col_labels[c] << ' ';
+  for (long int c=0; c<n_cols; c++) { std::cout << col_labels[c]; if (c<n_cols-1) printf("%c", element_separator); }
   std::cout << '\n';
 }
 
@@ -1566,7 +1562,7 @@ template <class T> void MatrixTemplate<T>::Delete(char *fmt, T cutoff, bool equa
   selected[0] = 0;
   if (has_col_labels==true) {
     if (has_row_labels) printf("\t");
-    for (long int c=0; c<n_cols; c++) std::cout << col_labels[c] << ' ';
+    for (long int c=0; c<n_cols; c++) { std::cout << col_labels[c]; if (c<n_cols-1) printf("%c", element_separator); }
     printf("\n");
   }
   if (has_row_labels) std::cout << row_labels[0] << '\t';
@@ -1687,13 +1683,13 @@ template <class T> void MatrixTemplate<T>::PrintRel2(char *fmt)
   if (has_col_labels==true) {
     printf("\t");
     for (long int c0=0; c0<n_cols-1; c0++) 
-      for (long int c=c0+1; c<n_cols; c++) std::cout << col_labels[c] << '/' << col_labels[c0] << ' ';
+      for (long int c=c0+1; c<n_cols; c++) std::cout << col_labels[c] << '/' << col_labels[c0] << element_separator; 
     printf("\n");
   }
   for (long int r=0; r<n_rows; r++) {
     if (has_row_labels) std::cout << row_labels[r] << '\t';
     for (long int c0=0; c0<n_cols-1; c0++) 
-      for (long int c=c0+1; c<n_cols; c++) { printf(fmt, val[r][c]/val[r][c0]); printf(" "); }
+      for (long int c=c0+1; c<n_cols; c++) { printf(fmt, val[r][c]/val[r][c0]); printf("%c", element_separator); }
     printf("\n");
     PRG.Check();
   }

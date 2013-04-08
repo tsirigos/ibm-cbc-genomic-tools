@@ -1258,6 +1258,14 @@ int *VectorRank(double *V, int n)
   return I;
 }
 
+int *GetVectorRanks(double *V, int n)
+{
+  int *order = VectorRank(V,n);
+  int *rank = new int[n];
+  for (int i=0; i<n; i++) rank[order[i]] = i;
+  delete order; 
+  return rank;
+}
 
 
 //-----VectorRank-----------
