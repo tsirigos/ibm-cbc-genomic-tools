@@ -1067,6 +1067,17 @@ size_t GenomicRegion::GetSeqLength(Chromosomes *C)
 
 
 
+//---------GetLabelValue-----------
+//
+long int GenomicRegion::GetLabelValue(long int max_label_value)
+{
+  if (max_label_value<=1) return 1;
+  return min(max_label_value,atol(LABEL));
+}
+
+
+
+
 //---------DeleteIntervals-----------
 //
 void GenomicRegion::DeleteIntervals(GenomicIntervalSet::iterator i, GenomicIntervalSet::iterator j)
@@ -4681,9 +4692,9 @@ void GenomicRegionSet::RunGlobalScan(StringLIntMap *bounds, long int win_step, l
 
 //-----RunGlobalScanCount----------
 //
-void GenomicRegionSet::RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads)
+void GenomicRegionSet::RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, long int max_label_value, long int min_reads)
 {
-  SortedGenomicRegionSetScanner input_scanner(this,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess);
+  SortedGenomicRegionSetScanner input_scanner(this,bounds,win_step,win_size,max_label_value,ignore_strand,preprocess);
   GenomicRegionSet *RefRegSet = strlen(ref_reg_file)>0?new GenomicRegionSet(ref_reg_file,10000,false,false,true):NULL;
   Progress PRG("Scanning...",1);
   for (long int v=input_scanner.Next(RefRegSet); v!=-1; v=input_scanner.Next(RefRegSet)) {
@@ -4806,7 +4817,7 @@ void GenomicRegionSet::PrintBEDGraphFormat(char *title, char *color, char *posit
 
 //---------Constructor--------
 //
-GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
+GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess)
 {
   if (R->format=="SEQ") { cerr << "Error: this operation does not accept SEQ format!\n"; exit(1); }
   if (R->n_regions==0) return;
@@ -4816,7 +4827,7 @@ GenomicRegionSetScanner::GenomicRegionSetScanner(GenomicRegionSet *R, StringLInt
   this->bounds = bounds;
   this->win_step = win_step;
   this->win_size = win_size;
-  this->use_labels_as_values = use_labels_as_values;
+  this->max_label_value = max_label_value;
   this->ignore_strand = ignore_strand;
   this->preprocess = preprocess;
   if (win_size%win_step!=0) { cerr << "Error: window size must be a multiple of window step in 'GenomicRegionSetScanner'!\n"; exit(1); }
@@ -4856,8 +4867,8 @@ GenomicRegionSetScanner::~GenomicRegionSetScanner()
 
 //---------Constructor--------
 //
-SortedGenomicRegionSetScanner::SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
-  : GenomicRegionSetScanner(R,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess)
+SortedGenomicRegionSetScanner::SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess)
+  : GenomicRegionSetScanner(R,bounds,win_step,win_size,max_label_value,ignore_strand,preprocess)
 {
   chr = bounds->begin();
   r = R->Get();
@@ -4917,10 +4928,7 @@ long int SortedGenomicRegionSetScanner::Next()
             if (r->I.front()->STOP<=stop) { v[k] += r->I.front()->STOP-r->I.front()->START+1; r = R->Next(!ignore_strand,false); }
             else { v[k] += stop-r->I.front()->START+1; r->I.front()->START = stop+1; }
           }
-          else if (preprocess=='1') {
-            if (use_labels_as_values) v[k] += max(1L,atol(r->LABEL));
-            else v[k]++;
-          }
+          else if (preprocess=='1') v[k] += r->GetLabelValue(max_label_value);
           else { fprintf(stderr, "Error: [SortedGenomicRegionSetScanner] preprocess operator '%c' not supported!\n", preprocess); exit(1); }
           r = R->Next(!ignore_strand,false);
         }
@@ -4996,8 +5004,8 @@ long int SortedGenomicRegionSetScanner::Next(GenomicRegionSetIndex *index)
 
 //---------Constructor--------
 //
-UnsortedGenomicRegionSetScanner::UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess)
-  : GenomicRegionSetScanner(R,bounds,win_step,win_size,use_labels_as_values,ignore_strand,preprocess)
+UnsortedGenomicRegionSetScanner::UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess)
+  : GenomicRegionSetScanner(R,bounds,win_step,win_size,max_label_value,ignore_strand,preprocess)
 {
 	// initialize window counts per chromosome
 	Progress PRG1("Initializing structures...",bounds->size());
@@ -5026,10 +5034,7 @@ UnsortedGenomicRegionSetScanner::UnsortedGenomicRegionSetScanner(GenomicRegionSe
 				else { fprintf(stderr, "Error: [UnsortedGenomicRegionSetScanner] preprocess operator '%c' not supported!\n", preprocess); exit(1); }
 				long int w = (start-1)/win_step+1;
 				unsigned long int *v = ((ignore_strand==true)||((*i)->STRAND=='+'))?p->second[0]:p->second[1];
-				if ((start>=1)&&(w<=(long int)v[0])) {
-					if (use_labels_as_values) v[w] += max(1L,atol(r->LABEL));
-					else v[w]++;
-				}
+				if ((start>=1)&&(w<=(long int)v[0])) v[w] += r->GetLabelValue(max_label_value);
 			}
 	    }
 	    PRG2.Check();
@@ -5234,12 +5239,12 @@ GenomicRegion *GenomicRegionSetOverlaps::NextOverlap(bool match_gaps, bool ignor
 
 //---------CalcQueryCoverage--------
 //
-unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage(bool match_gaps, bool ignore_strand, long int max_label_value)
 {
   unsigned long int c = 0;
   for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) {
     long int cc = match_gaps ? min(r->I.back()->STOP,current_qreg->I.back()->STOP)-max(r->I.front()->START,current_qreg->I.front()->START)+1 : current_qreg->CalcOverlap(r,ignore_strand);
-    if (use_labels_as_values) cc *= atol(r->LABEL);
+    cc *= r->GetLabelValue(max_label_value);
     c += cc;
   }
   return c;
@@ -5249,7 +5254,7 @@ unsigned long int GenomicRegionSetOverlaps::CalcQueryCoverage(bool match_gaps, b
 
 //---------CalcIndexCoverage--------
 //
-unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, bool ignore_strand, long int max_label_value)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CalcIndexCoverage]: index set must be loaded in memory for this operation!\n"); exit(1); }
   Progress PRG("Processing queries...",QuerySet->n_regions);
@@ -5258,7 +5263,7 @@ unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, 
   for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
     for (GenomicRegion *ireg=GetOverlap(match_gaps,ignore_strand); ireg!=NULL; ireg=NextOverlap(match_gaps,ignore_strand)) {
       long int cc = match_gaps ? min(qreg->I.back()->STOP,ireg->I.back()->STOP)-max(qreg->I.front()->START,ireg->I.front()->START)+1 : ireg->CalcOverlap(qreg,ignore_strand);
-      if (use_labels_as_values) cc *= atol(qreg->LABEL);
+      cc *= qreg->GetLabelValue(max_label_value);
       coverage[ireg->n_line] += cc; 
     }
     PRG.Check();
@@ -5272,10 +5277,10 @@ unsigned long int *GenomicRegionSetOverlaps::CalcIndexCoverage(bool match_gaps, 
 
 //---------CountQueryOverlaps--------
 //
-unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps(bool match_gaps, bool ignore_strand, long int max_label_value)
 {
   unsigned long int c = 0;
-  for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) c += use_labels_as_values?atol(r->LABEL):1;
+  for (GenomicRegion *r=GetOverlap(match_gaps,ignore_strand); r!=NULL; r=NextOverlap(match_gaps,ignore_strand)) c += r->GetLabelValue(max_label_value);
   return c;
 }
 
@@ -5284,7 +5289,7 @@ unsigned long int GenomicRegionSetOverlaps::CountQueryOverlaps(bool match_gaps, 
 
 //---------CountIndexOverlaps--------
 //
-unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values)
+unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps, bool ignore_strand, long int max_label_value)
 {
   if (IndexSet->load_in_memory==false) { fprintf(stderr, "[GenomicRegionSetOverlaps::CountIndexOverlaps]: index set must be loaded in memory for this operation!\n"); exit(1); }
   Progress PRG("Processing queries...",QuerySet->n_regions);
@@ -5292,7 +5297,7 @@ unsigned long int *GenomicRegionSetOverlaps::CountIndexOverlaps(bool match_gaps,
   for (long int k=0; k<IndexSet->n_regions; k++) { IndexSet->R[k]->n_line = k; hits[k] = 0; }
   for (GenomicRegion *qreg=GetQuery(); qreg!=NULL; qreg=NextQuery()) {
     for (GenomicRegion *ireg=GetOverlap(match_gaps,ignore_strand); ireg!=NULL; ireg=NextOverlap(match_gaps,ignore_strand)) 
-      hits[ireg->n_line] += use_labels_as_values?atol(qreg->LABEL):1; 
+      hits[ireg->n_line] += qreg->GetLabelValue(max_label_value);
     PRG.Check();
   }
   PRG.Done();
@@ -6186,12 +6191,12 @@ OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_
 
 //---------CountGenomicRegions--------
 //
-long int CountGenomicRegions(char *reg_file, bool use_label_counts)
+long int CountGenomicRegions(char *reg_file, long int max_label_value)
 {
   GenomicRegionSet rset(reg_file,10000,false,false,true);
   Progress PRG("Counting genomic regions...",1);
   long int n_counts = 0;
-  for (GenomicRegion *r=rset.Get(); r!=NULL; r=rset.Next(),PRG.Check()) n_counts += use_label_counts?max(1L,atol(r->LABEL)):1;
+  for (GenomicRegion *r=rset.Get(); r!=NULL; r=rset.Next(),PRG.Check()) n_counts += r->GetLabelValue(max_label_value);
   PRG.Done();
   return n_counts;
 }

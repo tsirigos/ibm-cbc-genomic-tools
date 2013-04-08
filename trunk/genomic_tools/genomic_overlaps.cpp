@@ -50,7 +50,7 @@ bool MERGE_LABELS;
 bool PRINT_LABELS;
 bool PRINT_REGIONS;
 bool MATCH_GAPS;
-bool USE_VALUES;
+long int MAX_LABEL_VALUE;
 unsigned long int MIN_COUNT;
 double MIN_DENSITY;
 char *OFFSET_OP;
@@ -194,17 +194,17 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   }
   else if (op=="count") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
-    cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
     cmd_line->AddOption("-min", &MIN_COUNT, 0, "minimum count");
   }
   else if (op=="coverage") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
-    cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
     cmd_line->AddOption("-min", &MIN_COUNT, 0, "minimum coverage");
   }
   else if (op=="density") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
-    cmd_line->AddOption("-val", &USE_VALUES, false, "use values contained in the labels of index intervals");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
     cmd_line->AddOption("-min", &MIN_DENSITY, 0.0, "minimum density");
   }
   else if (op=="dist") {
@@ -383,30 +383,6 @@ int main(int argc, char* argv[])
     PRG.Done();
   }
 
-  
-  //--------------------
-  // count/sorted
-  //--------------------
-  /*if ((cmd_line->current_cmd_operation=="count")&&(IS_SORTED==true)) {
-    // open region sets
-    char *REF_REG_FILE = argv[next_arg];
-    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-
-    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
-    Progress PRG("Processing queries...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      unsigned long int hits = Overlaps.CountQueryOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
-      if (hits>=MIN_COUNT) {
-        printf("%s", qreg->LABEL); printf("\t");
-        printf("%ld", hits); printf("\n");
-      }
-      PRG.Check();
-    }
-    PRG.Done();
-  }*/
-
 
   //--------------------
   // count
@@ -421,7 +397,7 @@ int main(int argc, char* argv[])
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
     else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
-    unsigned long int *hits = overlaps->CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    unsigned long int *hits = overlaps->CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
     Progress PRG("Printing counts...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       if (hits[k]>=MIN_COUNT) {
@@ -435,31 +411,6 @@ int main(int argc, char* argv[])
     delete overlaps;
   }
 
-
-  //--------------------
-  // coverage/sorted
-  //--------------------
-/*
-  else if ((cmd_line->current_cmd_operation=="coverage")&&(IS_SORTED==true)) {
-    // open region sets
-    char *REF_REG_FILE = argv[next_arg];
-    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-
-    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
-    Progress PRG("Processing queries...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      unsigned long int coverage = Overlaps.CalcQueryCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
-      if (coverage>=MIN_COUNT) {
-        printf("%s", qreg->LABEL); printf("\t");
-        printf("%ld", coverage); printf("\n");
-      }
-      PRG.Check();
-    }
-    PRG.Done();
-  }
-*/
 
 
   //--------------------
@@ -475,7 +426,7 @@ int main(int argc, char* argv[])
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
     else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
-    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
     Progress PRG("Printing coverages...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       if (coverage[k]>=MIN_COUNT) {
@@ -489,29 +440,6 @@ int main(int argc, char* argv[])
     delete overlaps;
   }
 
-
-/*
-  //--------------------
-  // density/sorted
-  //--------------------
-  else if ((cmd_line->current_cmd_operation=="density")&&(IS_SORTED==true)) {    
-    // open region sets
-    char *REF_REG_FILE = argv[next_arg];
-    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
-    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
-
-    SortedGenomicRegionSetOverlaps Overlaps(&RefRegSet,&TestRegSet,SORTED_BY_STRAND);
-    Progress PRG("Processing queries...",1);
-    for (GenomicRegion *qreg=Overlaps.GetQuery(); qreg!=NULL; qreg=Overlaps.NextQuery()) {
-      long int qreg_size = MATCH_GAPS ? (qreg->I.back()->STOP-qreg->I.front()->START+1) : qreg->GetSize();
-      double density = (double)Overlaps.CalcQueryCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES)/qreg_size; 
-      if (density>=MIN_DENSITY) printf("%s\t%.4e\n", qreg->LABEL, density);
-      PRG.Check();
-    }
-    PRG.Done();
-  }
-*/
 
 
   //--------------------
@@ -528,7 +456,7 @@ int main(int argc, char* argv[])
     GenomicRegionSetOverlaps *overlaps;
     if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
     else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
-    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       GenomicRegion *qreg = RefRegSet.R[k];

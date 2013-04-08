@@ -77,12 +77,14 @@ float FDR;
 float FOLD_CUTOFF;
 long int FDR_BINS;
 float OUTLIER_PROB;
+char *SCALING;
+char *NORMALIZATION;
 double PSEUDOCOUNT;
 char *LABELS;
 
 bool SKIP_REF_GAPS;
 bool NORM_REF_LEN;
-bool USE_LABELS_AS_VALUES;
+long int MAX_LABEL_VALUE;
 
 
 
@@ -121,9 +123,9 @@ REQUIREMENTS: \n\
   * Region-set requirements: none\n\
 \n\
 EXAMPLES: \n\
-  1. genomic_apps peakdiff -v -o Notch1.vs.Input -g genome.bed Notch1.r1.bed,Notch1.r2.bed Input.r1.bed,Input.r2.bed\n\
-  2. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed\n\
-  3. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal.with_controls -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed Input_cancer.r1.bed,Input_cancer.r2.bed Input_normal.r1.bed,Input_normal.r2.bed" \
+  1. genomic_apps peakdiff -v -o Notch1.vs.Input -labels Notch1,Input -g genome.bed Notch1.r1.bed,Notch1.r2.bed Input.r1.bed,Input.r2.bed\n\
+  2. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal -labels cancer,normal -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed\n\
+  3. genomic_apps peakdiff -v -o Notch1_cancer.vs.Notch1_normal.with_controls -labels cancer,normal -g genome.bed Notch1_cancer.r1.bed,Notch1_cancer.r2.bed Notch1_normal.r1.bed,Notch1_normal.r2.bed Input_cancer.r1.bed,Input_cancer.r2.bed Input_normal.r1.bed,Input_normal.r2.bed" \
   );
 
   cmd_line->AddOperation("profile", "[OPTIONS] COMMA-SEPARATED-SIGNAL-REG-FILES COMMA-SEPARATED-REFERENCE-REG-FILES", \
@@ -157,7 +159,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
-    cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum query region label value to be used");
     cmd_line->AddOption("--norm-ref-length", &NORM_REF_LEN, false, "normalize reference region length to 1.0");
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
     cmd_line->AddOption("--norm-by-bin-size", &NORMALIZE_BY_BIN_SIZE, false, "normalize by the bin size");
@@ -180,10 +182,13 @@ EXAMPLES: \n\
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum input region label value to be used");
     cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window distance)");
     cmd_line->AddOption("-d", &WIN_DIST, 100, "window distance");
     cmd_line->AddOption("-pval", &PVALUE_CUTOFF, 1.0e-05, "p-value cutoff for calling significant windows");
     cmd_line->AddOption("-outliers", &OUTLIER_PROB, 0.01, "probability cutoff for residuals in outlier detection between replicates");
+    cmd_line->AddOption("-scale", &SCALING, "winsize", "scaling type: 'winsize' to scale by window size, or 'none'");
+    cmd_line->AddOption("-norm", &NORMALIZATION, "normq", "normalization type: 'normq' for quantile normalization, or 'none'");
     cmd_line->AddOption("-pseudo", &PSEUDOCOUNT, 1.0, "pseudocount to be added to window count for fold-change computations");
     cmd_line->AddOption("-nbins", &FDR_BINS, 1, "number of bins for binned FDR computation");
     cmd_line->AddOption("-fdr", &FDR, 0.05, "false discover rate for differential peak discovery");
@@ -200,7 +205,7 @@ EXAMPLES: \n\
     cmd_line->AddOption("-o", &OUT_PREFIX, "", "prefix for output files (required)");
     cmd_line->AddOption("-i", &IGNORE_STRAND, false, "ignore strand while finding overlaps");
     cmd_line->AddOption("--skip-ref-gaps", &SKIP_REF_GAPS, false, "ignore gaps in reference regions when computing offsets");
-    cmd_line->AddOption("--labels-as-values", &USE_LABELS_AS_VALUES, false, "use query labels as values to be added in the corresponding bins");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum query region label value to be used");
     cmd_line->AddOption("--norm-ref-length", &NORM_REF_LEN, false, "normalize reference region length to 1.0");
     cmd_line->AddOption("--norm-by-ref-regions", &NORMALIZE_BY_REF_REGIONS, false, "normalize by the number of reference regions");
     cmd_line->AddOption("--norm-by-total-reads", &NORMALIZE_BY_SIGNAL_REGIONS, false, "normalize by the total number of reads");
@@ -309,7 +314,6 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
                    char **signal_control_reg_file, int n_signal_control_files, char **ref_control_reg_file, int n_ref_control_files, \
                    char **labels, char *genome_reg_file, const char *out_file_name)
 {
-  bool USE_COUNTS = false;
   char PREPROCESS = 'c';
 
   StringLIntMap *bounds = ReadBounds(genome_reg_file);
@@ -324,7 +328,7 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     p_signal[s] = (double)CountGenomicRegions(signal_reg_file[s],false)/effective_genome_size;
     SignalRegSet[s] = new GenomicRegionSet(signal_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
     if (VERBOSE) fprintf(stderr, "* Signal input file = %s; background probability = %.2e\n", signal_reg_file[s], p_signal[s]);
-    SignalRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+    SignalRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalRegSet[s],bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
   }
   
   // open signal control files
@@ -335,7 +339,7 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     p_signal_control[s] = (double)CountGenomicRegions(signal_control_reg_file[s],false)/effective_genome_size;
     SignalControlRegSet[s] = new GenomicRegionSet(signal_control_reg_file[s],BUFFER_SIZE,VERBOSE,false,true);
     if (VERBOSE) fprintf(stderr, "* Signal control input file = %s; background probability = %.2e\n", signal_control_reg_file[s], p_signal_control[s]);
-    SignalControlRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalControlRegSet[s],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+    SignalControlRegScanner[s] = new UnsortedGenomicRegionSetScanner(SignalControlRegSet[s],bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
   }
   
   // open reference files
@@ -346,7 +350,7 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     p_ref[r] = (double)CountGenomicRegions(ref_reg_file[r],false)/effective_genome_size;
     RefRegSet[r] = new GenomicRegionSet(ref_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
     if (VERBOSE) fprintf(stderr, "* Reference input file = %s; background probability = %.2e\n", ref_reg_file[r], p_ref[r]);
-    RefRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+    RefRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefRegSet[r],bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
   }
   
   // open reference control files
@@ -357,7 +361,7 @@ void ScanReadFiles(char **signal_reg_file, int n_signal_files, char **ref_reg_fi
     p_ref_control[r] = (double)CountGenomicRegions(ref_control_reg_file[r],false)/effective_genome_size;
     RefControlRegSet[r] = new GenomicRegionSet(ref_control_reg_file[r],BUFFER_SIZE,VERBOSE,false,true);
     if (VERBOSE) fprintf(stderr, "* Reference control input file = %s; background probability = %.2e\n", ref_control_reg_file[r], p_ref_control[r]);
-    RefControlRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefControlRegSet[r],bounds,WIN_DIST,WIN_SIZE,USE_COUNTS,IGNORE_STRAND,PREPROCESS);
+    RefControlRegScanner[r] = new UnsortedGenomicRegionSetScanner(RefControlRegSet[r],bounds,WIN_DIST,WIN_SIZE,MAX_LABEL_VALUE,IGNORE_STRAND,PREPROCESS);
   }
   
   
@@ -577,7 +581,7 @@ int main(int argc, char* argv[])
                   	for (OffsetList::iterator p=offsets->begin(); p!=offsets->end(); p++) {
                           double x = (double)(p->first+p->second)/2/ref_len+bin_min;
                           double z = (double)(x-bin_min)/(bin_max-bin_min);
-                          if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+                          if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += (double)qreg->GetLabelValue(MAX_LABEL_VALUE);
                   	}
               	}
               	if (offsets!=NULL) delete offsets;
@@ -588,7 +592,7 @@ int main(int argc, char* argv[])
                   if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
                   double x = (double)(start_offset+stop_offset)/2/ref_len+bin_min;
                   double z = (double)(x-bin_min)/(bin_max-bin_min);
-                  if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+                  if ((z>=0)&&(z<1)) bins[n][ireg->n_line-n_ref1][(int)(n_bins*z)] += (double)qreg->GetLabelValue(MAX_LABEL_VALUE);
           	}
           }
           PRG.Check();
@@ -691,41 +695,44 @@ int main(int argc, char* argv[])
 	string image_file_name = (string)OUT_PREFIX + "." + (string)IMAGE_TYPE;
 	string log_file_name = (string)OUT_PREFIX + (string)".log";
 
-	// print parameters to file
-	FILE *param_file = fopen(param_file_name.c_str(),"w");
+    // print parameters to file
+    FILE *param_file = fopen(param_file_name.c_str(),"w");
     if (param_file==NULL) { fprintf(stderr, "Error: cannot open file '%s' for writing!\n", param_file_name.c_str()); exit(1); }
-	fprintf(param_file, "%d\n", n_signal_files);
-	fprintf(param_file, "%d\n", n_ref_files);
-	fprintf(param_file, "%ld\n", WIN_SIZE);
-	fprintf(param_file, "%.6e\n", PVALUE_CUTOFF);
-	fprintf(param_file, "%.6e\n", PSEUDOCOUNT);
-	fprintf(param_file, "%.6e\n", OUTLIER_PROB);
-	fprintf(param_file, "%.6e\n", FDR);
-	fprintf(param_file, "%.6e\n", FOLD_CUTOFF);
-	fprintf(param_file, "%ld\n", FDR_BINS);
-	fprintf(param_file, "%s\n", LABELS);
-	fprintf(param_file, "%s\n", IMAGE_SIZE);
-	fprintf(param_file, "%d\n", IMAGE_RESOLUTION);
-	for (int i=0; i<argc; i++)
-		if (strchr(argv[i],' ')==NULL) fprintf(param_file, "%s%c", argv[i], i<argc-1?' ':'\n');
-		else fprintf(param_file, "'%s'%c", argv[i], i<argc-1?' ':'\n');
+    fprintf(param_file, "n_signal %d\n", n_signal_files);
+    fprintf(param_file, "n_ref %d\n", n_ref_files);
+    fprintf(param_file, "win %ld\n", WIN_SIZE);
+    fprintf(param_file, "pval %.6e\n", PVALUE_CUTOFF);
+    fprintf(param_file, "scale %s\n", SCALING);
+    fprintf(param_file, "norm %s\n", NORMALIZATION);
+    fprintf(param_file, "pseudo %.6e\n", PSEUDOCOUNT);
+    fprintf(param_file, "outliers %.6e\n", OUTLIER_PROB);
+    fprintf(param_file, "fdr %.6e\n", FDR);
+    fprintf(param_file, "fold %.6e\n", FOLD_CUTOFF);
+    fprintf(param_file, "fdr_bins %ld\n", FDR_BINS);
+    fprintf(param_file, "labels %s\n", LABELS);
+    fprintf(param_file, "isize %s\n", IMAGE_SIZE);
+    fprintf(param_file, "ires %d\n", IMAGE_RESOLUTION);
+    fprintf(param_file, "# "); 
+    for (int i=0; i<argc; i++)
+      if (strchr(argv[i],' ')==NULL) fprintf(param_file, "%s%c", argv[i], i<argc-1?' ':'\n');
+      else fprintf(param_file, "'%s'%c", argv[i], i<argc-1?' ':'\n');
     fclose(param_file);
 
-	// scan read files for preliminary peak identification
+    // scan read files for preliminary peak identification
     if (REUSE==false) ScanReadFiles(signal_reg_file,n_signal_files,ref_reg_file,n_ref_files,signal_control_reg_file,n_signal_control_files,ref_control_reg_file,n_ref_control_files,labels,GENOME_REG_FILE,data_file_name.c_str());
 
-	// execute R script
-	CreateRscript(RSCRIPT_INPUT_FILE_NAME,RSCRIPT_TEMPLATE_PEAKDIFF,rscript_file_name);
-	fprintf(stderr, "Running R script...\n");
-	stringstream s;
-	s << "R CMD BATCH '--args " << data_file_name << " " << param_file_name << " " << image_file_name << "' " << rscript_file_name << " " << log_file_name;
-	system(s.str().c_str()); 
-	PrintLogFile(log_file_name);
+    // execute R script
+    CreateRscript(RSCRIPT_INPUT_FILE_NAME,RSCRIPT_TEMPLATE_PEAKDIFF,rscript_file_name);
+    fprintf(stderr, "Running R script...\n");
+    stringstream s;
+    s << "R CMD BATCH '--args " << data_file_name << " " << param_file_name << " " << image_file_name << "' " << rscript_file_name << " " << log_file_name;
+    system(s.str().c_str()); 
+    PrintLogFile(log_file_name);
 	
     // cleanup
     delete labels;
     delete [] signal_reg_file;	
-	delete [] ref_reg_file;
+    delete [] ref_reg_file;
     if (signal_control_reg_file!=NULL) delete [] signal_control_reg_file;	
     if (ref_control_reg_file!=NULL) delete [] ref_control_reg_file;	
     delete SIGNAL_REG_FILES;
@@ -846,7 +853,7 @@ int main(int argc, char* argv[])
                     	for (OffsetList::iterator p=offsets->begin(); p!=offsets->end(); p++) {
                             double x = (double)(p->first+p->second)/2/ref_len+bin_min;
                             double z = (double)(x-bin_min)/(bin_max-bin_min);
-                            if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+                            if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)] += (double)qreg->GetLabelValue(MAX_LABEL_VALUE);
                     	}
                 	}
                 	if (offsets!=NULL) delete offsets;
@@ -857,7 +864,7 @@ int main(int argc, char* argv[])
                     if (start_offset>stop_offset) { fprintf(stderr, "Error: start offset is greater than stop offest (this must be a bug)!\n"); exit(1); }
                     double x = (double)(start_offset+stop_offset)/2/ref_len+bin_min;
                     double z = (double)(x-bin_min)/(bin_max-bin_min);
-                    if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)] += USE_LABELS_AS_VALUES?(double)atof(qreg->LABEL):1.0;
+                    if ((z>=0)&&(z<1)) bins[(int)(n_bins*z)] += (double)qreg->GetLabelValue(MAX_LABEL_VALUE);
             	}
             }
             PRG.Check();

@@ -61,7 +61,7 @@ char *DIST_OP1;
 char *DIST_OP2;
 long int WIN_STEP;
 long int WIN_SIZE;
-bool WIN_USE_LABELS_AS_COUNTS;
+bool WIN_MAX_LABEL_VALUE;
 bool WIN_IGNORE_REVERSE_STRAND;
 char WIN_PREPROCESS;
 long int WIN_MIN_READS;
@@ -591,21 +591,6 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="rnd") {
     cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region-set file");
   }
-  else if (op=="scan") {
-    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region-set file");
-    cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window step)");
-    cmd_line->AddOption("-d", &WIN_STEP, 25, "window step");
-  }
-  else if (op=="scanc") {
-    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region-set file");
-    cmd_line->AddOption("-r", &REF_REG_FILE, "", "reference region file");
-    cmd_line->AddOption("-w", &WIN_SIZE, 500, "window size (must be a multiple of window step)");
-    cmd_line->AddOption("-d", &WIN_STEP, 25, "window step");
-    cmd_line->AddOption("-n", &WIN_USE_LABELS_AS_COUNTS, false, "use region label as read count");
-    cmd_line->AddOption("-i", &WIN_IGNORE_REVERSE_STRAND, false, "ingore negative strand");
-    cmd_line->AddOption("-op", &WIN_PREPROCESS, 'c', "preprocess operator (1=start, c=center, p=all points)");
-    cmd_line->AddOption("-min", &WIN_MIN_READS, 0, "minimum required reads for output window");
-  }
   else if (op=="search") {
     cmd_line->AddOption("-p", &PATTERN, "C|G", "pattern");
     cmd_line->AddOption("-H", &HEADER, false, "print header");
@@ -713,7 +698,7 @@ int main(int argc, char* argv[])
 
   // open region sets
   bool hide_header = ((cmd_line->current_cmd_operation=="bed")||(cmd_line->current_cmd_operation=="reg"))?true:false;
-  bool load_in_memory = (cmd_line->current_cmd_operation=="gsort")?true:false;
+  bool load_in_memory = ((cmd_line->current_cmd_operation=="gsort")||(cmd_line->current_cmd_operation=="annotator"))?true:false;
   GenomicRegionSet RegSet(REG_FILE,BUFFER_SIZE,VERBOSE,load_in_memory,hide_header);
 
   //----------------------------------------------//
@@ -774,8 +759,6 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="partition") RegSet.RunGlobalPartition();
   else if (cmd_line->current_cmd_operation=="rc") RegSet.PrintReversePos(bounds);
   else if (cmd_line->current_cmd_operation=="rev") RegSet.RunGlobalReverseOrder(); 
-  else if (cmd_line->current_cmd_operation=="scan") RegSet.RunGlobalScan(bounds,WIN_STEP,WIN_SIZE);
-  else if (cmd_line->current_cmd_operation=="scanc") RegSet.RunGlobalScanCount(bounds,REF_REG_FILE,WIN_STEP,WIN_SIZE,WIN_IGNORE_REVERSE_STRAND,WIN_PREPROCESS,WIN_USE_LABELS_AS_COUNTS,WIN_MIN_READS); 
   else if (cmd_line->current_cmd_operation=="verify") RegSet.PrintVerifySeq(C,IGNORE);
 #endif
 

@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.7.2";
+const string VERSION = "genomic_tools 2.7.3a";
 
 
 #include <stdio.h>
@@ -701,7 +701,11 @@ class GenomicRegion
   char *GetSeq(Chromosomes *C, bool replace=false);
 
 
+  //! Returns thresholded genomic region value
+  long int GetLabelValue(long int max_label_value);
 
+  
+  
   //------------------------------------------------------//
   //   Check                                              //
   //------------------------------------------------------//
@@ -1952,10 +1956,10 @@ class GenomicRegionSet
     \param win_size					sliding window size (must be a multiple of window step)
     \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
     \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
-    \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+    \param max_label_value			maximum genomic region label value to be used
     \param min_reads				report windows only if value is greater that this parameter
   */
-  void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, bool use_labels_as_values, long int min_reads);
+  void RunGlobalScanCount(StringLIntMap *bounds, char *ref_reg_file, long int win_step, long int win_size, bool ignore_strand, char preprocess, long int max_label_value, long int min_reads);
 
 
   //! Prints in Wiggle format. If <b>convert_chromosome</b> is 'true', then convert from ENSEMBL to UCSC names (by adding 'chr' prefix to each chromosome name, and by converting 'MT' to 'chrM'). 
@@ -2197,11 +2201,11 @@ class GenomicRegionSetScanner
     \param bounds 					chromosome sizes
     \param win_step					sliding window step
     \param win_size					sliding window size (must be a multiple of window step)
-    \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+    \param max_label_value			maximum genomic region label value to be used
     \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
     \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   */
-  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+  GenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess);
   virtual ~GenomicRegionSetScanner();
 
   // operations
@@ -2217,7 +2221,7 @@ class GenomicRegionSetScanner
   StringLIntMap *bounds;			//!< chromosome sizes
   long int win_step;				//!< sliding window step
   long int win_size;				//!< sliding window size (must be a multiple of window step)
-  bool use_labels_as_values;		//!< if true, genomic region labels are assumed to be integers and are included in the counting
+  long int max_label_value;			//!< maximum genomic region label value to be used
   bool ignore_strand;				//!< if true, strand information is ignored and no sliding windows on the negative strand are reported
   char preprocess;					//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   long int n_win_combine;			//!< win_size divided by win_step (note: each window is comprised of non-overlapping sub-windows of size win_step)
@@ -2275,11 +2279,11 @@ class SortedGenomicRegionSetScanner : public GenomicRegionSetScanner
     \param bounds 					chromosome sizes
     \param win_step					sliding window step
     \param win_size					sliding window size (must be a multiple of window step)
-    \param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+    \param max_label_value			maximum genomic region label value to be used
     \param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
     \param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   */
-  SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+  SortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess);
   virtual ~SortedGenomicRegionSetScanner();
   
   // operations
@@ -2333,11 +2337,11 @@ class UnsortedGenomicRegionSetScanner : public GenomicRegionSetScanner
 		\param bounds 					chromosome sizes
 		\param win_step					sliding window step
 		\param win_size					sliding window size (must be a multiple of window step)
-		\param use_labels_as_values		if true, genomic region labels are assumed to be integers and are included in the counting
+		\param max_label_value			maximum genomic region label value to be used
     	\param ignore_strand			if true, strand information is ignored and no sliding windows on the negative strand are reported
 		\param preprocess				if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
 	*/
-	UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, bool use_labels_as_values, bool ignore_strand, char preprocess);
+	UnsortedGenomicRegionSetScanner(GenomicRegionSet *R, StringLIntMap *bounds, long int win_step, long int win_size, long int max_label_value, bool ignore_strand, char preprocess);
 	virtual ~UnsortedGenomicRegionSetScanner();
 
 	// operations
@@ -2434,36 +2438,36 @@ class GenomicRegionSetOverlaps
   /*!
     \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
     \param ignore_strand		if 'true', overlaps are strand-ignorant
-    \param use_labels_as_values 	region labels contain number to be used in calculation
+    \param max_label_value		maximum genomic region label value to be used
   */
-  unsigned long int CalcQueryCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int CalcQueryCoverage(bool match_gaps, bool ignore_strand, long int max_label_value);
 
 
   //! Calculates the total overlap for each index region. The index region set must be loaded in memory.  
   /*!
     \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
     \param ignore_strand		if 'true', overlaps are strand-ignorant
-    \param use_labels_as_values 	region labels contain number to be used in calculation
+    \param max_label_value		maximum genomic region label value to be used
   */
-  unsigned long int *CalcIndexCoverage(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int *CalcIndexCoverage(bool match_gaps, bool ignore_strand, long int max_label_value);
 
 
   //! Calculates the total number of matches between the current query region and the index region set.
   /*!
     \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
     \param ignore_strand		if 'true', overlaps are strand-ignorant
-    \param use_labels_as_values 	region labels contain number to be used in calculation
+    \param max_label_value		maximum genomic region label value to be used
    */
-  unsigned long int CountQueryOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int CountQueryOverlaps(bool match_gaps, bool ignore_strand, long int max_label_value);
 
 
   //! Calculates the total number of matches for each index region. The index region set must be loaded in memory. 
   /*!
     \param match_gaps 			if 'true', overlaps are defined as in \ref GetMatch.
     \param ignore_strand		if 'true', overlaps are strand-ignorant
-    \param use_labels_as_values 	region labels contain number to be used in calculation
+    \param max_label_value		maximum genomic region label value to be used
    */
-  unsigned long int *CountIndexOverlaps(bool match_gaps, bool ignore_strand, bool use_labels_as_values);
+  unsigned long int *CountIndexOverlaps(bool match_gaps, bool ignore_strand, long int max_label_value);
 
  
   
@@ -2584,7 +2588,7 @@ class GenomicRegionSetIndex
 
     // process overlaps
     GenomicRegionSetOverlaps *overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet);
-    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       GenomicRegion *qreg = RefRegSet.R[k];
@@ -2679,7 +2683,7 @@ class UnsortedGenomicRegionSetOverlaps : public GenomicRegionSetOverlaps
 
     // process overlaps
     GenomicRegionSetOverlaps *overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
-    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,USE_VALUES); 
+    unsigned long int *coverage = overlaps->CalcIndexCoverage(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
     Progress PRG("Printing densities...",RefRegSet.n_regions);
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       GenomicRegion *qreg = RefRegSet.R[k];
@@ -2805,7 +2809,7 @@ GenomicRegionSetBins *BinGenomicRegions(GenomicRegionSet *rset, bool sorted_by_s
 long int *GetGapSizes(GenomicRegion *r, char *offset_op);
 OffsetList *CalcOffsetsWithoutGaps(GenomicRegion *query_reg, GenomicRegion *ref_reg, char *offset_op, bool ignore_strand);
 
-long int CountGenomicRegions(char *reg_file, bool use_label_counts);
+long int CountGenomicRegions(char *reg_file, long int max_label_value);
 
 GenomicRegionSet *CreateGenomicRegionSetAnnotator(GenomicRegionSet *RefRegSet, StringLIntMap *bounds, bool ignore_strand, long int upstream_max_distance, long int upstream_min_distance, char *bin_bits);
 

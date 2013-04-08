@@ -63,8 +63,8 @@ double HIST_MAX;
 bool HIST_AUTOMIN;
 bool HIST_AUTOMAX;
 char *SEPARATOR;
-
-
+bool RANK_NORM;
+double CONST;
 
 
 
@@ -106,6 +106,7 @@ void Usage()
   fprintf(stderr, "  permute    permute order of vectors\n");
   fprintf(stderr, "  pow        compute the power\n");
   fprintf(stderr, "  q          quantiles\n");
+  fprintf(stderr, "  rank       ranks\n");
   fprintf(stderr, "  rev        reverse\n");
   fprintf(stderr, "  sd         standard deviation\n");
   fprintf(stderr, "  shuffle    shuffle vector elements\n");
@@ -165,6 +166,7 @@ CmdLine *InitCmdLine(char *method)
   }
   else if (strcmp(method,"log")==0) {
     cmd_line->AddOption("-b", &LOG_BASE, 10.0, "log base");
+    cmd_line->AddOption("-c", &CONST, 0.0, "add constant before computing logarithm");
   }
   else if (strcmp(method,"m")==0) {
     cmd_line->AddOption("-a", &ALPHA, 0.0, "trimmed vector parameter");
@@ -178,6 +180,9 @@ CmdLine *InitCmdLine(char *method)
   }
   else if (strcmp(method,"pow")==0) {
     cmd_line->AddOption("-b", &POW, 10.0, "power of");
+  }
+  else if (strcmp(method,"rank")==0) {
+    cmd_line->AddOption("-norm", &RANK_NORM, false, "normalized ranks");
   }
   else if (strcmp(method,"sd")==0) {
     cmd_line->AddOption("-a", &ALPHA, 0.0, "trimmed vector parameter");
@@ -461,7 +466,7 @@ int main(int argc, char* argv[])
 
 
   //--------------------------------------------------------------------------------------//
-  // OPTION -format: format vectors                                                       //
+  // OPERATION format: format vectors                                                       //
   //--------------------------------------------------------------------------------------//
   else if (strcmp(method,"format")==0) { 
     Progress PRG("Formatting rows...",n_vectors);
@@ -480,7 +485,25 @@ int main(int argc, char* argv[])
 
 
   //--------------------------------------------------------------------------------------//
-  // OPTION -sort: sort vectors                                                           //
+  // OPERATION rank: compute ranks                                                        //
+  //--------------------------------------------------------------------------------------//
+  else if (strcmp(method,"rank")==0) { 
+    Progress PRG("Ranking vectors...",n_vectors);
+    while (VB->ReadNext()==true) {
+      VB->PrintLabel();
+      int *r = GetVectorRanks(VB->vec,VB->vec_size);
+      if (RANK_NORM) for (long int j=0; j<VB->vec_size; j++) { printf(fmt, (double)(r[j]+1)/VB->vec_size); printf(" "); }
+      else for (long int j=0; j<VB->vec_size; j++) printf("%d ", r[j]+1);
+      printf("\n");
+	  delete r;
+      PRG.Check();
+    }
+    PRG.Done();
+  }
+
+
+  //--------------------------------------------------------------------------------------//
+  // OPERATION sort: sort vectors                                                           //
   //--------------------------------------------------------------------------------------//
   else if (strcmp(method,"sort")==0) { 
     Progress PRG("Sorting vectors...",n_vectors);
@@ -496,7 +519,7 @@ int main(int argc, char* argv[])
 
 
   //--------------------------------------------------------------------------------------//
-  // OPTION -shuffle: shuffle vectors                                                     //
+  // OPERATION shuffle: shuffle vectors                                                     //
   //--------------------------------------------------------------------------------------//
   else if (strcmp(method,"shuffle")==0) { 
     gsl_rng *RANDOM_GENERATOR = InitRandomGenerator(getpid()+time(NULL));
@@ -541,7 +564,7 @@ int main(int argc, char* argv[])
       VB->PrintLabel();
       for (long int j=0; j<VB->vec_size; j++) {
         if (VB->vec[j]!=VB->vec[j]) printf("NaN");
-        else printf(fmt, log(VB->vec[j])/log(LOG_BASE));
+        else printf(fmt, log(VB->vec[j]+CONST)/log(LOG_BASE));
 	printf(" ");
       }
       printf("\n");
