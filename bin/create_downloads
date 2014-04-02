@@ -11,7 +11,7 @@ if ($#argv < 1) then
   exit
 endif
 
-set VERSION = $1
+set VERSION = $1   # e.g. v2.8.0
 set ARCH = $2
 if ($ARCH == "") then
   set ARCH = redhat-x86_64
@@ -25,15 +25,15 @@ ln -sf $REPODIR $DIR
 
 echo "Creating source/documentation/examples archive..."
 cd $DIR
-cd src
+cd gtools
 make clean
 cd ~
-tar --wildcards-match-slash --exclude="*\/\.svn" -cvzf genomic-tools-$VERSION-src+doc.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/src $DIR/doc
+tar --wildcards-match-slash --exclude="*\/\.svn" -cvzf genomic-tools-$VERSION-src+doc.tgz $DIR/Makefile $DIR/README $DIR/bin $DIR/gtools $DIR/doc
 tar --wildcards-match-slash --exclude="*\/\.svn" -cvzf genomic-tools-$VERSION-examples.tgz $DIR/examples 
 
 echo "Compiling..."
 cd $DIR
-cd src
+cd gtools
 make clean
 make -f Makefile.static
 echo

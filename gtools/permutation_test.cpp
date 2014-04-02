@@ -304,7 +304,7 @@ double *StringSets::CalcTStatistic(bool approx)
       if (UNDER) Y[c] = -Y[c];
       if (approx==true) {
         long int df = (long int)floor(pow(var[0]/n[0]+var[1]/n[1],2.0)/(pow(var[0]/n[0],2.0)/(n[0]-1)+pow(var[1]/n[1],2.0)/(n[1]-1)));
-        Y[c] = gsl_cdf_tdist_Q(Y[c],df);
+        Y[c] = (df<0)?1.0:gsl_cdf_tdist_Q(Y[c],df);
       }
     }
   }
@@ -335,7 +335,7 @@ double *StringSets::CalcTStatistic(bool approx)
       if (UNDER) Y[c] = -Y[c];
       if (approx==true) {
         long int df = (long int)floor(pow(varZ[0]/n[0]+varZ[1]/n[1],2.0)/(pow(varZ[0]/n[0],2.0)/(n[0]-1)+pow(varZ[1]/n[1],2.0)/(n[1]-1)));
-        Y[c] = gsl_cdf_tdist_Q(Y[c],df);
+        Y[c] = (df<0)?1.0:gsl_cdf_tdist_Q(Y[c],df);
       }
     }
   }
@@ -409,7 +409,7 @@ double *StringSets::CalcHyperGeomStatistic(bool approx)
       k += UNDER?V[r]<0:V[r]>0;
     }
     Y[c] = k;
-    if (approx==true) Y[c] = (double)gsl_cdf_hypergeometric_Q(k,n1,n_rows-n1,t);
+    if (approx==true) Y[c] = k==0?1.0:(double)gsl_cdf_hypergeometric_Q(k-1,n1,n_rows-n1,t);
   }
 
   return Y;

@@ -61,6 +61,7 @@ char *DIST_OP1;
 char *DIST_OP2;
 long int WIN_STEP;
 long int WIN_SIZE;
+bool WIN_SMALL;
 bool WIN_MAX_LABEL_VALUE;
 bool WIN_IGNORE_REVERSE_STRAND;
 char WIN_PREPROCESS;
@@ -646,6 +647,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="win") {
     cmd_line->AddOption("-s", &WIN_SIZE, 1, "window size");
     cmd_line->AddOption("-d", &WIN_STEP, 1, "window distance");
+    cmd_line->AddOption("--small", &WIN_SMALL, false, "include smaller windows at the end of chromosomes");
   }
   else if (op=="x") {
     cmd_line->AddOption("-Q", &CHROMOSOME_FASTA_FILE, "", "FASTA file containing all chromosomes (overrides options -D and -q)");
@@ -729,7 +731,7 @@ int main(int argc, char* argv[])
   else if (cmd_line->current_cmd_operation=="strand") RegSet.RunModifyStrand(STRAND_OP,STRAND_SORTED);
   else if (cmd_line->current_cmd_operation=="union") RegSet.RunUnion();
   else if (cmd_line->current_cmd_operation=="wig") RegSet.RunConvertToWIG(TRACK_TITLE,TRACK_COLOR,TRACK_POSITION,TRACK_OPTIONS,TRACK_SCALE,TRACK_SPAN,CONVERT_CHROMOSOME);
-  else if (cmd_line->current_cmd_operation=="win") RegSet.RunSlidingWindows(WIN_STEP,WIN_SIZE);
+  else if (cmd_line->current_cmd_operation=="win") RegSet.RunSlidingWindows(WIN_STEP,WIN_SIZE,WIN_SMALL);
   else if (cmd_line->current_cmd_operation=="x") RegSet.RunExtractSeq(C,REPLACE);
   
   //----------------------------------------------//
