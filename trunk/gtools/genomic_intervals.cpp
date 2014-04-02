@@ -1069,11 +1069,21 @@ size_t GenomicRegion::GetSeqLength(Chromosomes *C)
 
 //---------GetLabelValue-----------
 //
+double GenomicRegion::GetLabelValue(double max_label_value)
+{
+  if (max_label_value<=1) return 1;
+  return min(max_label_value,atof(LABEL));
+}
+
+
+//---------GetLabelValue-----------
+//
 long int GenomicRegion::GetLabelValue(long int max_label_value)
 {
   if (max_label_value<=1) return 1;
   return min(max_label_value,atol(LABEL));
 }
+
 
 
 
@@ -1687,11 +1697,12 @@ void GenomicRegion::RunUnion()
 
 //---------PrintWindows-----------
 //
-void GenomicRegion::PrintWindows(long int win_step, long int win_size)
+void GenomicRegion::PrintWindows(long int win_step, long int win_size, bool win_small)
 {
   if (I.size()!=1) PrintError("this operation requires single-interval regions!\n");
-  for (long int z=I.front()->START,k=1; z+win_size-1<=I.front()->STOP; z+=win_step,k++) {
-    printf("%s#%ld\t%s %c %ld %ld\n", LABEL, k, I.front()->CHROMOSOME, I.front()->STRAND, z, z+win_size-1);
+  for (long int z=I.front()->START,k=1; z<=I.front()->STOP; z+=win_step,k++) {
+    if ((win_small==false)&&(z+win_size-1>I.front()->STOP)) break;
+    printf("%s#%ld\t%s %c %ld %ld\n", LABEL, k, I.front()->CHROMOSOME, I.front()->STRAND, z, min(z+win_size-1,I.front()->STOP));
   }
 }
 
@@ -2506,11 +2517,12 @@ void GenomicRegionBED::Union()
 
 //---------PrintWindows-----------
 //
-void GenomicRegionBED::PrintWindows(long int win_step, long int win_size)
+void GenomicRegionBED::PrintWindows(long int win_step, long int win_size, bool win_small)
 {
   if (I.size()!=1) PrintError("this operation requires single-interval regions!\n");
-  for (long int z=I.front()->START,k=1; z+win_size-1<=I.front()->STOP; z+=win_step,k++) {
-    printf("%s%c%ld%c%ld", I.front()->CHROMOSOME, BED_SEPARATOR, z-1, BED_SEPARATOR, z+win_size-1);
+  for (long int z=I.front()->START,k=1; z<=I.front()->STOP; z+=win_step,k++) {
+    if ((win_small==false)&&(z+win_size-1>I.front()->STOP)) break;
+    printf("%s%c%ld%c%ld", I.front()->CHROMOSOME, BED_SEPARATOR, z-1, BED_SEPARATOR, min(z+win_size-1,I.front()->STOP));
     if (n_tokens>=4) {
       printf("%c%s", BED_SEPARATOR, LABEL);
       if (n_tokens>=6) printf("%c%ld%c%c", BED_SEPARATOR, score, BED_SEPARATOR, I.front()->STRAND);
@@ -3342,7 +3354,7 @@ void GenomicRegionSAM::Union()
 
 //---------PrintWindows-----------
 //
-void GenomicRegionSAM::PrintWindows(long int win_step, long int win_size)
+void GenomicRegionSAM::PrintWindows(long int win_step, long int win_size, bool win_small)
 {
   PrintError("the 'windows' operation has not yet been implemented for SAM inputs; convert to REG/BED first and try again!");
 }
@@ -3617,7 +3629,7 @@ void GenomicRegionGFF::RunSplit(bool by_chrom_and_strand)
 
 //---------PrintWindows-----------
 //
-void GenomicRegionGFF::PrintWindows(long int win_step, long int win_size)
+void GenomicRegionGFF::PrintWindows(long int win_step, long int win_size, bool win_small)
 {
   PrintError("the 'windows' operation has not yet been implemented for GFF inputs; convert to REG/BED first and try again!");
 }
@@ -4434,11 +4446,11 @@ void GenomicRegionSet::RunConvertToWIG(char *title, char *color, char *position,
 
 //---------RunSlidingWindows--------
 //
-void GenomicRegionSet::RunSlidingWindows(long int win_step, long int win_size)
+void GenomicRegionSet::RunSlidingWindows(long int win_step, long int win_size, bool win_small)
 {
   if (n_regions==0) return;
   Progress PRG("Printing windows...",n_regions);
-  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) r->PrintWindows(win_step,win_size);
+  for (GenomicRegion *r=Get(); r!=NULL; r=Next(),PRG.Check()) r->PrintWindows(win_step,win_size,win_small);
   PRG.Done();
 }
 
@@ -4601,8 +4613,8 @@ void GenomicRegionSet::RunGlobalLink(bool sorted_by_strand, long int max_differe
     if (r->I.size()!=1) r->PrintError("not a single-interval region!");
     GenomicRegion *r0 = r; 
     long int new_stop = r0->I.front()->STOP; 
-	string new_label = strlen(label_func)>0?r0->LABEL:"_";
-	double new_val = (double)atof(r0->LABEL);
+    string new_label = strlen(label_func)>0?r0->LABEL:"_";
+    double new_val = (double)atof(r0->LABEL);
     while (true) {
       if ((r=Next(sorted_by_strand,r==r0))!=NULL) {
         if (r->I.size()!=1) r->PrintError("not a single-interval region!");
@@ -4621,8 +4633,8 @@ void GenomicRegionSet::RunGlobalLink(bool sorted_by_strand, long int max_differe
 	  if (is_func) {
 	    stringstream s;
 		s << new_val;
-		new_label = s.str();
-	  }
+        new_label = s.str();
+      }
       r0->PrintModified(new_label.c_str(),r0->I.front()->START,new_stop);
       break;
     }

@@ -911,7 +911,8 @@ class CmdLineWithOperations : public CmdLine
       cmd_info(string &usage, string &description, string &details, string &examples):usage(usage),description(description),details(details),examples(examples) {}
     }; 
     typedef map<string,cmd_info*> OperationMap;
-
+    typedef list<string> OperationList;
+    
     // constructor & destructor    
     CmdLineWithOperations();
     ~CmdLineWithOperations();
@@ -921,12 +922,13 @@ class CmdLineWithOperations : public CmdLine
     void SetCurrentOperation(string operation);
 
     // print info
-    void OperationSummary(string usage, string description);
+    void OperationSummary(string usage, string description, bool keep_order=false);
     void OperationUsage();
 
     // data
     string current_cmd_operation;
     OperationMap cmd_operations;
+    OperationList cmd_operations_list;
 };
 
 //---------------------------------------------------------------------------------------------------//

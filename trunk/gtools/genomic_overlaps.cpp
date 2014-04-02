@@ -52,12 +52,14 @@ bool PRINT_REGIONS;
 bool MATCH_GAPS;
 long int MAX_LABEL_VALUE;
 unsigned long int MIN_COUNT;
+double MIN_RPKM;
 double MIN_DENSITY;
 char *OFFSET_OP;
 bool OFFSET_FRACTION;
 bool CENTER;
 bool SUBSET_NONOVERLAPS;
 bool OFFSET_SKIP_REF_GAPS;
+char *QUERY_OP;
 long int UPSTREAM_MAX_DISTANCE;
 long int UPSTREAM_MIN_DISTANCE;
 bool DISTANCE_FLAG;
@@ -156,6 +158,14 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   * Region-set requirements: sorted if -S option is used"\
   );
 
+  cmd_line->AddOperation("rpkm", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
+  "Computing reference region RPKM values.", \
+  "* Input formats: REG, GFF, BED, SAM\n\
+  * Operands: region, region-set\n\
+  * Region requirements: chromosome/strand-compatible, sorted, non-overlapping\n\
+  * Region-set requirements: sorted if -S option is used"\
+  );
+
   cmd_line->AddOperation("subset", "[OPTIONS] REFERENCE-REGION-FILE <TEST-REGION-FILE>", \
   "Picks a subset of test regions depending on their overlap with reference regions. Results are grouped by test region.", \
   "* Input formats: REG, GFF, BED, SAM\n\
@@ -182,7 +192,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
    
   // Main options
   if (op=="annotate") {
-    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 10000, "maximum allowed upstream region size ");
+    cmd_line->AddOption("--query-op", &QUERY_OP, "center", "query operation for comparison with reference: {center|overlap}");
+    cmd_line->AddOption("--upstream-max", &UPSTREAM_MAX_DISTANCE, 10000, "maximum allowed upstream region size");
     cmd_line->AddOption("--upstream-min", &UPSTREAM_MIN_DISTANCE, 10000, "minimum allowed upstream region size (subject to genomic bounds)");
     cmd_line->AddOption("--distance-flag", &DISTANCE_FLAG, false, "add proximal-distal indication");
     cmd_line->AddOption("--proximal-dist", &PROXIMAL_DIST, 1000, "define proximal distance (in nucleotides)");
@@ -205,6 +216,7 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="density") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
+
     cmd_line->AddOption("-min", &MIN_DENSITY, 0.0, "minimum density");
   }
   else if (op=="dist") {
@@ -225,6 +237,11 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   else if (op=="overlap") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
     cmd_line->AddOption("-label", &MERGE_LABELS, false, "print query label for each match");
+  }
+  else if (op=="rpkm") {
+    cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
+    cmd_line->AddOption("--max-label-value", &MAX_LABEL_VALUE, 1, "maximum region label value to be used");
+    cmd_line->AddOption("-min", &MIN_RPKM, 0.0, "minimum RPKM");
   }
   else if (op=="subset") {
     cmd_line->AddOption("-gaps", &MATCH_GAPS, false, "matching gaps between intervals are considered overlaps");
@@ -248,26 +265,27 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
 
 //-------PrintAnnotations-----------
 //
-void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_strand, bool skip_ref_gaps, const char *offset_op, bool flag, long int proximal_dist)
+void PrintAnnotations(GenomicRegion *qreg, GenomicRegion *ireg, bool ignore_strand, bool skip_ref_gaps, char *query_op, const char *offset_op, bool flag, long int proximal_dist)
 {
     long int start_offset, stop_offset;
     qreg->I[0]->GetOffsetFrom(ireg,offset_op,ignore_strand,&start_offset,&stop_offset);
-    double center_offset = (double)(start_offset+stop_offset)/2;
-	if (center_offset<0) return;
+    double offset;
+    if (strcmp(QUERY_OP,"center")==0) { offset = (double)(start_offset+stop_offset)/2; if (offset<0) return; }
+    else if (strcmp(QUERY_OP,"overlap")==0) offset = (double)start_offset;
+    else { fprintf(stderr, "Error [PrintAnnotations]: invalid value for query operation!\n"); exit(1); }
+    //cout << "offsets: " << start_offset << ' ' << stop_offset << '\n';
 	printf("%s\t", qreg->LABEL);
 	qreg->I[0]->PrintInterval();
 	printf("\t");
 	printf("%lu\t", (unsigned long int)qreg->I[0]->GetSize());
-    if ((strcmp(offset_op,"3p")==0)&&(flag==true)) printf("%s:", center_offset>proximal_dist?"distal":"proximal");
-	else if ((strcmp(offset_op,"5p")==0)&&(flag==true)) printf("%s:downstream:", center_offset>proximal_dist?"distal":"proximal");
+    if ((strcmp(offset_op,"3p")==0)&&(flag==true)) printf("%s:", offset>=proximal_dist?"distal":"proximal");	
+	else if ((strcmp(offset_op,"5p")==0)&&(flag==true)) printf("%s:downstream:", offset>proximal_dist?"distal":"proximal");
 	printf("%s\t", ireg->LABEL);
 	ireg->I[0]->PrintInterval();
 	printf("\t");
 	printf("%lu\t", (unsigned long int)ireg->I[0]->GetSize());
-    //if (strcmp(offset_op,"3p")==0) center_offset = -center_offset;
-    printf("%ld\t", (long int)center_offset);
-	//printf("(%ld %ld)\t", start_offset, stop_offset);
-    printf("%f", center_offset/ireg->GetSize(skip_ref_gaps));
+    printf("%ld\t", (long int)offset);
+    printf("%f", offset/ireg->GetSize(skip_ref_gaps));
 	printf("\n");
 }
 
@@ -316,12 +334,12 @@ int main(int argc, char* argv[])
 	  GenomicInterval *qint = qreg->I[0];
 	  for (GenomicRegion *ireg=RefIndex.GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=RefIndex.NextOverlap(match_gaps,IGNORE_STRAND)) {
         if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
-        PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"5p",DISTANCE_FLAG,PROXIMAL_DIST);
+        PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,QUERY_OP,"5p",DISTANCE_FLAG,PROXIMAL_DIST);
 	  }
 	  if (UpstreamRefIndex) {
 	    for (GenomicRegion *ireg=UpstreamRefIndex->GetOverlap(qint,match_gaps,IGNORE_STRAND); ireg!=NULL; ireg=UpstreamRefIndex->NextOverlap(match_gaps,IGNORE_STRAND)) {
           if (ireg->I.size()!=1) ireg->PrintError("single-interval reference regions are required for this operation!");
-          PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,"3p",DISTANCE_FLAG,PROXIMAL_DIST);
+          PrintAnnotations(qreg,ireg,IGNORE_STRAND,skip_ref_gaps,QUERY_OP,"3p",DISTANCE_FLAG,PROXIMAL_DIST);
 	    }
 	  }
       PRG.Check();
@@ -402,7 +420,8 @@ int main(int argc, char* argv[])
     for (long int k=0; k<RefRegSet.n_regions; k++) {
       if (hits[k]>=MIN_COUNT) {
         printf("%s", RefRegSet.R[k]->LABEL); printf("\t");
-        printf("%lu", hits[k]); printf("\n");
+        printf("%lu", hits[k]);
+        printf("\n");
       }
       PRG.Check();
     }
@@ -720,6 +739,42 @@ int main(int argc, char* argv[])
   }
 
   
+
+  //--------------------
+  // rpkm
+  //--------------------
+  else if (cmd_line->current_cmd_operation=="rpkm") {
+    // open region sets
+    char *REF_REG_FILE = argv[next_arg];
+    char *TEST_REG_FILE = next_arg+1==argc ? NULL : argv[next_arg+1];
+    GenomicRegionSet RefRegSet(REF_REG_FILE,BUFFER_SIZE,VERBOSE,true,true);
+    GenomicRegionSet TestRegSet(TEST_REG_FILE,BUFFER_SIZE,VERBOSE,false,true);
+
+    GenomicRegionSetOverlaps *overlaps;
+    if (IS_SORTED) overlaps = new SortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,SORTED_BY_STRAND);
+    else overlaps = new UnsortedGenomicRegionSetOverlaps(&TestRegSet,&RefRegSet,BIN_BITS);
+    unsigned long int *hits = overlaps->CountIndexOverlaps(MATCH_GAPS,IGNORE_STRAND,MAX_LABEL_VALUE); 
+    unsigned long int nreads = 0;
+    for (long int k=0; k<RefRegSet.n_regions; k++) nreads += hits[k]; 
+    if (VERBOSE) fprintf(stderr, "* %lu reads overlap reference regions.\n", nreads);
+    double mreads = (double)nreads/1000000;
+    Progress PRG("Printing counts...",RefRegSet.n_regions);
+    for (long int k=0; k<RefRegSet.n_regions; k++) {
+      if (hits[k]>=MIN_COUNT) {
+        printf("%s", RefRegSet.R[k]->LABEL); printf("\t");
+        long int eff_len = RefRegSet.R[k]->GetSize(!MATCH_GAPS);
+        double rpkm = eff_len<=0?0.0/0.0:(double)1000*hits[k]/eff_len/mreads;
+        printf("%.4e", rpkm);
+        printf("\n");
+      }
+      PRG.Check();
+    }
+    PRG.Done();
+    delete hits;
+    delete overlaps;
+  }
+
+
 
   //--------------------
   // subset

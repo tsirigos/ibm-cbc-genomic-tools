@@ -2579,6 +2579,7 @@ void CmdLineWithOperations::AddOperation(string operation, string usage, string 
 {
   if (cmd_operations.find(operation)!=cmd_operations.end()) { fprintf(stderr, "Error: [CmdLine::AddOperation] operation is already defined!\n"); exit(1); }
   cmd_operations[operation] = new cmd_info(usage,description,details,examples);
+  cmd_operations_list.push_back(operation);
 }
 
 
@@ -2594,7 +2595,7 @@ void CmdLineWithOperations::SetCurrentOperation(string operation)
 
 //-----OperationSummary----------
 //
-void CmdLineWithOperations::OperationSummary(string usage, string description)
+void CmdLineWithOperations::OperationSummary(string usage, string description, bool keep_order)
 {
   cout << '\n';
   cout << "USAGE: \n";
@@ -2609,8 +2610,8 @@ void CmdLineWithOperations::OperationSummary(string usage, string description)
   cout << "  " << description << '\n'; 
   cout << '\n';
   cout << "OPERATION: \n";
-  for (OperationMap::iterator it=cmd_operations.begin(); it!=cmd_operations.end(); it++) 
-    printf("  %-15s %s\n", it->first.c_str(), it->second->description.c_str());
+  if (keep_order==true) for (OperationList::iterator it=cmd_operations_list.begin(); it!=cmd_operations_list.end(); it++) printf("  %-15s %s\n", it->c_str(), cmd_operations[*it]->description.c_str());
+  else for (OperationMap::iterator it=cmd_operations.begin(); it!=cmd_operations.end(); it++) printf("  %-15s %s\n", it->first.c_str(), it->second->description.c_str());
   cout << '\n';
 }
 

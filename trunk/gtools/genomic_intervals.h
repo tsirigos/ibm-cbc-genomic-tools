@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 
-const string VERSION = "genomic_tools 2.7.3a";
+const string VERSION = "genomic_tools 2.8.0";
 
 
 #include <stdio.h>
@@ -702,6 +702,7 @@ class GenomicRegion
 
 
   //! Returns thresholded genomic region value
+  double GetLabelValue(double max_label_value);
   long int GetLabelValue(long int max_label_value);
 
   
@@ -896,7 +897,7 @@ class GenomicRegion
 
 
   //! Print sliding windows (implemented only for single-interval regions)
-  virtual void PrintWindows(long int win_step, long int win_size);
+  virtual void PrintWindows(long int win_step, long int win_size, bool win_small);
 
 
 
@@ -1276,7 +1277,7 @@ class GenomicRegionBED : public GenomicRegion
 
 
   //! Print sliding windows (implemented only for single-interval regions)
-  void PrintWindows(long int win_step, long int win_size);
+  void PrintWindows(long int win_step, long int win_size, bool win_small);
 
 
 
@@ -1600,7 +1601,7 @@ class GenomicRegionSAM : public GenomicRegion
 
 
   //! Print sliding windows (implemented only for single-interval regions)
-  void PrintWindows(long int win_step, long int win_size);
+  void PrintWindows(long int win_step, long int win_size, bool win_small);
 
 
 
@@ -1774,7 +1775,7 @@ class GenomicRegionGFF : public GenomicRegion
 
   
   //! Print sliding windows (implemented only for single-interval regions)
-  void PrintWindows(long int win_step, long int win_size);
+  void PrintWindows(long int win_step, long int win_size, bool win_small);
 
 
 
@@ -2081,7 +2082,7 @@ class GenomicRegionSet
 
 
   //! Print sliding windows (implemented only for single-interval regions)
-  void RunSlidingWindows(long int win_step, long int win_size);
+  void RunSlidingWindows(long int win_step, long int win_size, bool win_small);
 
 
   //! Prints region label, intervals and extracted sequence in SEQ format
@@ -2223,7 +2224,7 @@ class GenomicRegionSetScanner
   long int win_size;				//!< sliding window size (must be a multiple of window step)
   long int max_label_value;			//!< maximum genomic region label value to be used
   bool ignore_strand;				//!< if true, strand information is ignored and no sliding windows on the negative strand are reported
-  char preprocess;					//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
+  char preprocess;				//!< if '1', only start position is counted; if 'p', all positions are counted; if 'c', center of interval is counted
   long int n_win_combine;			//!< win_size divided by win_step (note: each window is comprised of non-overlapping sub-windows of size win_step)
 };
 
