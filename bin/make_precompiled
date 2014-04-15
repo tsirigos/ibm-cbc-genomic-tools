@@ -1,0 +1,25 @@
+#!/bin/tcsh
+
+##
+## USAGE: make_precompiled [ARCHITECTURE=linux-x86_64]
+##
+## NOTE: run from the bin directory
+##
+
+if ($#argv > 1) then
+  cat $0 | grep '^##'
+  exit
+endif
+
+set ARCH = $1
+if ($ARCH == "") then
+  set ARCH = linux-x86_64
+endif
+
+echo "Compiling..."
+cd ../gtools
+make BINDIR=../bin/$ARCH clean
+make BINDIR=../bin/$ARCH cflags=--static
+echo
+echo "Done."
+

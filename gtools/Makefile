@@ -8,7 +8,7 @@
 
 BINDIR = ../bin
 CC = g++
-CFLAGS = -g -O2 -Wall 
+CFLAGS = -g -O2 -Wall $(cflags)
 INCLUDE = -Isamtools
 HEADER = gzstream.h core.h genomic_intervals.h 
 OBJ = gzstream.o core.o genomic_intervals.o 
@@ -16,7 +16,6 @@ LIB = -Lsamtools -lbam -lm -lz -lgslcblas -lgsl
 
 
 # Explicit rules
-
 
 gtools: genomic_regions genomic_overlaps genomic_scans genomic_apps gtools_hic vectors matrix permutation_test
 
@@ -36,7 +35,7 @@ genomic_scans: $(HEADER) $(OBJ) libbam.a
 genomic_apps: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/genomic_apps genomic_apps.cpp $(OBJ) $(LIB)
 gtools_hic: $(HEADER) $(OBJ) libbam.a
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/gtools_hic genomic_apps.cpp $(OBJ) $(LIB)
+	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/gtools_hic gtools_hic.cpp $(OBJ) $(LIB)
 vectors: $(HEADER) $(OBJ) libbam.a
 	$(CC) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/vectors vectors.cpp $(OBJ) $(LIB)
 matrix: $(HEADER) $(OBJ) libbam.a
