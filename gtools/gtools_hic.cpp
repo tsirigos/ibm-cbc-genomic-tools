@@ -21,10 +21,8 @@ using namespace std;
 
 // TODO
 // ---------------
-// * filter: more refined classification (as I had initially)
-// * compare align/filter to imakaev
+// * filter: more refined classification
 // * [LATER] fragment reg file: check if non-overlapping (don't care about sorted)
-// * [LATER] bin: --matrix-output
 // * [LATER] filter at the fragment level: too big, too small (--frag-min-size, --frag-max-size) [this needs to be done before creating the index]
 
 
@@ -69,6 +67,8 @@ long int FILTER_MAX_OFFSET;
 bool FILTER_DUPLICATES;
 char *FILTER_CLASS_FILE;
 long int BIN_SIZE;
+char *GENOME_REG_FILE;
+bool PRINT_MATRIX;
 
 
 
@@ -141,6 +141,8 @@ CmdLineWithOperations *InitCmdLine(int argc, char *argv[], int *next_arg)
   }
   else if (op=="bin") {
     cmd_line->AddOption("--bin-size", &BIN_SIZE, 1000000, "genomic bin size");
+    cmd_line->AddOption("-g", &GENOME_REG_FILE, "", "genome region file (BED/REG)");
+    cmd_line->AddOption("--matrix", &PRINT_MATRIX, false, "print output as matrix (default is sparse output)");
   }
   else {
     cerr << "Unknown operation '" << op << "'!\n";
@@ -451,9 +453,34 @@ void RunAlign(char **args, int argn, char *work_dir, int min_len, int len_diff, 
 
 
 
+
+//--------ProcessGenomeReg-----------
+//
+StringLIntMap *ProcessGenomeReg(char *genome_reg_file, long int bin_size, long int *n_bins) 
+{
+  if ((genome_reg_file!=NULL)&&(strlen(genome_reg_file)>0)) {
+    StringLIntMap *chrom_pos = new StringLIntMap();
+    GenomicRegionSet RegSet(genome_reg_file,10000,false,false,true);
+    long int line = 1;
+    long int bin = 1;
+    for (GenomicRegion *r=RegSet.Get(); r!=NULL; r=RegSet.Next(),line++) {
+      if (r->I.size()!=1) { cerr << "label = " << r->LABEL << '\n'; r->PrintError("genome regions should be single-interval regions!\n"); }
+      string chr = r->I.front()->CHROMOSOME;
+      if (chrom_pos->find(chr)==chrom_pos->end()) { (*chrom_pos)[chr] = bin; bin += (long int)ceil((float)r->I.front()->GetSize()/bin_size); }
+      else if ((*chrom_pos)[chr]!=r->I.front()->STOP) { cerr << "Error: chromosome " << chr << " appears in multiple lines in genome file '" << genome_reg_file << "' line " << line << "!\n"; exit(1); }
+    }
+    *n_bins = bin-1;
+    return chrom_pos;
+  }
+  else {
+    cerr << "Error: genome region file is necessary for this operation!\n"; exit(1);
+    return NULL;
+  } 
+}
+
 //------RunBin------
 //
-void RunBin(char **args, int argn, long int bin_size)
+void RunBin(char **args, int argn, long int bin_size, char *genome_reg_file, bool print_matrix)
 {
   // process args
   char *filteredRegFile = argn==0?NULL:args[0];
@@ -461,17 +488,56 @@ void RunBin(char **args, int argn, long int bin_size)
   // open region set
   FileBuffer *filteredRegBuffer = CreateFileBuffer(filteredRegFile,BUFFER_SIZE);
 
+  // read genome reg file
+  long int n_bins = 0;
+  StringLIntMap *chrom_pos = strlen(genome_reg_file)>0?ProcessGenomeReg(genome_reg_file,bin_size,&n_bins):NULL;
+  //for (StringLIntMap::iterator s=chrom_pos->begin(); s!=chrom_pos->end(); s++) cerr << s->first << '\t' << s->second << '\n';
+  print_matrix = print_matrix&&(n_bins>0);
+  long int **X = NULL;
+  if (print_matrix==true) {
+    X = new long int*[n_bins];
+    for (long int i=0; i<n_bins; i++) { X[i] = new long int[n_bins]; for (long int j=0; j<n_bins; j++) X[i][j] = 0; } 
+  }
+  
   // process read pairs
   Progress PRG("Binning filtered reads...",1);
   while (filteredRegBuffer->Next()!=NULL) {
     GenomicRegion r(filteredRegBuffer);
     if (r.I.size()!=2) { r.PrintError("each line should be a pair of aligned reads intervals"); exit(1); }
-    printf("%s:%ld\t%s:%ld\n", r.I[0]->CHROMOSOME, (r.I[0]->START/bin_size)+1, r.I[1]->CHROMOSOME, (r.I[1]->START/bin_size)+1);
+    char *bin1_chrom = r.I[0]->CHROMOSOME;
+    char *bin2_chrom = r.I[1]->CHROMOSOME;
+    long int bin1_offset = (r.I[0]->START/bin_size)+1;
+    long int bin2_offset = (r.I[1]->START/bin_size)+1;
+    if (print_matrix==false) printf("%s:%ld\t%s:%ld", bin1_chrom, bin1_offset, bin2_chrom, bin2_offset);
+    if (chrom_pos!=NULL) {
+      StringLIntMap::iterator bin1_chrom_it = chrom_pos->find(bin1_chrom);
+      StringLIntMap::iterator bin2_chrom_it = chrom_pos->find(bin2_chrom);
+      if ((bin1_chrom_it!=chrom_pos->end())&&(bin2_chrom_it!=chrom_pos->end())) {
+        long int i = bin1_chrom_it->second+bin1_offset-1;
+        long int j = bin2_chrom_it->second+bin2_offset-1;
+        if ((i>n_bins)||(j>n_bins)) { fprintf(stderr, "BUG!\n"); exit(1); }
+        if (print_matrix==true) {
+          X[i-1][j-1]++;
+          if (i!=j) X[j-1][i-1]++;
+        }
+        else printf("\t%ld\t%ld", i, j);
+      }
+    }
+    if (print_matrix==false) printf("\n");
     PRG.Check();
   }
   PRG.Done();
 
+  // print matrix
+  if (print_matrix==true) {
+    for (long int i=0; i<n_bins; i++) { 
+      for (long int j=0; j<n_bins; j++) { printf("%ld", X[i][j]); printf("%c", j==n_bins-1?'\n':' '); }
+    } 
+  }
 
+  // cleanup
+  if (chrom_pos!=NULL) delete chrom_pos;
+  if (X!=NULL) delete [] X;
 } 
 
 
@@ -494,7 +560,7 @@ int main(int argc, char* argv[])
   // run 
   if (cmd_line->current_cmd_operation=="align") RunAlign(&argv[next_arg],argc-next_arg,ALIGN_WORK_DIR,ALIGN_MIN_LEN,ALIGN_LEN_DIFF,BOWTIE_THREADS,BOWTIE_PATH,BOWTIE_INDEX);
   else if (cmd_line->current_cmd_operation=="filter") RunFilter(&argv[next_arg],argc-next_arg,ENZYME_REG_FILE);
-  else if (cmd_line->current_cmd_operation=="bin") RunBin(&argv[next_arg],argc-next_arg,BIN_SIZE);
+  else if (cmd_line->current_cmd_operation=="bin") RunBin(&argv[next_arg],argc-next_arg,BIN_SIZE,GENOME_REG_FILE,PRINT_MATRIX);
   else { cerr << "Unknown method '" << cmd_line->current_cmd_operation << "'!\n"; delete cmd_line; exit(1); }
 
   // clean up
